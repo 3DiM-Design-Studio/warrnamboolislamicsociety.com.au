@@ -1,33 +1,48 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import {
+  Libre_Franklin,
+  Tajawal,
+  Noto_Nastaliq_Urdu,
+  Noto_Sans_Devanagari,
+  Noto_Sans_Tamil,
+} from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { Banner, Header } from "@/components/header";
+import { Footer } from "@/components/footer";
+import { site } from "@/content/site";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const libreFranklin = Libre_Franklin({
+  variable: "--font-libre-franklin",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const arabic = Tajawal({
+  variable: "--font-arabic",
+  subsets: ["arabic"],
+  weight: ["400", "500", "700"],
 });
+const urdu = Noto_Nastaliq_Urdu({ variable: "--font-urdu", subsets: ["arabic"] });
+const devanagari = Noto_Sans_Devanagari({ variable: "--font-devanagari", subsets: ["devanagari"] });
+const tamil = Noto_Sans_Tamil({ variable: "--font-tamil", subsets: ["tamil"] });
 
 export const metadata: Metadata = {
-  title: "Warrnambool Islamic Society",
-  description: "Warrnambool Islamic Society. Jumu'ah at 12:30pm (spring).",
+  title: { default: site.name, template: `%s | ${site.name}` },
+  description: site.tagline,
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
-      {process.env.NEXT_PUBLIC_GA_ID && (
-        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
-      )}
+    <html lang="en" className={`${libreFranklin.variable} ${arabic.variable} ${urdu.variable} ${devanagari.variable} ${tamil.variable} h-full antialiased`}>
+      <body className="min-h-full flex flex-col">
+        <Banner />
+        <Header />
+        <main className="flex-1">{children}</main>
+        <Footer />
+        {process.env.NEXT_PUBLIC_GA_ID && (
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+        )}
+      </body>
     </html>
   );
 }

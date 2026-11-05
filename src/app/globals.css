@@ -1,26 +1,110 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f4f4f0;
+  --foreground: #121512;
+  --brand: #121512;
+  --brand-dark: #0b0d0b;
+  --accent: #c9f26b;
+  --muted: #5f655e;
+  --card: #ffffff;
+  --border: #e3e4dd;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-brand: var(--brand);
+  --color-brand-dark: var(--brand-dark);
+  --color-accent: var(--accent);
+  --color-muted: var(--muted);
+  --color-card: var(--card);
+  --color-border: var(--border);
+  --font-sans: var(--font-libre-franklin), system-ui, sans-serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-libre-franklin), system-ui, sans-serif;
+}
+
+@keyframes greet {
+  0% { opacity: 0; transform: scale(0.94); filter: blur(18px); }
+  30%, 70% { opacity: 1; transform: scale(1); filter: blur(0); }
+  100% { opacity: 0; transform: scale(1.06); filter: blur(18px); }
+}
+
+.animate-greet {
+  animation: greet 1100ms ease-in-out both;
+}
+
+/* Final greeting: blurs in and stays */
+@keyframes greet-in {
+  0% { opacity: 0; transform: scale(0.94); filter: blur(18px); }
+  100% { opacity: 1; transform: scale(1); filter: blur(0); }
+}
+
+.animate-greet-in {
+  animation: greet-in 900ms ease-out both;
+}
+
+/* Soft drifting gradient behind the splash greetings */
+.splash-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  opacity: 0.75;
+  animation: orb-drift 6s ease-in-out infinite alternate;
+}
+.splash-orb-a { width: 55vmax; height: 55vmax; background: #c9f26b; top: -20%; left: -15%; opacity: 0.45; }
+.splash-orb-b { width: 50vmax; height: 50vmax; background: #0f8a63; bottom: -25%; right: -10%; animation-delay: -2s; }
+.splash-orb-c { width: 35vmax; height: 35vmax; background: #b88a2e; top: 30%; left: 45%; opacity: 0.35; animation-delay: -4s; }
+
+@keyframes orb-drift {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(8vmax, -6vmax) scale(1.2); }
+}
+
+/* Comet that travels around the border of the ACNC hover card */
+@property --comet-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes comet-spin {
+  to { --comet-angle: 360deg; }
+}
+
+.comet-border {
+  background:
+    conic-gradient(
+      from var(--comet-angle),
+      transparent 0%,
+      transparent 62%,
+      #0f8a63 82%,
+      #00989d 96%,
+      #ffffff 100%
+    ),
+    linear-gradient(rgba(15, 138, 99, 0.3), rgba(0, 152, 157, 0.3));
+  animation: comet-spin 2.4s linear infinite;
+}
+
+/* Our lime blended into the WIS logo green */
+.bg-brand-gradient {
+  background-image: linear-gradient(135deg, #c9f26b 0%, #00bf2e 100%);
+}
+
+.text-brand-gradient {
+  background-image: linear-gradient(135deg, #c9f26b 0%, #00bf2e 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Edges of the card illustrations fade out so the cropped artwork blends into the card */
+.feature-fade {
+  -webkit-mask-image: radial-gradient(ellipse 70% 75% at 50% 55%, #000 45%, transparent 100%);
+  mask-image: radial-gradient(ellipse 70% 75% at 50% 55%, #000 45%, transparent 100%);
 }

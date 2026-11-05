@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# credentials doc (contains live secrets)
+/docs/CREDENTIALS.md
