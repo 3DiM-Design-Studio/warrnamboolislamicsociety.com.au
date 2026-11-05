@@ -13,7 +13,7 @@ export default function Membership() {
         The existing site collects member registrations through a form. Online
         registration (via Paid Memberships Pro) is not migrated yet. To register
         now, please{" "}
-        <Link href="/contact" className="text-brand underline">
+        <Link href="/contact" className="text-brand link-fx">
           contact the committee
         </Link>
         .

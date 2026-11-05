@@ -106,7 +106,7 @@ export default function Home() {
         <section className="pt-16">
           <div className="flex items-baseline justify-between">
             <h2 className="text-3xl font-bold">Latest from the community</h2>
-            <Link href="/news" className="text-sm font-medium underline">
+            <Link href="/news" className="text-sm font-medium link-fx">
               All news
             </Link>
           </div>
@@ -128,7 +128,7 @@ export default function Home() {
                     {p.body[0]}
                   </p>
                 </div>
-                <span className="mt-6 text-sm font-semibold group-hover:underline">
+                <span className="mt-6 text-sm font-semibold link-fx">
                   Read more
                 </span>
               </Link>

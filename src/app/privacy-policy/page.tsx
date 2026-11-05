@@ -13,7 +13,7 @@ export default function Privacy() {
       </p>
       <p>
         To ask about or remove your information, email{" "}
-        <a className="text-brand underline" href={`mailto:${site.email}`}>
+        <a className="text-brand link-fx" href={`mailto:${site.email}`}>
           {site.email}
         </a>
         .
