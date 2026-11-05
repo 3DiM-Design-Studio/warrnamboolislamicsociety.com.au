@@ -12,7 +12,7 @@ export default function Contact() {
     >
       <p>
         You can also call {site.phones.join(", ")} or email{" "}
-        <a className="text-brand underline" href={`mailto:${site.email}`}>
+        <a className="text-brand link-fx" href={`mailto:${site.email}`}>
           {site.email}
         </a>
         .

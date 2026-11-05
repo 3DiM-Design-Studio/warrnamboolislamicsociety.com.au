@@ -10,9 +10,13 @@
   },
   "dependencies": {
     "@next/third-parties": "^16.4.5",
+    "@stripe/react-stripe-js": "^7.0.1",
+    "@stripe/stripe-js": "^10.2.1",
+    "lucide-react": "^1.69.0",
     "mapbox-gl": "^3.34.2",
     "next": "16.4.5",
     "nodemailer": "^10.3.1",
+    "ogl": "^1.0.11",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "stripe": "^23.1.0"
