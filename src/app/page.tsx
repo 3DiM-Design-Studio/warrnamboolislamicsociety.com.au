@@ -136,15 +136,17 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="relative isolate mt-16 overflow-hidden rounded-3xl bg-card px-6 py-14 sm:px-10">
-          <Image
-            src="/jumuah-bg.png"
-            alt=""
-            fill
-            sizes="(min-width: 1152px) 1152px, 100vw"
-            className="-z-10 object-cover object-top"
-          />
-          <div className="grid items-center gap-10 md:grid-cols-[20rem_1fr]">
+        <section className="relative isolate mt-16 overflow-hidden rounded-3xl bg-card px-6 py-8 sm:px-10">
+          <div className="absolute inset-0 -z-10 overflow-hidden rounded-3xl">
+            <Image
+              src="/jumuah-bg.png"
+              alt=""
+              fill
+              sizes="(min-width: 1152px) 1152px, 100vw"
+              className="object-cover object-top"
+            />
+          </div>
+          <div className="grid items-center gap-10 md:grid-cols-[24rem_1fr]">
             <FridayCalendar />
             <div className="text-center md:text-left">
               <p className="text-sm text-muted">

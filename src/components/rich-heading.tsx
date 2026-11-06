@@ -46,13 +46,16 @@ export function RichHeading({
                 : ""
             }
           >
-            {word}
-            {icon && (
-              <span className="mx-1.5 inline-flex translate-y-[0.1em] items-center align-baseline text-[#00bf2e]">
-                {icon}
-              </span>
-            )}
-            {trailing}{" "}
+            {/* nowrap keeps the word, its icon and its punctuation on one line */}
+            <span className="whitespace-nowrap">
+              {word}
+              {icon && (
+                <span className="mx-1.5 inline-flex translate-y-[0.1em] items-center align-baseline text-[#00bf2e]">
+                  {icon}
+                </span>
+              )}
+              {trailing}
+            </span>{" "}
           </span>
         );
       })}

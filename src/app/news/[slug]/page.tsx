@@ -16,7 +16,12 @@ export default async function Post({ params }: PageProps<"/news/[slug]">) {
   const post = posts.find((p) => p.slug === slug);
   if (!post) notFound();
   return (
-    <PageShell title={post.title} intro={post.date}>
+    <PageShell
+      title={post.title}
+      crumb="Article"
+      parent={{ label: "News", href: "/news" }}
+      intro={post.date}
+    >
       {post.body.map((para) => (
         <p key={para}>{para}</p>
       ))}
