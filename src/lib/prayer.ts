@@ -1,6 +1,9 @@
-// Prayer times for Warrnambool. Azan is calculated from the sun's position (same method as the
-// adhan and praytimes libraries). Iqamah is Azan plus a number of minutes, or a fixed time.
-// Daylight saving comes from the Australia/Melbourne time zone database.
+// Prayer maths for Warrnambool.
+// - Iqamah is Azan plus a number of minutes, or a fixed time (iqamahFor, dayBoard).
+// - azanTimes() calculates Azan from the sun's position (the method used by the adhan and praytimes
+//   libraries) with daylight saving taken from the Australia/Melbourne time zone database. The website
+//   currently shows the society's published timetable (src/content/prayer-times.json) instead; see
+//   src/lib/timetable.ts.
 
 export const TZ = "Australia/Melbourne";
 export const LAT = -38.3818;
@@ -188,9 +191,8 @@ export type BoardRow = {
   ramadan: boolean;
 };
 
-export function dayBoard(date: string, cfg: PrayerConfig, ramadan: Ramadan[]): { rows: BoardRow[]; ramadan: Ramadan | null } {
-  const az = azanTimes(date, cfg);
-  const ram = activeRamadan(date, ramadan);
+/** One day: the given Azan times, the Iqamah rules, and Ramadan (if the day falls inside it). */
+export function dayBoard(az: AzanTimes, rules: IqamahRules, ram: Ramadan | null): { rows: BoardRow[]; ramadan: Ramadan | null } {
   const rows: BoardRow[] = [];
   for (const [key, name] of PRAYERS) {
     const isIshaRamadan = key === "isha" && ram;
@@ -198,7 +200,7 @@ export function dayBoard(date: string, cfg: PrayerConfig, ramadan: Ramadan[]): {
       key,
       name,
       azan: az[key],
-      iqamah: isIshaRamadan ? parseHM(ram.isha_iqamah) : iqamahFor(cfg.rules[key], az[key]),
+      iqamah: isIshaRamadan ? parseHM(ram.isha_iqamah) : iqamahFor(rules[key], az[key]),
       ramadan: Boolean(isIshaRamadan),
     });
     if (key === "fajr") rows.push({ key: "sunrise", name: "Sunrise", azan: az.sunrise, iqamah: null, ramadan: false });

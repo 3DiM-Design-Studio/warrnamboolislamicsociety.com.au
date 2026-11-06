@@ -49,7 +49,7 @@ check("Visitors can read posts", posts.status === 200 && Array.isArray(posts.jso
 check("Visitors see published posts only", Array.isArray(posts.json) && posts.json.every((p) => p.status === "published"));
 const events = await call("GET", "/rest/v1/events?select=status");
 check("Visitors see published events only", events.status === 200 && Array.isArray(events.json) && events.json.every((p) => p.status === "published"));
-for (const t of ["site_settings", "team_members", "prayer_settings", "ramadan_periods", "jumuah_seasons", "donation_settings"]) {
+for (const t of ["site_settings", "team_members", "prayer_settings", "ramadan_periods", "jumuah_seasons"]) {
   const r = await call("GET", `/rest/v1/${t}?select=*&limit=1`);
   check(`Visitors can read ${t}`, r.status === 200, `status ${r.status}`);
 }

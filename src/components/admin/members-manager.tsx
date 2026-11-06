@@ -71,7 +71,9 @@ export function MembersManager({ members }: { members: MemberRow[] }) {
                 <span className="pl-[58px] max-sm:pl-0">
                   {m.email}
                   {m.phone ? ` · ${m.phone}` : ""} · {fmtDate(m.created_at.slice(0, 10))}
+                  {m.amount_cents != null && ` · paid ${(m.amount_cents / 100).toFixed(2)}`}
                 </span>
+                {m.details && <span className="basis-full pl-[58px] max-sm:pl-0">{m.details}</span>}
               </Row>
             ))}
           </List>

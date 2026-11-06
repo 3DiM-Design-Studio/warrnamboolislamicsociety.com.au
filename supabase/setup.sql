@@ -61,9 +61,16 @@ create table if not exists public.members (
   name text not null check (char_length(name) between 1 and 120),
   email text not null check (char_length(email) between 3 and 200),
   phone text not null default '' check (char_length(phone) <= 40),
+  details text not null default '' check (char_length(details) <= 600),
+  amount_cents int check (amount_cents is null or amount_cents >= 0),
+  payment_intent text unique,
   status text not null default 'new' check (status in ('new', 'member')),
   created_at timestamptz not null default now()
 );
+-- (for a database created by an earlier version of this file)
+alter table public.members add column if not exists details text not null default '';
+alter table public.members add column if not exists amount_cents int;
+alter table public.members add column if not exists payment_intent text unique;
 
 create table if not exists public.team_members (
   id uuid primary key default gen_random_uuid(),
@@ -75,12 +82,13 @@ create table if not exists public.team_members (
 
 create table if not exists public.prayer_settings (
   id int primary key default 1 check (id = 1),
-  method text not null default 'mwl' check (method in ('mwl', 'egypt', 'karachi', 'isna', 'ummqura')),
-  asr text not null default 'standard' check (asr in ('standard', 'hanafi')),
   rules jsonb not null,
   show_on_site boolean not null default false,
   updated_at timestamptz not null default now()
 );
+
+alter table public.prayer_settings drop column if exists method;
+alter table public.prayer_settings drop column if exists asr;
 
 create table if not exists public.ramadan_periods (
   id uuid primary key default gen_random_uuid(),
@@ -102,15 +110,8 @@ create table if not exists public.jumuah_seasons (
   jumuah_time time not null
 );
 
-create table if not exists public.donation_settings (
-  id int primary key default 1 check (id = 1),
-  intro text not null default '' check (char_length(intro) <= 1500),
-  account_name text not null default '',
-  bsb text not null default '',
-  account_no text not null default '',
-  purposes jsonb not null default '[]',
-  updated_at timestamptz not null default now()
-);
+-- The Donate page uses Stripe, so there is no donation_settings table.
+drop table if exists public.donation_settings;
 
 -- ============ 3. Security rules (Row Level Security) ============
 alter table public.admins enable row level security;
@@ -122,7 +123,6 @@ alter table public.team_members enable row level security;
 alter table public.prayer_settings enable row level security;
 alter table public.ramadan_periods enable row level security;
 alter table public.jumuah_seasons enable row level security;
-alter table public.donation_settings enable row level security;
 
 -- Remove old versions of these rules so the file can be run again
 do $$
@@ -156,8 +156,6 @@ create policy wis_ramadan_write on public.ramadan_periods for all to authenticat
 create policy wis_jumuah_read on public.jumuah_seasons for select to anon, authenticated using (true);
 create policy wis_jumuah_write on public.jumuah_seasons for all to authenticated using (public.is_admin()) with check (public.is_admin());
 
-create policy wis_donation_read on public.donation_settings for select to anon, authenticated using (true);
-create policy wis_donation_write on public.donation_settings for all to authenticated using (public.is_admin()) with check (public.is_admin());
 
 -- Posts and events: visitors see published ones only; admins see everything
 create policy wis_posts_read on public.posts for select to anon, authenticated using (status = 'published' or public.is_admin());
@@ -192,9 +190,9 @@ insert into public.site_settings (id, phones, email, facebook, banner_on, banner
 values (1, array['+61 3 5907 1724', '+61 493 187 858', '+61 408 307 364', '+61 407 975 314'], 'warrnambool.is@gmail.com', '', false, '')
 on conflict (id) do nothing;
 
--- Prayer times stay hidden on the website until the committee switches them on.
-insert into public.prayer_settings (id, method, asr, rules, show_on_site)
-values (1, 'mwl', 'standard', '{
+-- Iqamah times stay hidden on the website until the committee switches them on.
+insert into public.prayer_settings (id, rules, show_on_site)
+values (1, '{
   "fajr":    {"mode": "offset", "offset": 20, "time": "06:00"},
   "dhuhr":   {"mode": "offset", "offset": 15, "time": "13:15"},
   "asr":     {"mode": "offset", "offset": 15, "time": "16:30"},
@@ -207,10 +205,6 @@ on conflict (id) do nothing;
 insert into public.jumuah_seasons (name, start_month, start_day, end_month, end_day, jumuah_time)
 select 'All year', 1, 1, 12, 31, '12:30'
 where not exists (select 1 from public.jumuah_seasons);
-
-insert into public.donation_settings (id, intro, account_name, bsb, account_no, purposes)
-values (1, 'Your support will help establish a permanent place of worship, strengthen the local Muslim community, and create a space for future generations.', '', '', '', '[]'::jsonb)
-on conflict (id) do nothing;
 
 insert into public.posts (title, slug, excerpt, body, post_date, status, pinned) values
   ($wis$WIS is now a registered charity with the ACNC, Alhamdulillah$wis$, $wis$wis-registered-charity-acnc$wis$, $wis$On behalf of the Warrnambool Islamic Society (WIS) and its committee, I am pleased to share some positive news with our brothers and sisters in the community...$wis$, $wis$<p>On behalf of the Warrnambool Islamic Society (WIS) and its committee, I am pleased to share some positive news with our brothers and sisters in the community. WIS has now been successfully registered with the Australian Charities and Not-for-profits Commission (ACNC). This means that we are officially recognised as a registered charitable not-for-profit organisation.</p><p>We are currently in the process of obtaining planning permission from the local city council. Due to an objection raised by a neighbouring business, the matter has been referred to the Victorian Civil and Administrative Tribunal (VCAT) for determination. As a result, the planning approval process will now proceed through VCAT.</p><p>Once this matter is resolved, we look forward to moving ahead with the next phase of the renovation so that we can establish a fit-for-purpose facility to support the ongoing charitable, educational, and community activities of our society.</p><p>We kindly ask for your ongoing prayers and support, including donations where possible. May Allah reward you for your efforts. JazakAllah Khairan.</p><p>Dr Rashid Mahmood, President, Warrnambool Islamic Society</p>$wis$, '2026-03-31', 'published', true),

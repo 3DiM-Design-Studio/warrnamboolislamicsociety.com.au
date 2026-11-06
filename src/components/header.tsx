@@ -11,7 +11,9 @@ export function Banner() {
     <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-1 bg-brand-dark px-4 py-4 text-center text-base text-white/90 sm:text-lg">
       <span>Non Profit Organisation</span>
       <span className="text-white/40">|</span>
-      <span lang="ar" dir="rtl" className="text-3xl leading-none">﷽</span>
+      <span lang="ar" dir="rtl" className="text-3xl leading-none">
+        ﷽
+      </span>
       <span className="text-white/40">|</span>
       <span>In the name of Allah, the Most Gracious, the Most Merciful</span>
     </div>
@@ -36,14 +38,10 @@ export function Header() {
     <header
       className={`sticky z-50 ${isHome ? "-top-8 h-[120px] pt-12" : "top-0 h-[88px] pt-4"}`}
     >
-      <div
-        className={`mx-auto max-w-6xl ${isHome ? "px-6 sm:px-10" : "px-4"}`}
-      >
+      <div className={`mx-auto max-w-6xl ${isHome ? "px-6 sm:px-10" : "px-4"}`}>
         <div
           className={`flex h-14 items-center justify-between gap-3 rounded-full px-3 pl-4 transition-colors ${
-            overHero
-              ? "text-white"
-              : "bg-white/90 backdrop-blur"
+            overHero ? "text-white" : "bg-white/90 backdrop-blur"
           }`}
         >
           <Link href="/" className="flex items-center gap-2 font-bold">
@@ -52,7 +50,7 @@ export function Header() {
           </Link>
           <nav className="hidden items-center gap-x-5 text-sm font-medium lg:flex">
             {nav.map((n) => (
-              <Link key={n.href} href={n.href} className="hover:underline">
+              <Link key={n.href} href={n.href} className="link-fx">
                 {n.label}
               </Link>
             ))}

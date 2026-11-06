@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import {
   DEFAULT_RULES,
+  activeRamadan,
   azanTimes,
   dayBoard,
   fmtTime,
@@ -13,7 +14,10 @@ import {
   type Season,
 } from "./prayer";
 
-const cfg = { method: "mwl" as const, asr: "standard" as const, rules: DEFAULT_RULES };
+import { timetableAzan } from "./timetable";
+
+const cfg = { method: "mwl" as const, asr: "standard" as const };
+const board = (date: string, ram: Parameters<typeof activeRamadan>[1]) => dayBoard(azanTimes(date, cfg), DEFAULT_RULES, activeRamadan(date, ram));
 const season = (name: string, sm: number, sd: number, em: number, ed: number, time: string): Season => ({
   name,
   start_month: sm,
@@ -83,10 +87,10 @@ describe("Iqamah", () => {
   });
   test("Ramadan replaces Isha and adds Taraweeh only inside its dates", () => {
     const ram = [{ name: "Ramadan", start_date: "2027-02-08", end_date: "2027-03-09", isha_iqamah: "21:15", taraweeh: "21:45" }];
-    const inside = dayBoard("2027-02-20", cfg, ram);
+    const inside = board("2027-02-20", ram);
     expect(inside.rows.find((r) => r.key === "isha")?.iqamah).toBe(21 * 60 + 15);
     expect(inside.rows.find((r) => r.key === "taraweeh")?.iqamah).toBe(21 * 60 + 45);
-    const outside = dayBoard("2027-03-10", cfg, ram);
+    const outside = board("2027-03-10", ram);
     expect(outside.rows.find((r) => r.key === "taraweeh")).toBeUndefined();
     expect(outside.rows.find((r) => r.key === "isha")?.ramadan).toBe(false);
   });
@@ -157,5 +161,31 @@ describe("Phone numbers", () => {
     expect(normalisePhone("0412 345 678").ok).toBe(false);
     expect(normalisePhone("+1 555 0100").ok).toBe(false);
     expect(normalisePhone("hello").ok).toBe(false);
+  });
+});
+
+describe("Society timetable", () => {
+  test("has an entry for every day of a leap year, in order through the day", () => {
+    const base = Date.UTC(2028, 0, 1);
+    for (let i = 0; i < 366; i++) {
+      const d = new Date(base + i * 86400000).toISOString().slice(0, 10);
+      const t = timetableAzan(d);
+      expect(t).not.toBeNull();
+      if (t) {
+        expect(t.fajr).toBeLessThan(t.sunrise);
+        expect(t.sunrise).toBeLessThan(t.dhuhr);
+        expect(t.dhuhr).toBeLessThan(t.asr);
+        expect(t.asr).toBeLessThan(t.maghrib);
+        expect(t.maghrib).toBeLessThan(t.isha);
+      }
+    }
+  });
+
+  test("Iqamah rules work on top of timetable Azan", () => {
+    const t = timetableAzan("2026-11-05");
+    expect(t).not.toBeNull();
+    if (!t) return;
+    const rows = dayBoard(t, DEFAULT_RULES, null).rows;
+    expect(rows.find((r) => r.key === "fajr")?.iqamah).toBe(Math.ceil((t.fajr + 20) / 5) * 5);
   });
 });

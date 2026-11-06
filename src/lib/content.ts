@@ -4,21 +4,21 @@
 import { cacheLife, cacheTag } from "next/cache";
 import { posts as staticPosts, officeBearers, site } from "@/content/site";
 import {
+  DEFAULT_RULES,
+  activeRamadan,
   dayBoard,
   fmtHM,
   fmtTime,
   jumuahOn,
   melbourneToday,
   seasonRangeText,
-  DEFAULT_RULES,
-  type PrayerConfig,
   type Season,
 } from "@/lib/prayer";
+import { timetableAzan } from "@/lib/timetable";
 import { htmlToText } from "@/lib/sanitize";
 import { createAnonClient, hasSupabase } from "@/lib/supabase/anon";
 import { TAGS } from "@/lib/tags";
 import type {
-  DonationRow,
   EventRow,
   JumuahRow,
   PostRow,
@@ -161,55 +161,43 @@ export async function getJumuah(): Promise<JumuahInfo> {
   };
 }
 
-export type PublicBoard = {
-  show: boolean;
-  dateLabel: string;
-  rows: { key: string; name: string; azan: string; iqamah: string; ramadan: boolean }[];
+export type TodayIqamah = {
+  /** Iqamah time text for each prayer today, keyed like the timetable (fajr, zuhr, asr, maghrib, isha). */
+  times: Record<"fajr" | "zuhr" | "asr" | "maghrib" | "isha", string>;
+  /** Taraweeh time while Ramadan dates are active, otherwise null. */
+  taraweeh: string | null;
 };
 
-export async function getPrayerBoard(): Promise<PublicBoard> {
+/** Today's Iqamah times, from the society's timetable plus the rules set in the admin. Null when switched off. */
+export async function getTodayIqamah(): Promise<TodayIqamah | null> {
   "use cache";
   cacheTag(TAGS.prayer);
   cacheLife("minutes");
-  const hidden: PublicBoard = { show: false, dateLabel: "", rows: [] };
-  if (!hasSupabase) return hidden;
+  if (!hasSupabase) return null;
   const sb = createAnonClient();
   const [settings, ramadan] = await Promise.all([
-    sb.from("prayer_settings").select("method,asr,rules,show_on_site").eq("id", 1).maybeSingle(),
+    sb.from("prayer_settings").select("rules,show_on_site").eq("id", 1).maybeSingle(),
     sb.from("ramadan_periods").select("id,name,start_date,end_date,isha_iqamah,taraweeh"),
   ]);
-  if (settings.error || !settings.data || !settings.data.show_on_site) return hidden;
-  const s = settings.data as PrayerSettingsRow;
-  const cfg: PrayerConfig = { method: s.method, asr: s.asr, rules: { ...DEFAULT_RULES, ...s.rules } };
+  if (settings.error || !settings.data || !settings.data.show_on_site) return null;
   const today = melbourneToday();
-  const list = ((ramadan.data ?? []) as RamadanRow[]).map((r) => ({
-    name: r.name,
-    start_date: r.start_date,
-    end_date: r.end_date,
-    isha_iqamah: r.isha_iqamah.slice(0, 5),
-    taraweeh: r.taraweeh.slice(0, 5),
-  }));
-  const board = dayBoard(today, cfg, list);
-  return {
-    show: true,
-    dateLabel: new Intl.DateTimeFormat("en-AU", { timeZone: "UTC", weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(new Date(`${today}T12:00:00Z`)),
-    rows: board.rows.map((r) => ({
-      key: r.key,
+  const azan = timetableAzan(today);
+  if (!azan) return null;
+  const rules = { ...DEFAULT_RULES, ...(settings.data as PrayerSettingsRow).rules };
+  const ram = activeRamadan(
+    today,
+    ((ramadan.data ?? []) as RamadanRow[]).map((r) => ({
       name: r.name,
-      azan: r.azan == null ? "" : fmtTime(r.azan),
-      iqamah: r.iqamah == null ? "" : fmtTime(r.iqamah),
-      ramadan: r.ramadan,
+      start_date: r.start_date,
+      end_date: r.end_date,
+      isha_iqamah: r.isha_iqamah.slice(0, 5),
+      taraweeh: r.taraweeh.slice(0, 5),
     })),
+  );
+  const board = dayBoard(azan, rules, ram);
+  const at = (key: string) => fmtTime(board.rows.find((r) => r.key === key)?.iqamah ?? 0);
+  return {
+    times: { fajr: at("fajr"), zuhr: at("dhuhr"), asr: at("asr"), maghrib: at("maghrib"), isha: at("isha") },
+    taraweeh: ram ? fmtHM(ram.taraweeh) : null,
   };
-}
-
-export async function getDonation(): Promise<DonationRow> {
-  "use cache";
-  cacheTag(TAGS.donations);
-  cacheLife("minutes");
-  const fallback: DonationRow = { intro: "", account_name: "", bsb: "", account_no: "", purposes: [] };
-  if (!hasSupabase) return fallback;
-  const { data, error } = await createAnonClient().from("donation_settings").select("intro,account_name,bsb,account_no,purposes").eq("id", 1).maybeSingle();
-  if (error || !data) return fallback;
-  return data as DonationRow;
 }

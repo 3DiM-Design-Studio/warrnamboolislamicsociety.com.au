@@ -4,7 +4,7 @@ import { updateTag } from "next/cache";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth";
 import { DATE, TIME, dbError, fail, fieldErrors, flag, ok, str } from "@/lib/actions/helpers";
-import { METHODS, PRAYERS, type IqamahRules } from "@/lib/prayer";
+import { PRAYERS, type IqamahRules } from "@/lib/prayer";
 import { TAGS } from "@/lib/tags";
 import type { ActionState } from "@/lib/types";
 
@@ -16,11 +16,6 @@ const ruleSchema = z.object({
 
 export async function savePrayerSettings(_prev: ActionState, fd: FormData): Promise<ActionState> {
   const { supabase } = await requireAdmin();
-  const method = str(fd, "method");
-  const asr = str(fd, "asr");
-  if (!(method in METHODS)) return fail("Please choose an Azan method.");
-  if (asr !== "standard" && asr !== "hanafi") return fail("Please choose an Asr rule.");
-
   const rules = {} as IqamahRules;
   const errors: Record<string, string> = {};
   for (const [key, label] of PRAYERS) {
@@ -35,8 +30,6 @@ export async function savePrayerSettings(_prev: ActionState, fd: FormData): Prom
 
   const { error } = await supabase.from("prayer_settings").upsert({
     id: 1,
-    method,
-    asr,
     rules,
     show_on_site: flag(fd, "show_on_site"),
     updated_at: new Date().toISOString(),

@@ -7,5 +7,4 @@ export const TAGS = {
   team: "team",
   prayer: "prayer",
   jumuah: "jumuah",
-  donations: "donations",
 } as const;

@@ -38,7 +38,11 @@ const featureImages = [
 const features = mission.slice(0, 3);
 
 export default async function Home() {
-  const [posts, jumuah, events] = await Promise.all([getPosts(), getJumuah(), getUpcomingEvents()]);
+  const [posts, jumuah, events] = await Promise.all([
+    getPosts(),
+    getJumuah(),
+    getUpcomingEvents(),
+  ]);
   return (
     <>
       <div className="mx-auto -mt-[120px] max-w-6xl px-4 pt-8">
@@ -109,7 +113,7 @@ export default async function Home() {
         <section className="pt-16">
           <div className="flex items-baseline justify-between">
             <h2 className="text-3xl font-bold">Latest from the community</h2>
-            <Link href="/news" className="text-sm font-medium underline">
+            <Link href="/news" className="text-sm font-medium link-fx">
               All news
             </Link>
           </div>
@@ -131,7 +135,7 @@ export default async function Home() {
                     {p.preview}
                   </p>
                 </div>
-                <span className="mt-6 text-sm font-semibold group-hover:underline">
+                <span className="mt-6 text-sm font-semibold link-fx">
                   Read more
                 </span>
               </Link>
@@ -143,7 +147,7 @@ export default async function Home() {
           <section className="pt-16">
             <div className="flex items-baseline justify-between">
               <h2 className="text-3xl font-bold">Upcoming events</h2>
-              <Link href="/events" className="text-sm font-medium underline">
+              <Link href="/events" className="text-sm font-medium link-fx">
                 All events
               </Link>
             </div>
@@ -151,7 +155,12 @@ export default async function Home() {
               {events.slice(0, 3).map((e) => (
                 <div key={e.id} className="rounded-2xl bg-card p-6">
                   <span className="inline-block rounded-full bg-background px-3 py-1 text-xs font-medium">
-                    {new Intl.DateTimeFormat("en-AU", { timeZone: "UTC", weekday: "short", day: "numeric", month: "short" }).format(new Date(`${e.event_date}T12:00:00Z`))}
+                    {new Intl.DateTimeFormat("en-AU", {
+                      timeZone: "UTC",
+                      weekday: "short",
+                      day: "numeric",
+                      month: "short",
+                    }).format(new Date(`${e.event_date}T12:00:00Z`))}
                     {" · "}
                     {fmtHM(e.event_time.slice(0, 5))}
                   </span>
@@ -163,15 +172,17 @@ export default async function Home() {
           </section>
         )}
 
-        <section className="relative isolate mt-16 overflow-hidden rounded-3xl bg-card px-6 py-14 sm:px-10">
-          <Image
-            src="/jumuah-bg.png"
-            alt=""
-            fill
-            sizes="(min-width: 1152px) 1152px, 100vw"
-            className="-z-10 object-cover object-top"
-          />
-          <div className="grid items-center gap-10 md:grid-cols-[20rem_1fr]">
+        <section className="relative isolate mt-16 overflow-hidden rounded-3xl bg-card px-6 py-8 sm:px-10">
+          <div className="absolute inset-0 -z-10 overflow-hidden rounded-3xl">
+            <Image
+              src="/jumuah-bg.png"
+              alt=""
+              fill
+              sizes="(min-width: 1152px) 1152px, 100vw"
+              className="object-cover object-top"
+            />
+          </div>
+          <div className="grid items-center gap-10 md:grid-cols-[24rem_1fr]">
             <FridayCalendar />
             <div className="text-center md:text-left">
               <p className="text-sm text-muted">

@@ -1,3 +1,4 @@
+import { SmoothScroll } from "@/components/smooth-scroll";
 import type { Metadata } from "next";
 import {
   Libre_Franklin,
@@ -20,8 +21,14 @@ const arabic = Tajawal({
   subsets: ["arabic"],
   weight: ["400", "500", "700"],
 });
-const urdu = Noto_Nastaliq_Urdu({ variable: "--font-urdu", subsets: ["arabic"] });
-const devanagari = Noto_Sans_Devanagari({ variable: "--font-devanagari", subsets: ["devanagari"] });
+const urdu = Noto_Nastaliq_Urdu({
+  variable: "--font-urdu",
+  subsets: ["arabic"],
+});
+const devanagari = Noto_Sans_Devanagari({
+  variable: "--font-devanagari",
+  subsets: ["devanagari"],
+});
 const tamil = Noto_Sans_Tamil({ variable: "--font-tamil", subsets: ["tamil"] });
 
 export const metadata: Metadata = {
@@ -29,10 +36,15 @@ export const metadata: Metadata = {
   description: site.tagline,
 };
 
+// The public site's header, footer and banner live in app/(site)/layout.tsx so that /admin does not get them.
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${libreFranklin.variable} ${arabic.variable} ${urdu.variable} ${devanagari.variable} ${tamil.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">
+    <html
+      lang="en"
+      className={`${libreFranklin.variable} ${arabic.variable} ${urdu.variable} ${devanagari.variable} ${tamil.variable} h-full antialiased`}
+    >
+      <body id="top" className="min-h-full flex flex-col">
+        <SmoothScroll />
         {children}
         {process.env.NEXT_PUBLIC_GA_ID && (
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />

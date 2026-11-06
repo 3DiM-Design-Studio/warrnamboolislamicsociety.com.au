@@ -6,6 +6,7 @@ import { Badge, Card, CardHead } from "@/components/admin/ui";
 import { requireAdmin } from "@/lib/auth";
 import {
   DEFAULT_RULES,
+  activeRamadan,
   addDays,
   dayBoard,
   fmtHM,
@@ -15,9 +16,9 @@ import {
   melbourneToday,
   normalisePhone,
   seasonCoverage,
-  type PrayerConfig,
   type Season,
 } from "@/lib/prayer";
+import { timetableAzan } from "@/lib/timetable";
 import type { JumuahRow, PrayerSettingsRow, RamadanRow, SettingsRow } from "@/lib/types";
 
 export const metadata: Metadata = { title: "Overview" };
@@ -33,7 +34,7 @@ export default async function OverviewPage() {
     supabase.from("members").select("status"),
     supabase.from("events").select("id", { count: "exact", head: true }).eq("status", "published").gte("event_date", today),
     supabase.from("site_settings").select("phones,email,facebook,banner_on,banner_text").eq("id", 1).maybeSingle(),
-    supabase.from("prayer_settings").select("method,asr,rules,show_on_site").eq("id", 1).maybeSingle(),
+    supabase.from("prayer_settings").select("rules,show_on_site").eq("id", 1).maybeSingle(),
     supabase.from("ramadan_periods").select("id,name,start_date,end_date,isha_iqamah,taraweeh"),
     supabase.from("jumuah_seasons").select("id,name,start_month,start_day,end_month,end_day,jumuah_time"),
   ]);
@@ -46,7 +47,7 @@ export default async function OverviewPage() {
   const fresh = (members.data ?? []).filter((m) => m.status === "new").length;
 
   const p = prayer.data as PrayerSettingsRow | null;
-  const cfg: PrayerConfig = { method: p?.method ?? "mwl", asr: p?.asr ?? "standard", rules: { ...DEFAULT_RULES, ...(p?.rules ?? {}) } };
+  const rules = { ...DEFAULT_RULES, ...(p?.rules ?? {}) };
   const ram = ((ramadan.data ?? []) as RamadanRow[]).map((r) => ({
     name: r.name,
     start_date: r.start_date,
@@ -54,14 +55,17 @@ export default async function OverviewPage() {
     isha_iqamah: r.isha_iqamah.slice(0, 5),
     taraweeh: r.taraweeh.slice(0, 5),
   }));
-  const board = dayBoard(today, cfg, ram);
+  const azanToday = timetableAzan(today);
+  if (!azanToday) return <LoadError error={{ message: "The prayer timetable has no entry for today." }} />;
+  const board = dayBoard(azanToday, rules, activeRamadan(today, ram));
 
   const now = melbourneMinutes();
   const upcoming = board.rows.find((r) => r.key !== "sunrise" && r.key !== "taraweeh" && r.azan != null && r.azan > now);
   const next = upcoming
     ? { name: upcoming.name, azan: upcoming.azan as number, mins: (upcoming.azan as number) - now, tomorrow: false }
     : (() => {
-        const t = dayBoard(addDays(today, 1), cfg, ram).rows[0];
+        const tomorrow = addDays(today, 1);
+        const t = dayBoard(timetableAzan(tomorrow) ?? azanToday, rules, activeRamadan(tomorrow, ram)).rows[0];
         return { name: t.name, azan: t.azan as number, mins: (t.azan as number) + 1440 - now, tomorrow: true };
       })();
 
@@ -77,7 +81,7 @@ export default async function OverviewPage() {
   if (drafts) todo.push({ text: `${drafts} news post${drafts > 1 ? "s" : ""} not on the website yet`, href: "/admin/posts", label: "Open" });
   if (badPhone) todo.push({ text: "A phone number needs fixing", href: "/admin/info", label: "Fix" });
   if (!coverage.ok) todo.push({ text: "Some days have no Jumu’ah time", href: "/admin/jumuah", label: "Fix" });
-  if (!p?.show_on_site) todo.push({ text: "Prayer times are hidden on the website", href: "/admin/prayer", label: "Check" });
+  if (!p?.show_on_site) todo.push({ text: "Iqamah times are hidden on the website", href: "/admin/prayer", label: "Check" });
 
   const kpi = (icon: IconName, label: string, value: string, sub: string) => (
     <Card className="grid gap-3">

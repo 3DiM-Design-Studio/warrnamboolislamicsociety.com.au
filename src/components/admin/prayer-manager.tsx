@@ -2,26 +2,14 @@
 
 import { useMemo, useState } from "react";
 import { deleteRamadan, savePrayerSettings, saveRamadan } from "@/lib/actions/prayer";
-import {
-  METHODS,
-  PRAYERS,
-  dayBoard,
-  fmtHM,
-  fmtTime,
-  type AsrRule,
-  type IqamahRules,
-  type MethodKey,
-  type PrayerKey,
-} from "@/lib/prayer";
+import { PRAYERS, activeRamadan, dayBoard, fmtHM, fmtTime, type AzanTimes, type IqamahRules, type PrayerKey } from "@/lib/prayer";
 import type { PrayerSettingsRow, RamadanRow } from "@/lib/types";
 import { Icon } from "@/components/admin/icons";
 import { fmtDate } from "@/components/admin/format";
 import { List, Row } from "@/components/admin/list";
-import { Badge, Button, Card, CardHead, ConfirmDialog, EmptyNote, Field, Modal, ModalActions, Switch, TextField, inputClass, useFormAction, useRunAction } from "@/components/admin/ui";
+import { Badge, Button, Card, CardHead, ConfirmDialog, EmptyNote, Modal, ModalActions, Switch, TextField, inputClass, useFormAction, useRunAction } from "@/components/admin/ui";
 
-export function PrayerManager({ settings, ramadan, today }: { settings: PrayerSettingsRow; ramadan: RamadanRow[]; today: string }) {
-  const [method, setMethod] = useState<MethodKey>(settings.method);
-  const [asr, setAsr] = useState<AsrRule>(settings.asr);
+export function PrayerManager({ settings, ramadan, today, azan }: { settings: PrayerSettingsRow; ramadan: RamadanRow[]; today: string; azan: AzanTimes }) {
   const [rules, setRules] = useState<IqamahRules>(settings.rules);
   const [editing, setEditing] = useState<RamadanRow | "new" | null>(null);
   const [deleting, setDeleting] = useState<RamadanRow | null>(null);
@@ -29,15 +17,10 @@ export function PrayerManager({ settings, ramadan, today }: { settings: PrayerSe
   const { state, formAction, pending } = useFormAction(savePrayerSettings);
   const errors = state?.errors ?? {};
 
-  const board = useMemo(
-    () =>
-      dayBoard(
-        today,
-        { method, asr, rules },
-        ramadan.map((r) => ({ name: r.name, start_date: r.start_date, end_date: r.end_date, isha_iqamah: r.isha_iqamah.slice(0, 5), taraweeh: r.taraweeh.slice(0, 5) })),
-      ),
-    [today, method, asr, rules, ramadan],
-  );
+  const board = useMemo(() => {
+    const list = ramadan.map((r) => ({ name: r.name, start_date: r.start_date, end_date: r.end_date, isha_iqamah: r.isha_iqamah.slice(0, 5), taraweeh: r.taraweeh.slice(0, 5) }));
+    return dayBoard(azan, rules, activeRamadan(today, list));
+  }, [azan, rules, ramadan, today]);
 
   function setRule(key: PrayerKey, patch: Partial<IqamahRules[PrayerKey]>) {
     setRules((r) => ({ ...r, [key]: { ...r[key], ...patch } }));
@@ -50,7 +33,7 @@ export function PrayerManager({ settings, ramadan, today }: { settings: PrayerSe
           <Card>
             <form action={formAction} className="grid gap-4">
               <CardHead title="Iqamah times" />
-              <p className="-mt-2 text-[13px] text-muted">Azan times are worked out automatically for Warrnambool. You only choose when the Iqamah is.</p>
+              <p className="-mt-2 text-[13px] text-muted">Azan times come from the society&rsquo;s prayer timetable. You only choose when the Iqamah is.</p>
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
                   <thead className="text-[13px] text-muted">
@@ -67,13 +50,7 @@ export function PrayerManager({ settings, ramadan, today }: { settings: PrayerSe
                         <tr key={key} className="border-t border-border align-top">
                           <td className="py-3 pr-3 font-semibold">{label}</td>
                           <td className="py-2 pr-3">
-                            <select
-                              aria-label={`${label} type`}
-                              name={`${key}_mode`}
-                              value={r.mode}
-                              onChange={(e) => setRule(key, { mode: e.target.value as "offset" | "fixed" })}
-                              className={inputClass}
-                            >
+                            <select aria-label={`${label} type`} name={`${key}_mode`} value={r.mode} onChange={(e) => setRule(key, { mode: e.target.value as "offset" | "fixed" })} className={inputClass}>
                               <option value="offset">Minutes after Azan</option>
                               <option value="fixed">Same time every day</option>
                             </select>
@@ -82,15 +59,7 @@ export function PrayerManager({ settings, ramadan, today }: { settings: PrayerSe
                             <input type="hidden" name={`${key}_offset`} value={r.offset} />
                             <input type="hidden" name={`${key}_time`} value={r.time} />
                             {r.mode === "offset" ? (
-                              <input
-                                aria-label={`${label} minutes`}
-                                type="number"
-                                min={0}
-                                max={90}
-                                value={r.offset}
-                                onChange={(e) => setRule(key, { offset: Number(e.target.value) })}
-                                className={inputClass + " w-24"}
-                              />
+                              <input aria-label={`${label} minutes`} type="number" min={0} max={90} value={r.offset} onChange={(e) => setRule(key, { offset: Number(e.target.value) })} className={inputClass + " w-24"} />
                             ) : (
                               <input aria-label={`${label} time`} type="time" value={r.time} onChange={(e) => setRule(key, { time: e.target.value })} className={inputClass + " w-36"} />
                             )}
@@ -103,29 +72,8 @@ export function PrayerManager({ settings, ramadan, today }: { settings: PrayerSe
                 </table>
               </div>
 
-              <details className="text-sm">
-                <summary className="cursor-pointer font-semibold text-muted">Advanced (leave as it is)</summary>
-                <div className="mt-3 grid gap-4">
-                  <Field label="Azan method">
-                    <select name="method" value={method} onChange={(e) => setMethod(e.target.value as MethodKey)} className={inputClass}>
-                      {(Object.keys(METHODS) as MethodKey[]).map((k) => (
-                        <option key={k} value={k}>
-                          {METHODS[k].name}
-                        </option>
-                      ))}
-                    </select>
-                  </Field>
-                  <Field label="Asr">
-                    <select name="asr" value={asr} onChange={(e) => setAsr(e.target.value as AsrRule)} className={inputClass}>
-                      <option value="standard">Standard</option>
-                      <option value="hanafi">Hanafi</option>
-                    </select>
-                  </Field>
-                </div>
-              </details>
-
-              <Switch label="Show prayer times on the website" name="show_on_site" defaultChecked={settings.show_on_site} />
-              <p className="-mt-2 text-[13px] text-muted">Keep this off until the committee has checked the times in the preview.</p>
+              <Switch label="Show Iqamah times on the website" name="show_on_site" defaultChecked={settings.show_on_site} />
+              <p className="-mt-2 text-[13px] text-muted">Keep this off until the committee has checked the times in the preview. Minutes after Azan are rounded up to the next 5 minutes.</p>
               {state && !state.ok && !state.errors && (
                 <p role="alert" className="text-sm text-[#b3261e]">
                   {state.message}
@@ -146,7 +94,7 @@ export function PrayerManager({ settings, ramadan, today }: { settings: PrayerSe
                 Add dates
               </Button>
             </CardHead>
-            <p className="mb-3 text-[13px] text-muted">During Ramadan the website shows the Isha and Taraweeh times set here.</p>
+            <p className="mb-3 text-[13px] text-muted">During Ramadan the website shows the Isha Iqamah and the Taraweeh time set here.</p>
             {ramadan.length === 0 ? (
               <EmptyNote>No Ramadan dates added.</EmptyNote>
             ) : (
