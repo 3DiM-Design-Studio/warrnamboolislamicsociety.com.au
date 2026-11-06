@@ -1,35 +1,31 @@
+import { CalendarDays, Users } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
+import { EventCard } from "@/components/story-cards";
 import { getUpcomingEvents } from "@/lib/content";
-import { fmtHM } from "@/lib/prayer";
 
 export const metadata = { title: "Events" };
 
 export default async function Events() {
   const events = await getUpcomingEvents();
   return (
-    <PageShell title="Events" intro="What is coming up at Warrnambool Islamic Society.">
+    <PageShell
+      title="What is coming up in our community."
+      crumb="Events"
+      highlight="coming up"
+      icons={{
+        events: <CalendarDays className="size-[0.75em]" aria-hidden />,
+        community: <Users className="size-[0.75em]" aria-hidden />,
+      }}
+      intro="Gatherings, talks and programs at Warrnambool Islamic Society. Everyone is welcome."
+    >
       {events.length === 0 ? (
         <p className="text-muted">No events are planned right now. Please check back soon.</p>
       ) : (
-        <ul className="divide-y divide-border rounded-lg border border-border bg-card">
+        <div className="grid gap-4 md:grid-cols-2">
           {events.map((e) => (
-            <li key={e.id} className="p-4">
-              <p className="text-xs text-muted">
-                {new Intl.DateTimeFormat("en-AU", {
-                  timeZone: "UTC",
-                  weekday: "long",
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                }).format(new Date(`${e.event_date}T12:00:00Z`))}
-                {" · "}
-                {fmtHM(e.event_time.slice(0, 5))}
-              </p>
-              <p className="font-medium">{e.title}</p>
-              <p className="text-sm text-muted">{e.place}</p>
-            </li>
+            <EventCard key={e.id} event={e} />
           ))}
-        </ul>
+        </div>
       )}
     </PageShell>
   );

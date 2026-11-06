@@ -11,13 +11,12 @@ async function recordMember(pi: Stripe.PaymentIntent) {
   if (!hasSupabase) return;
   const [name = "", email = "", phone = ""] = (pi.metadata.member ?? "").split("|").map((v) => v.trim());
   try {
+    // Plain insert: visitors may add rows but not read them. A repeat of the same payment hits the
+    // unique payment_intent column (code 23505) and is simply ignored.
     const { error } = await createAnonClient()
       .from("members")
-      .upsert(
-        { name, email, phone, details: pi.metadata.family ?? "", amount_cents: pi.amount, status: "new", payment_intent: pi.id },
-        { onConflict: "payment_intent", ignoreDuplicates: true },
-      );
-    if (error) console.error("Could not save member", pi.id, error.message);
+      .insert({ name, email, phone, details: pi.metadata.family ?? "", amount_cents: pi.amount, status: "new", payment_intent: pi.id });
+    if (error && error.code !== "23505") console.error("Could not save member", pi.id, error.message);
   } catch (e) {
     console.error("Could not save member", pi.id, e);
   }

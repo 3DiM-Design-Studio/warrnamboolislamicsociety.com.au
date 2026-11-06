@@ -5,7 +5,7 @@ import { FridayCalendar } from "@/components/friday-calendar";
 import { HeroGreeting } from "@/components/hero-greeting";
 import { mission, site } from "@/content/site";
 import { getJumuah, getPosts, getUpcomingEvents } from "@/lib/content";
-import { fmtHM } from "@/lib/prayer";
+import { EventCard, PostCard } from "@/components/story-cards";
 
 const faqs = [
   {
@@ -118,27 +118,8 @@ export default async function Home() {
             </Link>
           </div>
           <div className="mt-8 grid gap-4 sm:grid-cols-3">
-            {posts.slice(0, 3).map((p, i) => (
-              <Link
-                key={p.id}
-                href={`/news/${p.slug}`}
-                className="group flex flex-col justify-between rounded-2xl bg-card p-6 transition hover:-translate-y-0.5"
-              >
-                <div>
-                  <span
-                    className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${i === 0 ? "bg-brand-gradient" : "bg-background"}`}
-                  >
-                    {p.post_date}
-                  </span>
-                  <h3 className="mt-4 font-bold">{p.title}</h3>
-                  <p className="mt-2 line-clamp-3 text-sm text-muted">
-                    {p.preview}
-                  </p>
-                </div>
-                <span className="mt-6 text-sm font-semibold link-fx">
-                  Read more
-                </span>
-              </Link>
+            {posts.slice(0, 3).map((p) => (
+              <PostCard key={p.id} post={p} />
             ))}
           </div>
         </section>
@@ -151,22 +132,9 @@ export default async function Home() {
                 All events
               </Link>
             </div>
-            <div className="mt-8 grid gap-4 sm:grid-cols-3">
-              {events.slice(0, 3).map((e) => (
-                <div key={e.id} className="rounded-2xl bg-card p-6">
-                  <span className="inline-block rounded-full bg-background px-3 py-1 text-xs font-medium">
-                    {new Intl.DateTimeFormat("en-AU", {
-                      timeZone: "UTC",
-                      weekday: "short",
-                      day: "numeric",
-                      month: "short",
-                    }).format(new Date(`${e.event_date}T12:00:00Z`))}
-                    {" · "}
-                    {fmtHM(e.event_time.slice(0, 5))}
-                  </span>
-                  <h3 className="mt-4 font-bold">{e.title}</h3>
-                  <p className="mt-2 text-sm text-muted">{e.place}</p>
-                </div>
+            <div className="mt-8 grid gap-4 md:grid-cols-2">
+              {events.slice(0, 4).map((e) => (
+                <EventCard key={e.id} event={e} />
               ))}
             </div>
           </section>
