@@ -1,51 +1,165 @@
-import { PageShell } from "@/components/page-shell";
-import { getDonation } from "@/lib/content";
+import {
+  ArrowRight,
+  ChevronRight,
+  HandHeart,
+  Landmark,
+  Sprout,
+  Users,
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { DonateForm } from "@/components/donate-form";
+import { RichHeading } from "@/components/rich-heading";
+import { site } from "@/content/site";
 
 export const metadata = { title: "Donate" };
 
-export default async function Donate() {
-  const d = await getDonation();
-  const purposes = d.purposes.filter((p) => p.on);
-  const hasBank = Boolean(d.account_name && d.bsb && d.account_no);
+const heading =
+  "Your giving helps Warrnambool build a place of worship, strengthen our community and support generations to come.";
+const icon = "size-[0.75em]";
+const headingIcons = {
+  giving: <HandHeart className={icon} aria-hidden />,
+  worship: <Landmark className={icon} aria-hidden />,
+  community: <Users className={icon} aria-hidden />,
+  generations: <Sprout className={icon} aria-hidden />,
+};
+
+const faqs = [
+  {
+    q: "How is my donation processed?",
+    a: "Payments are processed securely by Stripe. Your card details are entered in a Stripe-hosted field and never reach our servers.",
+  },
+  {
+    q: "Are there any fees?",
+    a: "Stripe charges the society its standard processing fee on each payment. We add no extra fees on top.",
+  },
+  {
+    q: "Is this donation tax-deductible?",
+    a: "The society is registered with the ACNC. Please contact the committee to confirm whether a tax-deductible receipt is available for your gift.",
+  },
+  {
+    q: "Will I receive a receipt?",
+    a: "Enter your email and Stripe sends a payment receipt when receipts are enabled on the society's account. You can also contact us to confirm your gift.",
+  },
+  {
+    q: "Can I cancel a monthly donation?",
+    a: "Yes. Contact us at any time and we will cancel it for you.",
+  },
+];
+
+export default function Donate() {
   return (
-    <PageShell
-      title="Donate"
-      intro="Those who spend their wealth [in Allah's way] by night and by day, secretly and publicly: they will have their reward with their Lord. (Surah Al-Baqarah 2:274)"
-    >
-      <p>
-        Warrnambool Islamic Society is a registered charity with the ACNC.{" "}
-        {d.intro ||
-          "Your support will help establish a permanent place of worship, strengthen the local Muslim community, and create a space for future generations."}
-      </p>
-      {hasBank ? (
-        <div className="rounded-2xl border border-border bg-card p-5">
-          <p className="font-bold">Bank transfer</p>
-          <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-6 gap-y-1">
-            <dt className="text-muted">Account name</dt>
-            <dd className="font-medium">{d.account_name}</dd>
-            <dt className="text-muted">BSB</dt>
-            <dd className="font-medium tabular-nums">{d.bsb}</dd>
-            <dt className="text-muted">Account number</dt>
-            <dd className="font-medium tabular-nums">{d.account_no}</dd>
-          </dl>
-        </div>
-      ) : (
-        <p className="rounded-lg border border-border bg-card p-4 text-sm text-muted">
-          Please contact the committee for bank details. Online card donations are coming soon.
+    <div className="mx-auto max-w-6xl px-4 pt-6">
+      <div className="flex items-center justify-between">
+        <nav aria-label="Breadcrumb">
+          <ol className="flex items-center gap-1.5 text-sm text-muted">
+            <li>
+              <Link href="/" className="link-fx">
+                Home
+              </Link>
+            </li>
+            <li aria-hidden>
+              <ChevronRight className="size-4" />
+            </li>
+            <li aria-current="page" className="font-medium text-brand-dark">
+              Donate
+            </li>
+          </ol>
+        </nav>
+        <Link href="/" className="link-fx text-sm font-medium text-[#0f8a63]">
+          Cancel
+        </Link>
+      </div>
+
+      <div className="mt-8">
+        <RichHeading
+          text={heading}
+          icons={headingIcons}
+          highlight="place of worship"
+        />
+        <p className="mt-4 max-w-2xl text-sm text-muted">
+          &ldquo;Those who spend their wealth in Allah&apos;s way by night and
+          by day, secretly and publicly: they will have their reward with their
+          Lord.&rdquo; (Surah Al-Baqarah 2:274)
         </p>
-      )}
-      {purposes.length > 0 && (
-        <div>
-          <p className="font-medium">You can give to</p>
-          <p className="mt-2 flex flex-wrap gap-2">
-            {purposes.map((p) => (
-              <span key={p.id} className="rounded-full bg-card px-3 py-1 text-sm">
-                {p.name}
-              </span>
+      </div>
+
+      <div className="mt-6 grid items-start gap-6 lg:grid-cols-[18rem_1fr]">
+        <aside className="order-2 space-y-4 lg:order-1">
+          <div className="overflow-hidden rounded-2xl bg-[#eaf6e3]">
+            <div className="relative h-44">
+              <Image
+                src="/hero.jpeg"
+                alt="Mosque reflected in still water"
+                fill
+                sizes="288px"
+                className="object-cover object-center"
+              />
+            </div>
+          </div>
+          <div className="flex items-center gap-4 rounded-2xl bg-card p-5 text-sm">
+            <Image
+              src="/acnc-logo.png"
+              alt="ACNC Registered Charity"
+              width={960}
+              height={816}
+              className="h-16 w-auto shrink-0"
+            />
+            <p>
+              Registered with the ACNC.{" "}
+              <Link
+                href="/news/wis-registered-charity-acnc"
+                className="link-fx inline-flex items-center gap-1 font-semibold text-[#0f8a63]"
+              >
+                Read more <ArrowRight className="size-3.5" aria-hidden />
+              </Link>
+            </p>
+          </div>
+          <div className="divide-y divide-border rounded-2xl bg-card">
+            {faqs.map((f) => (
+              <details key={f.q} className="group p-5">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm">
+                  {f.q}
+                  <span className="text-lg transition group-open:rotate-45">
+                    +
+                  </span>
+                </summary>
+                <p className="mt-3 text-sm text-muted">{f.a}</p>
+              </details>
             ))}
-          </p>
-        </div>
-      )}
-    </PageShell>
+          </div>
+        </aside>
+
+        <section className="order-1 lg:order-2">
+          <DonateForm />
+          <div className="mt-6 space-y-2 px-1 text-xs text-muted">
+            <p>
+              Your gift supports a permanent place of worship and our community
+              programs.
+            </p>
+            <p>
+              Need help? Email{" "}
+              <a
+                className="link-fx font-semibold text-brand-dark"
+                href={`mailto:${site.email}`}
+              >
+                {site.email}
+              </a>
+              .
+            </p>
+            <p>
+              We respect your privacy. Read our{" "}
+              <Link
+                href="/privacy-policy"
+                className="link-fx font-semibold text-brand-dark"
+              >
+                privacy policy
+              </Link>
+              .
+            </p>
+          </div>
+        </section>
+      </div>
+    </div>
   );
 }

@@ -15,7 +15,6 @@ const NAV: { href: string; label: string; icon: IconName }[] = [
   { href: "/admin/team", label: "Team", icon: "team" },
   { href: "/admin/prayer", label: "Prayer times", icon: "prayer" },
   { href: "/admin/jumuah", label: "Jumu’ah", icon: "jumuah" },
-  { href: "/admin/donations", label: "Donations", icon: "donations" },
   { href: "/admin/info", label: "Website info", icon: "info" },
   { href: "/admin/admins", label: "Admin users", icon: "admins" },
 ];

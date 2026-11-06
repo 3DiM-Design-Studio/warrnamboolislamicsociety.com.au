@@ -18,7 +18,7 @@ export default function Acnc() {
       </p>
       <p>
         Read the full{" "}
-        <Link href="/news/wis-registered-charity-acnc" className="text-brand underline">
+        <Link href="/news/wis-registered-charity-acnc" className="text-brand link-fx">
           announcement
         </Link>
         .

@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "lenis/dist/lenis.css";
 
 :root {
   --background: #f4f4f0;
@@ -107,4 +108,27 @@ body {
 .feature-fade {
   -webkit-mask-image: radial-gradient(ellipse 70% 75% at 50% 55%, #000 45%, transparent 100%);
   mask-image: radial-gradient(ellipse 70% 75% at 50% 55%, #000 45%, transparent 100%);
+}
+
+/* Soft blurred green gradient behind the footer card */
+.footer-gradient {
+  background:
+    radial-gradient(60rem 28rem at 15% 95%, #c9f26b 0%, transparent 65%),
+    radial-gradient(50rem 30rem at 80% 80%, #00bf2e 0%, transparent 65%),
+    radial-gradient(45rem 25rem at 100% 10%, #00989d 0%, transparent 70%),
+    radial-gradient(40rem 25rem at 0% 0%, #7fdc9c 0%, transparent 70%),
+    #3c9d73;
+}
+
+/* Link underline: draws in from the left on hover and exits to the right on leave */
+.link-fx {
+  background: linear-gradient(currentColor, currentColor) 100% 100% / 0% 1.5px no-repeat;
+  transition: background-size 0.35s ease;
+}
+
+.link-fx:hover,
+.link-fx:focus-visible,
+.group:hover .link-fx {
+  background-position: 0% 100%;
+  background-size: 100% 1.5px;
 }

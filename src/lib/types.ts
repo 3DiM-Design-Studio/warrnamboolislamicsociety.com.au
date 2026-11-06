@@ -36,6 +36,10 @@ export type MemberRow = {
   name: string;
   email: string;
   phone: string;
+  /** Family details from the membership form (spouse and children), when given. */
+  details: string;
+  /** Amount paid in cents when they joined online, otherwise null. */
+  amount_cents: number | null;
   status: "new" | "member";
   created_at: string;
 };
@@ -49,8 +53,6 @@ export type TeamRow = {
 };
 
 export type PrayerSettingsRow = {
-  method: "mwl" | "egypt" | "karachi" | "isna" | "ummqura";
-  asr: "standard" | "hanafi";
   rules: IqamahRules;
   show_on_site: boolean;
 };
@@ -72,16 +74,6 @@ export type JumuahRow = {
   end_month: number;
   end_day: number;
   jumuah_time: string;
-};
-
-export type Purpose = { id: string; name: string; on: boolean };
-
-export type DonationRow = {
-  intro: string;
-  account_name: string;
-  bsb: string;
-  account_no: string;
-  purposes: Purpose[];
 };
 
 export type AdminRow = { email: string; created_at: string };

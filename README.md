@@ -22,7 +22,7 @@ Mail (contact form and membership alerts) uses `SMTP_HOST`, `SMTP_PORT`, `SMTP_U
 
 ## Admin panel
 
-The committee edits the site at `/admin` (news, events, members, team, prayer times, Jumu'ah, donations, website info, admin users).
+The committee edits the site at `/admin` (news, events, members, team, Iqamah and Ramadan times, Jumu'ah, website info, admin users).
 
 - **First-time setup:** follow `supabase/README.md` (run `supabase/setup.sql`, create the admin login, close public sign-up, add the keys to Vercel).
 - **Security check:** `node scripts/check-security.mjs` tests the database rules as an anonymous visitor.
@@ -33,5 +33,5 @@ The committee edits the site at `/admin` (news, events, members, team, prayer ti
 - `src/lib/content.ts` reads published content with the visitor-level key. Each function is cached and tagged. If Supabase cannot be reached, the site falls back to `src/content/site.ts`.
 - Admin saves are Server Actions in `src/lib/actions/`. Each one checks the person is an admin, validates the form with Zod, writes to Supabase, then calls `updateTag(...)` so the public pages refresh straight away.
 - `src/proxy.ts` sends anyone who is not logged in away from `/admin`. This is a first check only: every admin page and action calls `requireAdmin()` (`src/lib/auth.ts`), and the database rules (Row Level Security) refuse writes from anyone who is not on the `admins` list.
-- `src/lib/prayer.ts` calculates Azan for Warrnambool (Melbourne time zone, daylight saving automatic), Iqamah, Ramadan and the Jumu'ah season for a date.
+- `src/lib/prayer.ts` holds the Iqamah rules, Ramadan and Jumu'ah season logic. Azan times come from `src/content/prayer-times.json` via `src/lib/timetable.ts`. `azanTimes()` can calculate Azan with daylight saving but is not used by the site yet.
 - Pages that depend on today's date refresh within a minute (`cacheLife("minutes")`), and straight away after an admin save.
