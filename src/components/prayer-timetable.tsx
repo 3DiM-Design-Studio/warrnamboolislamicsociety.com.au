@@ -1,36 +1,96 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { MONTHS, PRAYERS, table, type PrayerKey } from "@/lib/prayer-data";
+import {
+  ArrowLeft,
+  ArrowRight,
+  CalendarDays,
+  CloudSun,
+  Moon,
+  MoonStar,
+  Sun,
+  Sunrise,
+  Sunset,
+  type LucideIcon,
+} from "lucide-react";
+import { DatePicker } from "@/components/date-picker";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  MONTHS,
+  PRAYERS,
+  table,
+  toMinutes,
+  type PrayerKey,
+} from "@/lib/prayer-data";
 
-// Today's prayer times plus a filterable timetable (month or whole year, Fridays only, chosen prayers).
+// Each prayer gets its own colour and icon, like the lanes in a calendar.
+const STYLE: Record<PrayerKey, { color: string; Icon: LucideIcon }> = {
+  fajr: { color: "#3f6fd9", Icon: MoonStar },
+  sunrise: { color: "#ef8a17", Icon: Sunrise },
+  zuhr: { color: "#0e9fb3", Icon: Sun },
+  asr: { color: "#8447a8", Icon: CloudSun },
+  maghrib: { color: "#d9534f", Icon: Sunset },
+  isha: { color: "#24408f", Icon: Moon },
+};
+
+const START = 3; // first hour shown (earliest Fajr of the year is 3:04 am)
+const END = 23;
+const PX = 72; // pixels per hour
+const BLOCK = 68; // height of a prayer block
+
+const addDays = (d: Date, n: number) =>
+  new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+const sameDay = (a: Date, b: Date) =>
+  a.getFullYear() === b.getFullYear() &&
+  a.getMonth() === b.getMonth() &&
+  a.getDate() === b.getDate();
+const mondayOf = (d: Date) => addDays(d, -((d.getDay() + 6) % 7));
+const hourLabel = (h: number) => `${h % 12 || 12} ${h >= 12 ? "PM" : "AM"}`;
+
+// Today's prayer times plus a week/day calendar of when each prayer starts.
 export function PrayerTimetable() {
   const [now, setNow] = useState<Date | null>(null);
-  const [month, setMonth] = useState(1); // 0 = whole year
-  const [fridaysOnly, setFridaysOnly] = useState(false);
+  const [anchor, setAnchor] = useState<Date>(new Date(2000, 0, 1));
+  const [view, setView] = useState<"week" | "day">("week");
   const [shown, setShown] = useState<Set<PrayerKey>>(
     new Set(PRAYERS.map((p) => p.key)),
   );
+  const [picking, setPicking] = useState(false);
+  const scroller = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const d = new Date();
     setNow(d);
-    setMonth(d.getMonth() + 1);
+    setAnchor(d);
+    // A seven-column week is too tight on a phone, so start on the day view there.
+    if (window.matchMedia("(max-width: 767px)").matches) setView("day");
   }, []);
+
+  // Open scrolled to around Fajr instead of the middle of the night.
+  const ready = now !== null;
+  useLayoutEffect(() => {
+    if (scroller.current) scroller.current.scrollTop = PX * 0.5;
+  }, [ready]);
 
   if (!now) return <div className="h-96 rounded-2xl bg-card" />;
 
-  const year = now.getFullYear();
   const todayRow = table[now.getMonth() + 1]?.find(
     (r) => r.d === now.getDate(),
   );
-  const monthNumbers = month === 0 ? MONTHS.map((_, i) => i + 1) : [month];
-  const rows = monthNumbers
-    .flatMap((m) => (table[m] ?? []).map((r) => ({ m, r })))
-    .map(({ m, r }) => ({ m, r, date: new Date(year, m - 1, r.d) }))
-    .filter(({ m, date }) => date.getMonth() === m - 1) // drops 29 Feb in non-leap years
-    .filter(({ date }) => !fridaysOnly || date.getDay() === 5);
-  const columns = PRAYERS.filter((p) => shown.has(p.key));
+  const first = view === "week" ? mondayOf(anchor) : anchor;
+  const dates = Array.from({ length: view === "week" ? 7 : 1 }, (_, i) =>
+    addDays(first, i),
+  );
+  const last = dates[dates.length - 1];
+  const step = view === "week" ? 7 : 1;
+  const range =
+    view === "day"
+      ? first.toLocaleDateString("en-AU", {
+          weekday: "long",
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        })
+      : `${first.getDate()} ${first.toLocaleDateString("en-AU", { month: "short" })} to ${last.getDate()} ${last.toLocaleDateString("en-AU", { month: "short", year: "numeric" })}`;
 
   function toggle(key: PrayerKey) {
     setShown((prev) => {
@@ -41,6 +101,13 @@ export function PrayerTimetable() {
       return next;
     });
   }
+
+  const hours = Array.from({ length: END - START + 1 }, (_, i) => START + i);
+  const nowTop = ((now.getHours() * 60 + now.getMinutes()) / 60 - START) * PX;
+  const btn =
+    "grid size-9 place-items-center rounded-lg border border-border bg-white hover:bg-background";
+  const seg = (active: boolean) =>
+    `px-4 py-2 text-sm font-semibold ${active ? "bg-[#16c05a] text-white" : "bg-white hover:bg-background"}`;
 
   return (
     <div className="space-y-10">
@@ -69,98 +136,181 @@ export function PrayerTimetable() {
       )}
 
       <section>
-        <h2 className="text-2xl font-bold">Timetable</h2>
-        <div className="mt-4 flex flex-wrap items-center gap-3">
-          <select
-            value={month}
-            onChange={(e) => setMonth(Number(e.target.value))}
-            aria-label="Month"
-            className="rounded-full border border-brand-dark/20 bg-card px-4 py-2 text-sm"
-          >
-            <option value={0}>Whole year</option>
-            {MONTHS.map((m, i) => (
-              <option key={m} value={i + 1}>
-                {m} {year}
-              </option>
-            ))}
-          </select>
-          <button
-            onClick={() => setFridaysOnly((v) => !v)}
-            aria-pressed={fridaysOnly}
-            className={`rounded-full px-4 py-2 text-sm font-medium ${
-              fridaysOnly ? "bg-brand-gradient text-brand-dark" : "bg-card"
-            }`}
-          >
-            Fridays only
-          </button>
-          <span
-            className="mx-1 hidden h-6 w-px bg-border sm:block"
-            aria-hidden
-          />
-          {PRAYERS.map(({ key, label }) => (
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative">
             <button
-              key={key}
-              onClick={() => toggle(key)}
-              aria-pressed={shown.has(key)}
-              className={`rounded-full px-3 py-2 text-sm ${
-                shown.has(key)
-                  ? "bg-brand-dark text-white"
-                  : "bg-card text-muted"
-              }`}
+              onClick={() => setPicking((v) => !v)}
+              aria-expanded={picking}
+              aria-haspopup="dialog"
+              className="inline-flex items-center gap-2 rounded-lg border border-border bg-white px-3 py-2 text-sm font-medium hover:bg-background"
             >
-              {label}
+              <CalendarDays className="size-4" aria-hidden />
+              {range}
             </button>
-          ))}
+            {picking && (
+              <DatePicker
+                value={anchor}
+                today={now}
+                onPick={setAnchor}
+                onClose={() => setPicking(false)}
+              />
+            )}
+          </div>
+          <button
+            onClick={() => setAnchor(addDays(anchor, -step))}
+            aria-label={view === "week" ? "Previous week" : "Previous day"}
+            className={btn}
+          >
+            <ArrowLeft className="size-4" aria-hidden />
+          </button>
+          <button
+            onClick={() => setAnchor(addDays(anchor, step))}
+            aria-label={view === "week" ? "Next week" : "Next day"}
+            className={btn}
+          >
+            <ArrowRight className="size-4" aria-hidden />
+          </button>
+          <button
+            onClick={() => setAnchor(new Date())}
+            className="rounded-lg border border-border bg-white px-4 py-2 text-sm font-semibold hover:bg-background"
+          >
+            Today
+          </button>
+          <div className="flex overflow-hidden rounded-lg border border-border">
+            <button
+              onClick={() => setView("day")}
+              aria-pressed={view === "day"}
+              className={seg(view === "day")}
+            >
+              Day
+            </button>
+            <button
+              onClick={() => setView("week")}
+              aria-pressed={view === "week"}
+              className={seg(view === "week")}
+            >
+              Week
+            </button>
+          </div>
         </div>
-        <p className="mt-2 text-xs text-muted">{rows.length} days shown</p>
 
-        <div className="mt-4 max-h-[36rem] overflow-auto rounded-2xl bg-card">
-          <table className="w-full min-w-[32rem] text-left text-sm">
-            <thead className="sticky top-0 bg-card">
-              <tr className="border-b border-border text-xs uppercase tracking-widest text-muted">
-                <th className="p-4 font-medium">Date</th>
-                <th className="p-4 font-medium">Day</th>
-                {columns.map(({ key, label }) => (
-                  <th key={key} className="p-4 font-medium">
-                    {label}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map(({ m, r, date }) => {
-                const isToday =
-                  m === now.getMonth() + 1 && r.d === now.getDate();
-                return (
-                  <tr
-                    key={`${m}-${r.d}`}
-                    className={`border-b border-border last:border-0 ${
-                      isToday
-                        ? "bg-[#c9f26b]/40 font-bold"
-                        : date.getDay() === 5
-                          ? "bg-background"
-                          : ""
-                    }`}
+        <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
+          {PRAYERS.map(({ key, label }) => {
+            const { color, Icon } = STYLE[key];
+            return (
+              <button
+                key={key}
+                onClick={() => toggle(key)}
+                aria-pressed={shown.has(key)}
+                className={`inline-flex items-center gap-2 text-sm font-medium ${shown.has(key) ? "" : "opacity-40"}`}
+              >
+                <Icon className="size-5" style={{ color }} aria-hidden />
+                {label}
+              </button>
+            );
+          })}
+        </div>
+
+        <div
+          ref={scroller}
+          data-lenis-prevent
+          className="mt-4 max-h-[40rem] overflow-auto rounded-2xl border border-border bg-white"
+        >
+          <div className={view === "week" ? "min-w-[46rem]" : ""}>
+            <div
+              className="sticky top-0 z-20 grid border-b border-border bg-white"
+              style={{
+                gridTemplateColumns: `3.5rem repeat(${dates.length}, minmax(0, 1fr))`,
+              }}
+            >
+              <div />
+              {dates.map((d) => (
+                <div
+                  key={d.toISOString()}
+                  className={`border-l border-border px-3 py-3 text-sm font-semibold ${sameDay(d, now) ? "bg-[#c9f26b]/40" : ""}`}
+                >
+                  {d.toLocaleDateString("en-AU", { weekday: "long" })}{" "}
+                  {d.getDate()}
+                  <span className="ml-1 font-normal text-muted">
+                    {MONTHS[d.getMonth()].slice(0, 3)}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <div
+              className="grid"
+              style={{
+                gridTemplateColumns: `3.5rem repeat(${dates.length}, minmax(0, 1fr))`,
+              }}
+            >
+              <div className="relative" style={{ height: (END - START) * PX }}>
+                {hours.map((h) => (
+                  <span
+                    key={h}
+                    className="absolute right-2 -translate-y-1/2 text-xs text-muted"
+                    style={{ top: (h - START) * PX }}
                   >
-                    <td className="p-4">
-                      {r.d} {MONTHS[m - 1].slice(0, 3)}
-                    </td>
-                    <td className="p-4">
-                      {date.toLocaleDateString("en-AU", { weekday: "long" })}
-                    </td>
-                    {columns.map(({ key }) => (
-                      <td key={key} className="p-4">
-                        {r[key]}
-                      </td>
-                    ))}
-                  </tr>
+                    {hourLabel(h)}
+                  </span>
+                ))}
+              </div>
+              {dates.map((d) => {
+                const row = table[d.getMonth() + 1]?.find(
+                  (r) => r.d === d.getDate(),
+                );
+                const isToday = sameDay(d, now);
+                return (
+                  <div
+                    key={d.toISOString()}
+                    className="relative border-l border-border"
+                    style={{
+                      height: (END - START) * PX,
+                      backgroundImage: `repeating-linear-gradient(to bottom, transparent 0, transparent ${PX - 1}px, var(--color-border) ${PX - 1}px, var(--color-border) ${PX}px)`,
+                    }}
+                  >
+                    {row &&
+                      PRAYERS.filter((p) => shown.has(p.key)).map(
+                        ({ key, label }) => {
+                          const { color, Icon } = STYLE[key];
+                          const top = (toMinutes(row[key]) / 60 - START) * PX;
+                          return (
+                            <div
+                              key={key}
+                              className="absolute inset-x-1 overflow-hidden rounded-lg px-2.5 py-2 text-white"
+                              style={{
+                                top,
+                                height: BLOCK,
+                                background: `linear-gradient(135deg, color-mix(in srgb, ${color}, white 12%), ${color})`,
+                              }}
+                            >
+                              <div className="flex items-center gap-1.5 text-sm font-bold">
+                                <Icon className="size-4" aria-hidden />
+                                {label}
+                              </div>
+                              <div className="mt-0.5 text-xl font-extrabold leading-tight">
+                                {row[key]}
+                              </div>
+                            </div>
+                          );
+                        },
+                      )}
+                    {isToday && nowTop >= 0 && (
+                      <div
+                        className="pointer-events-none absolute inset-x-0 z-10 h-0.5 bg-red-500"
+                        style={{ top: nowTop }}
+                        aria-hidden
+                      />
+                    )}
+                  </div>
                 );
               })}
-            </tbody>
-          </table>
+            </div>
+          </div>
         </div>
         <p className="mt-3 text-xs text-muted">
-          Times are prayer start times for Warrnambool. Fridays are shaded.
+          Each block sits at the time that prayer starts in Warrnambool. The red
+          line is the time now.
         </p>
       </section>
     </div>

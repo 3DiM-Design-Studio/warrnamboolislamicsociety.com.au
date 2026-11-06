@@ -1,3 +1,4 @@
+import { SmoothScroll } from "@/components/smooth-scroll";
 import type { Metadata } from "next";
 import {
   Libre_Franklin,
@@ -22,8 +23,14 @@ const arabic = Tajawal({
   subsets: ["arabic"],
   weight: ["400", "500", "700"],
 });
-const urdu = Noto_Nastaliq_Urdu({ variable: "--font-urdu", subsets: ["arabic"] });
-const devanagari = Noto_Sans_Devanagari({ variable: "--font-devanagari", subsets: ["devanagari"] });
+const urdu = Noto_Nastaliq_Urdu({
+  variable: "--font-urdu",
+  subsets: ["arabic"],
+});
+const devanagari = Noto_Sans_Devanagari({
+  variable: "--font-devanagari",
+  subsets: ["devanagari"],
+});
 const tamil = Noto_Sans_Tamil({ variable: "--font-tamil", subsets: ["tamil"] });
 
 export const metadata: Metadata = {
@@ -33,8 +40,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${libreFranklin.variable} ${arabic.variable} ${urdu.variable} ${devanagari.variable} ${tamil.variable} h-full antialiased`}>
+    <html
+      lang="en"
+      className={`${libreFranklin.variable} ${arabic.variable} ${urdu.variable} ${devanagari.variable} ${tamil.variable} h-full antialiased`}
+    >
       <body id="top" className="min-h-full flex flex-col">
+        <SmoothScroll />
         <Banner />
         <Header />
         <main className="flex-1">{children}</main>
