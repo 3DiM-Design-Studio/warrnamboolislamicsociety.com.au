@@ -1,14 +1,13 @@
 // Content migrated from https://warrnamboolislamicsociety.com.au (WordPress REST API, Nov 2026).
+// News posts, office bearers, phones and email are now managed in the admin panel (Supabase).
+// The copies below are the starting content and the fallback if the database cannot be reached.
 
 export const site = {
   name: "Warrnambool Islamic Society",
   short: "WIS",
   tagline: "Serving Warrnambool and neighbouring communities through service, education and empowerment.",
   email: "warrnambool.is@gmail.com",
-  phones: ["+61 0359 071 724", "+61 493 187 858", "+61 408 307 364", "+61 407 975 314"],
-  jumuah: "Every Friday at 12:30 PM",
-  jumuahNote:
-    "The current site's prayer-times page lists Jumu'ah at 12:30 PM (autumn and winter) and 1:30 PM (spring and summer), while a 2024 notice fixed 12:30 PM for spring. Confirm before publishing.",
+  phones: ["+61 3 5907 1724", "+61 493 187 858", "+61 408 307 364", "+61 407 975 314"],
 };
 
 export const nav = [
@@ -16,6 +15,7 @@ export const nav = [
   { href: "/about", label: "About Us" },
   { href: "/prayer-times", label: "Prayer Times" },
   { href: "/news", label: "News" },
+  { href: "/events", label: "Events" },
   { href: "/membership", label: "Membership" },
   { href: "/contact", label: "Contact" },
 ];

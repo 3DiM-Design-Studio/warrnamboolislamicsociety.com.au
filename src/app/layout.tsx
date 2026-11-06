@@ -7,8 +7,6 @@ import {
   Noto_Sans_Tamil,
 } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
-import { Banner, Header } from "@/components/header";
-import { Footer } from "@/components/footer";
 import { site } from "@/content/site";
 import "./globals.css";
 
@@ -35,10 +33,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${libreFranklin.variable} ${arabic.variable} ${urdu.variable} ${devanagari.variable} ${tamil.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
-        <Banner />
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        {children}
         {process.env.NEXT_PUBLIC_GA_ID && (
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
         )}
