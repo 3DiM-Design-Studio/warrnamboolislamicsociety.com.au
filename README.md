@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Warrnambool Islamic Society website
 
-## Getting Started
+Next.js 16 (App Router, Cache Components), Tailwind 4, Supabase (database, login, photo storage). Package manager: Bun.
 
-First, run the development server:
+## Run it
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+bun install
+bun dev          # http://localhost:3000
+bun test         # prayer times, Jumu'ah seasons, phone numbers
+bun run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Copy the two Supabase values into `.env.local` (not committed):
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=...
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Mail (contact form and membership alerts) uses `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` and `MAIL_FROM`.
 
-## Learn More
+## Admin panel
 
-To learn more about Next.js, take a look at the following resources:
+The committee edits the site at `/admin` (news, events, members, team, prayer times, Jumu'ah, donations, website info, admin users).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **First-time setup:** follow `supabase/README.md` (run `supabase/setup.sql`, create the admin login, close public sign-up, add the keys to Vercel).
+- **Security check:** `node scripts/check-security.mjs` tests the database rules as an anonymous visitor.
+- **Guide for the committee:** `docs/WIS-Admin-Guide.pdf`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## How it fits together
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `src/lib/content.ts` reads published content with the visitor-level key. Each function is cached and tagged. If Supabase cannot be reached, the site falls back to `src/content/site.ts`.
+- Admin saves are Server Actions in `src/lib/actions/`. Each one checks the person is an admin, validates the form with Zod, writes to Supabase, then calls `updateTag(...)` so the public pages refresh straight away.
+- `src/proxy.ts` sends anyone who is not logged in away from `/admin`. This is a first check only: every admin page and action calls `requireAdmin()` (`src/lib/auth.ts`), and the database rules (Row Level Security) refuse writes from anyone who is not on the `admins` list.
+- `src/lib/prayer.ts` calculates Azan for Warrnambool (Melbourne time zone, daylight saving automatic), Iqamah, Ramadan and the Jumu'ah season for a date.
+- Pages that depend on today's date refresh within a minute (`cacheLife("minutes")`), and straight away after an admin save.

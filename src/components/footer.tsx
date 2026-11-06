@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { LogoMark } from "@/components/logo-mark";
 import { nav, site } from "@/content/site";
+import { getSettings } from "@/lib/content";
 
-export function Footer() {
+export async function Footer() {
+  const s = await getSettings();
   return (
     <footer className="mx-auto mt-16 w-full max-w-6xl px-4 pb-6">
       <div className="rounded-3xl bg-brand-dark p-8 text-sm text-white/70 sm:p-10">
@@ -24,13 +26,16 @@ export function Footer() {
           </div>
           <div>
             <p className="font-semibold text-white">Contact</p>
-            <p className="mt-3">{site.email}</p>
-            {site.phones.map((p) => (
+            <p className="mt-3">{s.email}</p>
+            {s.phones.map((p) => (
               <p key={p}>{p}</p>
             ))}
             <p className="mt-3 flex gap-4">
               <Link href="/acnc">ACNC</Link>
               <Link href="/privacy-policy">Privacy</Link>
+              {s.facebook && (
+                <a href={s.facebook} target="_blank" rel="noopener noreferrer">Facebook</a>
+              )}
             </p>
           </div>
         </div>
