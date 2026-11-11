@@ -31,7 +31,7 @@ export default async function OverviewPage() {
 
   const [posts, members, events, settings, prayer, ramadan, seasons] = await Promise.all([
     supabase.from("posts").select("status"),
-    supabase.from("members").select("status"),
+    supabase.from("members").select("id", { count: "exact", head: true }),
     supabase.from("events").select("id", { count: "exact", head: true }).eq("status", "published").gte("event_date", today),
     supabase.from("site_settings").select("phones,email,facebook,banner_on,banner_text").eq("id", 1).maybeSingle(),
     supabase.from("prayer_settings").select("rules,show_on_site").eq("id", 1).maybeSingle(),
@@ -44,7 +44,7 @@ export default async function OverviewPage() {
   const postRows = posts.data ?? [];
   const live = postRows.filter((p) => p.status === "published").length;
   const drafts = postRows.length - live;
-  const fresh = (members.data ?? []).filter((m) => m.status === "new").length;
+  const memberCount = members.count ?? 0;
 
   const p = prayer.data as PrayerSettingsRow | null;
   const rules = { ...DEFAULT_RULES, ...(p?.rules ?? {}) };
@@ -77,7 +77,6 @@ export default async function OverviewPage() {
   const badPhone = (s?.phones ?? []).some((ph) => !normalisePhone(ph).ok);
 
   const todo: { text: string; href: string; label: string }[] = [];
-  if (fresh) todo.push({ text: `${fresh} new membership request${fresh > 1 ? "s" : ""}`, href: "/admin/members", label: "Review" });
   if (drafts) todo.push({ text: `${drafts} news post${drafts > 1 ? "s" : ""} not on the website yet`, href: "/admin/posts", label: "Open" });
   if (badPhone) todo.push({ text: "A phone number needs fixing", href: "/admin/info", label: "Fix" });
   if (!coverage.ok) todo.push({ text: "Some days have no Jumu’ah time", href: "/admin/jumuah", label: "Fix" });
@@ -109,7 +108,7 @@ export default async function OverviewPage() {
         {kpi("clock", "Next prayer", `${next.name} ${fmtTime(next.azan)}`, `In ${inMinutes(next.mins)}${next.tomorrow ? " (tomorrow)" : ""}`)}
         {kpi("jumuah", "Jumu’ah", jumuah ? fmtHM(jumuah.jumuah_time) : "Not set", "Every Friday")}
         {kpi("posts", "News posts", String(live), `${drafts} not on the website`)}
-        {kpi("members", "New members", String(fresh), fresh ? "Waiting for review" : "All reviewed")}
+        {kpi("members", "Members", String(memberCount), "On the list")}
       </div>
 
       <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">

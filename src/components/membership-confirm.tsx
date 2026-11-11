@@ -1,7 +1,7 @@
 "use client";
 
 import { Download } from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 // Confirms the payment with the server (which emails the committee once) and shows the result.
 export function MembershipConfirm({
@@ -16,6 +16,12 @@ export function MembershipConfirm({
   );
   const [name, setName] = useState("");
   const [loaded, setLoaded] = useState(false);
+  const thanks = useRef<HTMLDialogElement>(null);
+
+  // Pop up a thank-you note as soon as the payment is confirmed.
+  useEffect(() => {
+    if (state === "done") thanks.current?.showModal();
+  }, [state]);
 
   useEffect(() => {
     const pi = new URLSearchParams(window.location.search).get(
@@ -52,6 +58,23 @@ export function MembershipConfirm({
 
   return (
     <div className="grid items-center gap-8 md:grid-cols-2">
+      <dialog
+        ref={thanks}
+        className="m-auto w-[min(92vw,26rem)] rounded-2xl bg-white p-8 text-center shadow-2xl backdrop:bg-black/50"
+      >
+        <h2 className="text-2xl font-bold tracking-tight">
+          Thank you{name ? `, ${name.split(" ")[0]}` : ""}!
+        </h2>
+        <p className="mt-3 text-muted">
+          Welcome to Warrnambool Islamic Society. You are now a member. May
+          Allah accept it from you and reward you.
+        </p>
+        <form method="dialog" className="mt-6">
+          <button className="rounded-lg bg-[#16c05a] px-8 py-2.5 font-semibold text-white hover:brightness-95">
+            Close
+          </button>
+        </form>
+      </dialog>
       {left(
         state === "checking" ? (
           <p className="text-muted">Confirming your payment...</p>
@@ -62,8 +85,9 @@ export function MembershipConfirm({
           </p>
         ) : (
           <p>
-            Your payment was received and your details have been sent to the
-            committee. May Allah accept it from you and reward you.
+            Thank you! Your payment was received and you are now a member of
+            Warrnambool Islamic Society. May Allah accept it from you and reward
+            you.
           </p>
         ),
       )}
