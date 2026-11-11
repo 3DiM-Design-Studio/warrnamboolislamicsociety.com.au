@@ -8,6 +8,8 @@ import { fmtDate } from "@/components/admin/format";
 import { Avatar, List, Row } from "@/components/admin/list";
 import { Badge, Button, Card, CardHead, ConfirmDialog, EmptyNote, Modal, ModalActions, TextField, cx, useFormAction, useRunAction } from "@/components/admin/ui";
 
+const fullName = (m: MemberRow) => `${m.first_name} ${m.last_name}`.trim();
+
 export function MembersManager({ members }: { members: MemberRow[] }) {
   const [filter, setFilter] = useState<"all" | "new">("all");
   const [adding, setAdding] = useState(false);
@@ -49,9 +51,9 @@ export function MembersManager({ members }: { members: MemberRow[] }) {
                 key={m.id}
                 lead={
                   <span className="flex items-center gap-3.5">
-                    <Avatar name={m.name} round />
+                    <Avatar name={fullName(m)} round />
                     <span>
-                      {m.name} {m.status === "new" ? <Badge tone="gold">New</Badge> : <Badge tone="green">Member</Badge>}
+                      {fullName(m)} {m.status === "new" ? <Badge tone="gold">New</Badge> : <Badge tone="green">Member</Badge>}
                     </span>
                   </span>
                 }
@@ -70,10 +72,21 @@ export function MembersManager({ members }: { members: MemberRow[] }) {
               >
                 <span className="pl-[58px] max-sm:pl-0">
                   {m.email}
-                  {m.phone ? ` · ${m.phone}` : ""} · {fmtDate(m.created_at.slice(0, 10))}
+                  {m.phone ? ` · ${m.phone}` : ""} · {fmtDate(m.submitted_date)}
                   {m.amount_cents != null && ` · paid ${(m.amount_cents / 100).toFixed(2)}`}
                 </span>
-                {m.details && <span className="basis-full pl-[58px] max-sm:pl-0">{m.details}</span>}
+                {(m.address || m.suburb || m.postcode) && (
+                  <span className="basis-full pl-[58px] max-sm:pl-0">
+                    {[m.address, m.suburb, m.postcode].filter(Boolean).join(", ")}
+                  </span>
+                )}
+                {(m.spouse || m.children) && (
+                  <span className="basis-full pl-[58px] max-sm:pl-0">
+                    {m.spouse && `Spouse: ${m.spouse}`}
+                    {m.spouse && m.children && " · "}
+                    {m.children && `Children: ${m.children}`}
+                  </span>
+                )}
               </Row>
             ))}
           </List>
@@ -87,7 +100,7 @@ export function MembersManager({ members }: { members: MemberRow[] }) {
         open={deleting !== null}
         onClose={() => setDeleting(null)}
         pending={pending}
-        message={deleting ? `Delete ${deleting.name} from the list?` : ""}
+        message={deleting ? `Delete ${fullName(deleting)} from the list?` : ""}
         onConfirm={() => deleting && run(() => deleteMember(deleting.id), () => setDeleting(null))}
       />
     </>
@@ -99,7 +112,8 @@ function AddForm({ onClose }: { onClose: () => void }) {
   const e = state?.errors ?? {};
   return (
     <form action={formAction} className="grid gap-4">
-      <TextField label="Name" name="name" error={e.name} required />
+      <TextField label="First name" name="first_name" error={e.first_name} required />
+      <TextField label="Last name" name="last_name" error={e.last_name} required />
       <TextField label="Email" name="email" type="email" error={e.email} required />
       <TextField label="Phone (optional)" name="phone" type="tel" error={e.phone} />
       <ModalActions onCancel={onClose} pending={pending} okLabel="Add" message={state && !state.ok ? state.message : undefined} />

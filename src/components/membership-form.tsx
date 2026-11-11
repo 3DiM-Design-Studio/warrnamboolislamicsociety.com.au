@@ -14,6 +14,9 @@ type Fields = {
   lastName: string;
   phone: string;
   email: string;
+  address: string;
+  suburb: string;
+  postcode: string;
   showSpouse: boolean;
   spouse: string;
   children: string[];
@@ -46,7 +49,10 @@ function Card({
   const aboutValid =
     fields.firstName.trim() !== "" &&
     fields.lastName.trim() !== "" &&
-    /^\S+@\S+\.\S+$/.test(fields.email);
+    /^\S+@\S+\.\S+$/.test(fields.email) &&
+    fields.address.trim() !== "" &&
+    fields.suburb.trim() !== "" &&
+    /^\d{4}$/.test(fields.postcode);
   const stepValid = [aboutValid, true, valid, true][step];
 
   async function submit(e: React.FormEvent) {
@@ -104,9 +110,9 @@ function Card({
   }
 
   const text = (
-    key: "firstName" | "lastName" | "phone" | "email" | "spouse",
+    key: "firstName" | "lastName" | "phone" | "email" | "spouse" | "address" | "suburb" | "postcode",
     placeholder: string,
-    extra: { required?: boolean; type?: string; autoComplete?: string } = {},
+    extra: { required?: boolean; type?: string; autoComplete?: string; inputMode?: "numeric"; maxLength?: number } = {},
   ) => (
     <input
       value={fields[key]}
@@ -246,6 +252,24 @@ function Card({
                   required: true,
                   type: "email",
                   autoComplete: "email",
+                })}
+              </div>
+              <div className="mt-3 grid gap-3">
+                {text("address", "Street address", {
+                  required: true,
+                  autoComplete: "street-address",
+                })}
+              </div>
+              <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                {text("suburb", "Suburb", {
+                  required: true,
+                  autoComplete: "address-level2",
+                })}
+                {text("postcode", "Postcode", {
+                  required: true,
+                  inputMode: "numeric",
+                  maxLength: 4,
+                  autoComplete: "postal-code",
                 })}
               </div>
             </div>
@@ -418,6 +442,9 @@ export function MembershipForm() {
     lastName: "",
     phone: "",
     email: "",
+    address: "",
+    suburb: "",
+    postcode: "",
     showSpouse: false,
     spouse: "",
     children: [],

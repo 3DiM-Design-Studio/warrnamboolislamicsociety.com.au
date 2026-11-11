@@ -58,19 +58,40 @@ create table if not exists public.events (
 
 create table if not exists public.members (
   id uuid primary key default gen_random_uuid(),
-  name text not null check (char_length(name) between 1 and 120),
-  email text not null check (char_length(email) between 3 and 200),
+  first_name text not null default '' check (char_length(first_name) <= 60),
+  last_name text not null default '' check (char_length(last_name) <= 60),
   phone text not null default '' check (char_length(phone) <= 40),
-  details text not null default '' check (char_length(details) <= 600),
+  email text not null check (char_length(email) between 3 and 200),
+  address text not null default '' check (char_length(address) <= 200),
+  suburb text not null default '' check (char_length(suburb) <= 80),
+  postcode text not null default '' check (char_length(postcode) <= 4),
   amount_cents int check (amount_cents is null or amount_cents >= 0),
   payment_intent text unique,
-  status text not null default 'new' check (status in ('new', 'member')),
-  created_at timestamptz not null default now()
+  spouse text not null default '' check (char_length(spouse) <= 120),
+  children text not null default '' check (char_length(children) <= 600),
+  submitted_date date not null default current_date,
+  status text not null default 'new' check (status in ('new', 'member'))
 );
--- (for a database created by an earlier version of this file)
-alter table public.members add column if not exists details text not null default '';
+-- (for a database created by an earlier version of this file: adds the new columns and
+--  keeps the old name, so existing rows still show up)
+alter table public.members add column if not exists first_name text not null default '';
+alter table public.members add column if not exists last_name text not null default '';
+alter table public.members add column if not exists address text not null default '';
+alter table public.members add column if not exists suburb text not null default '';
+alter table public.members add column if not exists postcode text not null default '';
+alter table public.members add column if not exists spouse text not null default '';
+alter table public.members add column if not exists children text not null default '';
+alter table public.members add column if not exists submitted_date date not null default current_date;
 alter table public.members add column if not exists amount_cents int;
 alter table public.members add column if not exists payment_intent text unique;
+do $$
+begin
+  if exists (select 1 from information_schema.columns
+             where table_schema = 'public' and table_name = 'members' and column_name = 'name') then
+    alter table public.members alter column name drop not null;
+    update public.members set first_name = name where first_name = '' and name is not null;
+  end if;
+end $$;
 
 create table if not exists public.team_members (
   id uuid primary key default gen_random_uuid(),

@@ -33,15 +33,21 @@ export type EventRow = {
 
 export type MemberRow = {
   id: string;
-  name: string;
+  first_name: string;
+  last_name: string;
   email: string;
   phone: string;
-  /** Family details from the membership form (spouse and children), when given. */
-  details: string;
+  address: string;
+  suburb: string;
+  postcode: string;
+  spouse: string;
+  /** Children joined with "; " */
+  children: string;
   /** Amount paid in cents when they joined online, otherwise null. */
   amount_cents: number | null;
   status: "new" | "member";
-  created_at: string;
+  /** YYYY-MM-DD */
+  submitted_date: string;
 };
 
 export type TeamRow = {

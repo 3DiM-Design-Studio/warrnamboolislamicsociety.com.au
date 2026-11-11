@@ -9,13 +9,28 @@ const esc = (s: string) => s.replace(/[<>&]/g, "");
 // A problem here must never show the member an error: their payment already went through.
 async function recordMember(pi: Stripe.PaymentIntent) {
   if (!hasSupabase) return;
-  const [name = "", email = "", phone = ""] = (pi.metadata.member ?? "").split("|").map((v) => v.trim());
+  const md = pi.metadata;
   try {
     // Plain insert: visitors may add rows but not read them. A repeat of the same payment hits the
     // unique payment_intent column (code 23505) and is simply ignored.
     const { error } = await createAnonClient()
       .from("members")
-      .insert({ name, email, phone, details: pi.metadata.family ?? "", amount_cents: pi.amount, status: "new", payment_intent: pi.id });
+      .insert({
+        first_name: md.first_name ?? "",
+        last_name: md.last_name ?? "",
+        phone: md.phone ?? "",
+        email: md.email ?? "",
+        address: md.address ?? "",
+        suburb: md.suburb ?? "",
+        postcode: md.postcode ?? "",
+        amount_cents: pi.amount,
+        payment_intent: pi.id,
+        spouse: md.spouse ?? "",
+        children: md.children ?? "",
+        // en-CA formats as YYYY-MM-DD; Melbourne time so a late-night join gets the right day.
+        submitted_date: new Intl.DateTimeFormat("en-CA", { timeZone: "Australia/Melbourne" }).format(new Date()),
+        status: "new",
+      });
     if (error && error.code !== "23505") console.error("Could not save member", pi.id, error.message);
   } catch (e) {
     console.error("Could not save member", pi.id, e);

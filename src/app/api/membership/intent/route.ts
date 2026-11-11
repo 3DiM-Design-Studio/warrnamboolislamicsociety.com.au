@@ -5,6 +5,9 @@ type Member = {
   lastName: string;
   phone: string;
   email: string;
+  address: string;
+  suburb: string;
+  postcode: string;
   familyMembers: string;
   spouse: string;
   children: string[];
@@ -31,6 +34,9 @@ export async function POST(req: Request) {
     lastName: clean(body.lastName),
     phone: clean(body.phone, 30),
     email: clean(body.email, 150),
+    address: clean(body.address, 200),
+    suburb: clean(body.suburb, 80),
+    postcode: clean(body.postcode, 4),
     familyMembers: clean(body.familyMembers, 3),
     spouse: clean(body.spouse),
     children: (Array.isArray(body.children) ? body.children : [])
@@ -40,6 +46,12 @@ export async function POST(req: Request) {
   if (!m.firstName || !m.lastName || !/^\S+@\S+\.\S+$/.test(m.email)) {
     return Response.json(
       { error: "Please enter your name and a valid email address." },
+      { status: 400 },
+    );
+  }
+  if (!m.address || !m.suburb || !/^\d{4}$/.test(m.postcode)) {
+    return Response.json(
+      { error: "Please enter your address, suburb and a 4-digit postcode." },
       { status: 400 },
     );
   }
@@ -53,6 +65,15 @@ export async function POST(req: Request) {
     metadata: {
       kind: "membership",
       member: `${m.firstName} ${m.lastName} | ${m.email} | ${m.phone}`,
+      first_name: m.firstName,
+      last_name: m.lastName,
+      phone: m.phone,
+      email: m.email,
+      address: m.address,
+      suburb: m.suburb,
+      postcode: m.postcode,
+      spouse: m.spouse,
+      children: m.children.filter(Boolean).join("; ").slice(0, 500),
       family:
         `${m.familyMembers || "-"} members | spouse: ${m.spouse || "-"} | children: ${
           m.children.filter(Boolean).join(", ") || "-"
