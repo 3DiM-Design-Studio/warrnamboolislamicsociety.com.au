@@ -140,12 +140,14 @@ export function Modal({ open, onClose, title, children, small }: { open: boolean
   return (
     <dialog
       ref={ref}
+      // The site's smooth scrolling (Lenis) would otherwise take the mouse wheel and scroll the page behind.
+      data-lenis-prevent
       onClose={onClose}
       onClick={(e) => {
         if (e.target === ref.current) onClose();
       }}
       className={cx(
-        "m-auto max-h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] overflow-y-auto rounded-2xl bg-white p-0 text-foreground shadow-2xl backdrop:bg-black/50",
+        "m-auto max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] overflow-y-auto overscroll-contain rounded-2xl bg-white p-0 text-foreground shadow-2xl backdrop:bg-black/50",
         small ? "max-w-md" : "max-w-xl",
       )}
     >

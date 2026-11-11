@@ -17,8 +17,10 @@ const schema = z.object({
   children: z.string().trim().max(600, "That is too long."),
 });
 
-export async function addMember(_prev: ActionState, fd: FormData): Promise<ActionState> {
+// Adds a member, or changes one when the form carries an id.
+export async function saveMember(_prev: ActionState, fd: FormData): Promise<ActionState> {
   const { supabase } = await requireAdmin();
+  const id = str(fd, "id");
   const parsed = schema.safeParse({
     first_name: str(fd, "first_name"),
     last_name: str(fd, "last_name"),
@@ -33,6 +35,12 @@ export async function addMember(_prev: ActionState, fd: FormData): Promise<Actio
   if (!parsed.success) return fail("Please check the form.", fieldErrors(parsed.error));
   // Children are typed in one box; store them the same way the website form does ("A; B; C").
   const children = parsed.data.children.split(/[;,]/).map((c) => c.trim()).filter(Boolean).join("; ");
+  if (id) {
+    // Only the details change: when they joined, what they paid and the payment link stay as they were.
+    const { error } = await supabase.from("members").update({ ...parsed.data, children }).eq("id", id);
+    if (error) return fail(dbError(error));
+    return ok("Member saved");
+  }
   const { error } = await supabase.from("members").insert({
     ...parsed.data,
     children,

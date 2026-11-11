@@ -20,6 +20,10 @@ export type PostRow = {
   post_date: string;
   status: Status;
   pinned: boolean;
+  /** Login email of the admin who created the post. Empty for older posts. */
+  author: string;
+  created_at: string;
+  updated_at: string;
 };
 
 export type EventRow = {

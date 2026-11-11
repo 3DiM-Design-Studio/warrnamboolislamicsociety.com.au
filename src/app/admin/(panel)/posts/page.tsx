@@ -11,7 +11,7 @@ export default async function PostsPage() {
   const { supabase } = await requireAdmin();
   const { data, error } = await supabase
     .from("posts")
-    .select("id,title,slug,excerpt,body,photo_url,post_date,status,pinned")
+    .select("id,title,slug,excerpt,body,photo_url,post_date,status,pinned,author,created_at,updated_at")
     .order("pinned", { ascending: false })
     .order("post_date", { ascending: false });
   if (error) return <LoadError error={error} />;

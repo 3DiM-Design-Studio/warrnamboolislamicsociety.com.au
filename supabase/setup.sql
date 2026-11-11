@@ -43,8 +43,11 @@ create table if not exists public.posts (
   status text not null default 'draft' check (status in ('draft', 'published')),
   pinned boolean not null default false,
   created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
+  updated_at timestamptz not null default now(),
+  author text not null default ''
 );
+-- (for a database created by an earlier version of this file) who wrote the post: the admin's login email
+alter table public.posts add column if not exists author text not null default '';
 
 create table if not exists public.events (
   id uuid primary key default gen_random_uuid(),

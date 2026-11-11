@@ -60,7 +60,8 @@ export function MembershipConfirm({
     <div className="grid items-center gap-8 md:grid-cols-2">
       <dialog
         ref={thanks}
-        className="m-auto w-[min(92vw,26rem)] rounded-2xl bg-white p-8 text-center shadow-2xl backdrop:bg-black/50"
+        data-lenis-prevent
+        className="m-auto max-h-[calc(100dvh-2rem)] w-[min(92vw,26rem)] overflow-y-auto overscroll-contain rounded-2xl bg-white p-8 text-center shadow-2xl backdrop:bg-black/50"
       >
         <h2 className="text-2xl font-bold tracking-tight">
           Thank you{name ? `, ${name.split(" ")[0]}` : ""}!

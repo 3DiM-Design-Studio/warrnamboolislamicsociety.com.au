@@ -25,7 +25,7 @@ const slugify = (s: string) =>
 const PHOTO_PREFIX = `${supabaseUrl}/storage/v1/object/public/photos/`;
 
 export async function savePost(_prev: ActionState, fd: FormData): Promise<ActionState> {
-  const { supabase } = await requireAdmin();
+  const { supabase, email } = await requireAdmin();
   const id = str(fd, "id");
   const parsed = schema.safeParse({ title: str(fd, "title"), excerpt: str(fd, "excerpt"), post_date: str(fd, "post_date") });
   if (!parsed.success) return fail("Please check the form.", fieldErrors(parsed.error));
@@ -67,7 +67,8 @@ export async function savePost(_prev: ActionState, fd: FormData): Promise<Action
       if (!data) break;
       slug = `${base}-${n}`;
     }
-    const { error } = await supabase.from("posts").insert({ ...row, slug });
+    // The author is whoever creates the post; editing it later does not change that.
+    const { error } = await supabase.from("posts").insert({ ...row, slug, author: email });
     if (error) return fail(dbError(error));
   }
   updateTag(TAGS.posts);
