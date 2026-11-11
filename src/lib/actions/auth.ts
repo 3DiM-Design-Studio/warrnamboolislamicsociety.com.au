@@ -12,7 +12,11 @@ export async function signIn(_prev: ActionState, formData: FormData): Promise<Ac
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) return fail("That email or password is not right.");
+  if (error) {
+    // Only a real wrong-login says "not right". Anything else (bad key, unconfirmed email, network) is shown as it is.
+    if (error.code === "invalid_credentials") return fail("That email or password is not right.");
+    return fail(`Sign-in problem: ${error.message}`);
+  }
 
   const { data: isAdmin } = await supabase.rpc("is_admin");
   if (isAdmin !== true) {
