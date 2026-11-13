@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import { signIn } from "@/lib/actions/auth";
-import { Icon } from "@/components/admin/icons";
+import { LogoMark } from "@/components/logo-mark";
 import { Button, TextField } from "@/components/admin/ui";
 
 export function LoginForm() {
@@ -10,9 +10,7 @@ export function LoginForm() {
   return (
     <form action={action} className="grid w-[min(380px,calc(100vw-2rem))] gap-4 rounded-[18px] border border-border bg-card p-8">
       <div className="flex items-center gap-3 font-bold">
-        <span className="grid size-9 place-items-center rounded-full bg-brand-gradient text-brand-dark">
-          <Icon name="prayer" size={18} />
-        </span>
+        <LogoMark className="size-11" src="/admin-logo.png" />
         <span className="leading-tight">
           WIS Admin
           <small className="block text-[11.5px] font-normal text-muted">Warrnambool Islamic Society</small>

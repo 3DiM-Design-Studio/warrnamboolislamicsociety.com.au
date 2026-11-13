@@ -1,6 +1,6 @@
 import { CalendarDays, Users } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
-import { EventCard } from "@/components/story-cards";
+import { EventsGrid } from "@/components/events-grid";
 import { getUpcomingEvents } from "@/lib/content";
 
 export const metadata = { title: "Events" };
@@ -21,11 +21,7 @@ export default async function Events() {
       {events.length === 0 ? (
         <p className="text-muted">No events are planned right now. Please check back soon.</p>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2">
-          {events.map((e) => (
-            <EventCard key={e.id} event={e} />
-          ))}
-        </div>
+        <EventsGrid events={events} />
       )}
     </PageShell>
   );

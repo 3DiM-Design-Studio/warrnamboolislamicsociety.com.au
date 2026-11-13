@@ -198,7 +198,7 @@ function Card({
                     className="flex items-center disabled:cursor-default"
                   >
                     <span
-                      className={`grid size-7 place-items-center rounded-full text-xs font-bold ${
+                      className={`grid size-9 place-items-center rounded-full text-xs font-bold lg:size-7 ${
                         active
                           ? "bg-[#16c05a] text-white"
                           : done

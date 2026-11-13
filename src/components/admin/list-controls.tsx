@@ -5,7 +5,7 @@ import { Button, cx, inputClass } from "@/components/admin/ui";
 export const PAGE_SIZE = 10;
 
 /** Small controls for the top of a list: kept narrow so several fit on one line. */
-export const filterClass = cx(inputClass, "w-auto! py-2! text-sm font-semibold");
+export const filterClass = cx(inputClass, "w-auto! py-2! text-base font-semibold sm:text-sm");
 
 /** True when every word typed appears somewhere in the text. Capital letters do not matter. */
 export function matchesSearch(query: string, ...parts: (string | null | undefined)[]) {
@@ -23,7 +23,7 @@ export function SearchBox({ value, onChange, placeholder }: { value: string; onC
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       aria-label={placeholder}
-      className={cx(inputClass, "py-2! text-sm sm:w-64")}
+      className={cx(inputClass, "py-2! text-base sm:w-64 sm:text-sm")}
     />
   );
 }

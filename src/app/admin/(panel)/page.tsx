@@ -29,7 +29,7 @@ export default async function OverviewPage() {
   const { supabase } = await requireAdmin();
   const today = melbourneToday();
 
-  const [posts, members, events, settings, prayer, ramadan, seasons] = await Promise.all([
+  const [posts, members, events, settings, prayer, ramadan, seasons, messages] = await Promise.all([
     supabase.from("posts").select("status"),
     supabase.from("members").select("id", { count: "exact", head: true }),
     supabase.from("events").select("id", { count: "exact", head: true }).eq("status", "published").gte("event_date", today),
@@ -37,7 +37,10 @@ export default async function OverviewPage() {
     supabase.from("prayer_settings").select("rules,show_on_site").eq("id", 1).maybeSingle(),
     supabase.from("ramadan_periods").select("id,name,start_date,end_date,isha_iqamah,taraweeh"),
     supabase.from("jumuah_seasons").select("id,name,start_month,start_day,end_month,end_day,jumuah_time"),
+    // Left out of the error check below: before the contacts table exists this just counts as zero.
+    supabase.from("contacts").select("id", { count: "exact", head: true }).eq("status", "new"),
   ]);
+  const newMessages = messages.count ?? 0;
   const error = posts.error ?? members.error ?? prayer.error ?? seasons.error ?? settings.error;
   if (error) return <LoadError error={error} />;
 
@@ -99,11 +102,30 @@ export default async function OverviewPage() {
     { href: "/admin/posts", label: "Write a post", icon: "posts" },
     { href: "/admin/events", label: "Add an event", icon: "events" },
     { href: "/admin/members", label: "See members", icon: "members" },
+    { href: "/admin/donations", label: "See donations", icon: "donations" },
+    { href: "/admin/messages", label: "Read messages", icon: "messages" },
     { href: "/admin/jumuah", label: "Jumu’ah time", icon: "jumuah" },
+    { href: "/admin/info", label: "Website info", icon: "info" },
   ];
 
   return (
     <>
+      {newMessages > 0 && (
+        <Link
+          href="/admin/messages"
+          className="flex flex-wrap items-center gap-3 rounded-2xl border border-[#0f8a63] bg-[#dcf1e8] p-4 text-[#0f6a4d] transition hover:brightness-95 sm:px-6"
+        >
+          <span className="grid size-10 place-items-center rounded-full bg-white">
+            <Icon name="messages" />
+          </span>
+          <span className="min-w-0 flex-1 font-semibold">
+            {newMessages === 1 ? "You have 1 new message" : `You have ${newMessages} new messages`}
+            <span className="block text-sm font-normal">From the website&rsquo;s Contact page</span>
+          </span>
+          <span className="rounded-full bg-white px-4 py-1.5 text-sm font-semibold">Read now</span>
+        </Link>
+      )}
+
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
         {kpi("clock", "Next prayer", `${next.name} ${fmtTime(next.azan)}`, `In ${inMinutes(next.mins)}${next.tomorrow ? " (tomorrow)" : ""}`)}
         {kpi("jumuah", "Jumu’ah", jumuah ? fmtHM(jumuah.jumuah_time) : "Not set", "Every Friday")}

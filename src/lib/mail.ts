@@ -7,6 +7,6 @@ const transporter = nodemailer.createTransport({
   auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
 });
 
-export function sendMail(opts: { to: string; subject: string; html: string }) {
+export function sendMail(opts: { to: string; subject: string; html: string; replyTo?: string }) {
   return transporter.sendMail({ from: process.env.MAIL_FROM, ...opts });
 }

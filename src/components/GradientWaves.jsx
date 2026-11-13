@@ -420,7 +420,9 @@ export default function GradientWaves({
 
     const fit = () => {
       const s = settingsRef.current;
-      const ratio = Math.min(window.devicePixelRatio || 1, s.dpr);
+      // Phones and tablets get a lighter picture: fewer pixels to draw keeps scrolling smooth.
+      const coarse = window.matchMedia("(pointer: coarse)").matches;
+      const ratio = Math.min(window.devicePixelRatio || 1, s.dpr, coarse ? 1.25 : s.dpr);
       const width = Math.max(1, Math.round(state.cssWidth * ratio));
       const height = Math.max(1, Math.round(state.cssHeight * ratio));
       if (width === state.width && height === state.height) return;

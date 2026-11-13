@@ -105,13 +105,33 @@ export async function getUpcomingEvents(): Promise<EventRow[]> {
   if (!hasSupabase) return [];
   const { data, error } = await createAnonClient()
     .from("events")
-    .select("id,title,event_date,event_time,place,status")
+    .select("id,title,event_type,short_description,description,photo_url,event_date,event_time,end_date,end_time,place,map_url,speaker,audience,notes,status")
     .eq("status", "published")
-    .gte("event_date", melbourneToday())
+    // Stays listed until its end date (or its start date when it has no end).
+    .or(`end_date.gte.${melbourneToday()},and(end_date.is.null,event_date.gte.${melbourneToday()})`)
     .order("event_date", { ascending: true })
     .order("event_time", { ascending: true });
   if (error || !data) return [];
   return data as EventRow[];
+}
+
+const EVENT_COLUMNS =
+  "id,title,event_type,short_description,description,photo_url,event_date,event_time,end_date,end_time,place,map_url,speaker,audience,notes,status";
+
+// One event for its own page. Cancelled events stay reachable so a shared link says "Cancelled".
+export async function getEvent(id: string): Promise<EventRow | null> {
+  "use cache";
+  cacheTag(TAGS.events);
+  cacheLife("minutes");
+  if (!hasSupabase) return null;
+  const { data, error } = await createAnonClient()
+    .from("events")
+    .select(EVENT_COLUMNS)
+    .eq("id", id)
+    .in("status", ["published", "cancelled"])
+    .maybeSingle();
+  if (error || !data) return null;
+  return data as EventRow;
 }
 
 export type TeamGroup = { role: string; people: { id: string; name: string; photo_url: string | null }[] };

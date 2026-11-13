@@ -36,12 +36,12 @@ export function SubscribeForm() {
           type="email"
           required
           placeholder="Email address"
-          className="w-full bg-transparent text-sm outline-none placeholder:text-brand-dark/50"
+          className="w-full bg-transparent py-1 text-base outline-none placeholder:text-brand-dark/50"
         />
         <button
           aria-label="Subscribe"
           disabled={status === "sending"}
-          className="px-1 text-lg disabled:opacity-50"
+          className="grid size-11 shrink-0 place-items-center text-lg disabled:opacity-50"
         >
           <ArrowRight className="size-5" aria-hidden />
         </button>

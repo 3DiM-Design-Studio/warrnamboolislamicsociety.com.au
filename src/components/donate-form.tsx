@@ -12,6 +12,9 @@ type Fields = {
   amount: string;
   name: string;
   email: string;
+  phone: string;
+  anonymous: boolean;
+  receipt: boolean;
   dedicate: boolean;
   dedication: string;
 };
@@ -32,7 +35,7 @@ function Card({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
-  const { frequency, name, email, dedicate, dedication } = fields;
+  const { frequency, name, email, phone, anonymous, receipt, dedicate, dedication } = fields;
   const value = Number(fields.amount) || 0;
   const valid = Number.isInteger(value) && value >= 2 && value <= 10000;
 
@@ -62,6 +65,9 @@ function Card({
         frequency,
         name,
         email,
+        phone,
+        anonymous,
+        receipt,
         dedication: dedicate ? dedication : "",
       }),
     });
@@ -184,8 +190,36 @@ function Card({
               className={input}
             />
           </div>
+          <input
+            value={phone}
+            onChange={(e) => set("phone", e.target.value)}
+            type="tel"
+            maxLength={40}
+            placeholder="Phone number (optional)"
+            autoComplete="tel"
+            className={`${input} mt-3`}
+          />
 
           <label className="mt-4 flex items-center gap-3">
+            <input
+              type="checkbox"
+              checked={receipt}
+              onChange={(e) => set("receipt", e.target.checked)}
+              className="size-5 rounded border-2 border-brand-dark accent-brand-dark"
+            />
+            Email me a receipt
+          </label>
+          <label className="mt-3 flex items-center gap-3">
+            <input
+              type="checkbox"
+              checked={anonymous}
+              onChange={(e) => set("anonymous", e.target.checked)}
+              className="size-5 rounded border-2 border-brand-dark accent-brand-dark"
+            />
+            Make my donation anonymous
+          </label>
+
+          <label className="mt-3 flex items-center gap-3">
             <input
               type="checkbox"
               checked={dedicate}
@@ -228,6 +262,9 @@ export function DonateForm() {
     amount: "50",
     name: "",
     email: "",
+    phone: "",
+    anonymous: false,
+    receipt: true,
     dedicate: false,
     dedication: "",
   });

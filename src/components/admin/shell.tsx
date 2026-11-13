@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { signOut } from "@/lib/actions/auth";
 import { Icon, type IconName } from "@/components/admin/icons";
+import { LogoMark } from "@/components/logo-mark";
 import { ToastProvider, cx } from "@/components/admin/ui";
 
 const NAV: { href: string; label: string; icon: IconName }[] = [
@@ -12,6 +13,8 @@ const NAV: { href: string; label: string; icon: IconName }[] = [
   { href: "/admin/posts", label: "News posts", icon: "posts" },
   { href: "/admin/events", label: "Events", icon: "events" },
   { href: "/admin/members", label: "Members", icon: "members" },
+  { href: "/admin/donations", label: "Donations", icon: "donations" },
+  { href: "/admin/messages", label: "Messages", icon: "messages" },
   { href: "/admin/team", label: "Team", icon: "team" },
   { href: "/admin/prayer", label: "Prayer times", icon: "prayer" },
   { href: "/admin/jumuah", label: "Jumu’ah", icon: "jumuah" },
@@ -23,7 +26,7 @@ function initials(email: string) {
   return email.split("@")[0].split(/[._-]+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase() || "A";
 }
 
-export function AdminShell({ email, children }: { email: string; children: ReactNode }) {
+export function AdminShell({ email, newMessages = 0, children }: { email: string; newMessages?: number; children: ReactNode }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const current = NAV.find((n) => (n.href === "/admin" ? pathname === "/admin" : pathname.startsWith(n.href)));
@@ -33,18 +36,16 @@ export function AdminShell({ email, children }: { email: string; children: React
 
   return (
     <ToastProvider>
-      <div className="grid min-h-screen bg-background lg:grid-cols-[250px_minmax(0,1fr)]">
+      <div className="grid min-h-dvh bg-background lg:grid-cols-[250px_minmax(0,1fr)]">
         <aside
           aria-label="Menu"
           className={cx(
-            "fixed inset-y-0 left-0 z-30 flex w-[272px] flex-col gap-1 overflow-y-auto bg-brand-dark px-3.5 py-5 text-white/80 transition-transform lg:sticky lg:top-0 lg:h-screen lg:w-auto lg:translate-x-0",
+            "fixed inset-y-0 left-0 z-30 flex w-[272px] flex-col gap-1 overflow-y-auto bg-brand-dark px-3.5 py-5 text-white/80 transition-transform lg:sticky lg:top-0 lg:h-dvh lg:w-auto lg:translate-x-0",
             open ? "translate-x-0" : "-translate-x-full",
           )}
         >
           <div className="flex items-center gap-3 px-2 pb-6 text-white">
-            <span className="grid size-9 place-items-center rounded-full bg-brand-gradient text-brand-dark">
-              <Icon name="prayer" size={18} />
-            </span>
+            <LogoMark className="size-10" src="/admin-logo.png" />
             <span className="text-base font-bold leading-tight">
               WIS Admin
               <small className="block text-[11.5px] font-normal text-white/60">Warrnambool Islamic Society</small>
@@ -62,6 +63,14 @@ export function AdminShell({ email, children }: { email: string; children: React
               >
                 <Icon name={n.icon} className={active ? "text-accent" : undefined} />
                 {n.label}
+                {n.href === "/admin/messages" && newMessages > 0 && (
+                  <span
+                    aria-label={`${newMessages} new`}
+                    className="ml-auto grid min-w-6 place-items-center rounded-full bg-accent px-1.5 text-xs font-bold leading-6 text-brand-dark tabular-nums"
+                  >
+                    {newMessages > 99 ? "99+" : newMessages}
+                  </span>
+                )}
               </Link>
             );
           })}
@@ -85,7 +94,7 @@ export function AdminShell({ email, children }: { email: string; children: React
             <button
               aria-label="Open menu"
               onClick={() => setOpen(true)}
-              className="grid size-10 place-items-center rounded-full border border-[#cfd1c7] bg-white lg:hidden"
+              className="grid size-11 place-items-center rounded-full border border-[#cfd1c7] bg-white lg:hidden"
             >
               <Icon name="menu" />
             </button>

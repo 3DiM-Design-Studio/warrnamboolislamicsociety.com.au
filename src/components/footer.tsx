@@ -14,7 +14,7 @@ const support = [
 export async function Footer() {
   const settings = await getSettings();
   return (
-    <footer className="relative isolate mt-16 overflow-hidden">
+    <footer className="relative isolate mt-8 overflow-hidden">
       <div className="absolute inset-0 -z-10">
         <GradientWaves
           horizonColor="#0b5d3b"
@@ -47,7 +47,8 @@ export async function Footer() {
           style={{}}
         />
       </div>
-      <div className="mx-auto flex min-h-[37.75rem] max-w-6xl flex-col justify-end px-4 pb-6">
+      {/* No minimum height: the card sets the footer's height, so there is no empty gap above it. */}
+      <div className="mx-auto flex max-w-6xl flex-col justify-end px-4 pb-8 pt-4">
         <div className="rounded-xl border border-white/40 bg-white/90 p-8 backdrop-blur-xl sm:p-10">
           <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
             <div className="flex flex-col gap-12">
@@ -59,7 +60,7 @@ export async function Footer() {
                   <SubscribeForm />
                 </div>
               </div>
-              <div className="flex items-center gap-5 text-sm">
+              <div className="flex flex-col items-start gap-4 text-sm sm:flex-row sm:items-center sm:gap-5">
                 <Link
                   href="/news/wis-registered-charity-acnc"
                   aria-label="Registered charity with the ACNC"
@@ -73,17 +74,17 @@ export async function Footer() {
                     className="h-24 w-auto"
                   />
                 </Link>
-                <div>
+                <div className="min-w-0">
                   <p className="font-bold">{site.name}</p>
                   <p className="mt-1 text-brand-dark/70">
                     Registered charity with the ACNC.
                   </p>
-                  <p className="mt-3 flex items-center gap-2">
-                    <Mail className="size-4" aria-hidden />
+                  <p className="mt-3 flex items-center gap-2 break-all">
+                    <Mail className="size-4 shrink-0" aria-hidden />
                     {settings.email}
                   </p>
                   <p className="mt-1 flex items-center gap-2">
-                    <Phone className="size-4" aria-hidden />
+                    <Phone className="size-4 shrink-0" aria-hidden />
                     {settings.phones[0]}
                   </p>
                 </div>
@@ -111,9 +112,9 @@ export async function Footer() {
                   />
                 </span>
               </Link>
-              <p className="mt-5 flex flex-col items-start gap-1.5">
+              <p className="mt-4 flex flex-col items-start">
                 {support.map((n) => (
-                  <Link key={n.href} href={n.href} className="link-fx">
+                  <Link key={n.href} href={n.href} className="link-fx py-2.5 lg:py-1">
                     {n.label}
                   </Link>
                 ))}
@@ -123,9 +124,9 @@ export async function Footer() {
             <div className="flex flex-col justify-between gap-10 text-sm">
               <div>
                 <p className="font-bold">Menu</p>
-                <p className="mt-4 flex flex-col items-start gap-1.5">
+                <p className="mt-3 flex flex-col items-start">
                   {nav.map((n) => (
-                    <Link key={n.href} href={n.href} className="link-fx">
+                    <Link key={n.href} href={n.href} className="link-fx py-2.5 lg:py-1">
                       {n.label}
                     </Link>
                   ))}
@@ -134,7 +135,7 @@ export async function Footer() {
               <a
                 href="#top"
                 aria-label="Back to top"
-                className="grid size-10 place-items-center self-end rounded-full bg-brand-dark text-white"
+                className="grid size-11 place-items-center self-end rounded-full bg-brand-dark text-white"
               >
                 <ArrowUp className="size-5" aria-hidden />
               </a>

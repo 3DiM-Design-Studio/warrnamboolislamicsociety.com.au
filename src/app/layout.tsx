@@ -28,8 +28,10 @@ const urdu = Noto_Nastaliq_Urdu({
 const devanagari = Noto_Sans_Devanagari({
   variable: "--font-devanagari",
   subsets: ["devanagari"],
+  // Only needed for one rotating greeting, so it is not loaded up front.
+  preload: false,
 });
-const tamil = Noto_Sans_Tamil({ variable: "--font-tamil", subsets: ["tamil"] });
+const tamil = Noto_Sans_Tamil({ variable: "--font-tamil", subsets: ["tamil"], preload: false });
 
 export const metadata: Metadata = {
   title: { default: site.name, template: `%s | ${site.name}` },

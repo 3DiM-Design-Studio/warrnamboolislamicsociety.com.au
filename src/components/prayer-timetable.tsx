@@ -213,7 +213,7 @@ export function PrayerTimetable({ iqamah }: { iqamah?: TodayIqamah | null }) {
                 key={key}
                 onClick={() => toggle(key)}
                 aria-pressed={shown.has(key)}
-                className={`inline-flex items-center gap-2 text-sm font-medium ${shown.has(key) ? "" : "opacity-40"}`}
+                className={`inline-flex min-h-10 items-center gap-2 text-sm font-medium ${shown.has(key) ? "" : "opacity-40"}`}
               >
                 <Icon className="size-5" style={{ color }} aria-hidden />
                 {label}

@@ -20,7 +20,8 @@ async function getMonthlyProduct() {
 // Creates the payment (one-time) or subscription (monthly) and returns the client secret
 // the embedded card form uses to confirm it.
 export async function POST(req: Request) {
-  const { amount, frequency, name, email, dedication } = await req.json();
+  const { amount, frequency, name, email, phone, anonymous, receipt, dedication } =
+    await req.json();
   const dollars = Number(amount);
   if (!Number.isInteger(dollars) || dollars < 2 || dollars > 10000) {
     return Response.json(
@@ -35,14 +36,20 @@ export async function POST(req: Request) {
     );
   }
   const metadata = {
+    kind: "donation",
+    donor_email: email.slice(0, 200),
     donor_name: String(name ?? "").slice(0, 100),
     dedication: String(dedication ?? "").slice(0, 200),
+    phone: String(phone ?? "").slice(0, 40),
+    anonymous: anonymous === true ? "yes" : "no",
+    wants_receipt: receipt === false ? "no" : "yes",
   };
 
   if (frequency === "monthly") {
     const customer = await stripe.customers.create({
       email,
       name: metadata.donor_name,
+      phone: metadata.phone || undefined,
     });
     const subscription = await stripe.subscriptions.create({
       customer: customer.id,
@@ -79,7 +86,7 @@ export async function POST(req: Request) {
     amount: dollars * 100,
     currency: "aud",
     automatic_payment_methods: { enabled: true },
-    receipt_email: email,
+    receipt_email: metadata.wants_receipt === "yes" ? email : undefined,
     description: "Donation to Warrnambool Islamic Society",
     metadata,
   });

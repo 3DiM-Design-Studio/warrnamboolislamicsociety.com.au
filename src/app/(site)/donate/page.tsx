@@ -54,7 +54,7 @@ export default function Donate() {
         <nav aria-label="Breadcrumb">
           <ol className="flex items-center gap-1.5 text-sm text-muted">
             <li>
-              <Link href="/" className="link-fx">
+              <Link href="/" className="link-fx inline-block py-2">
                 Home
               </Link>
             </li>
@@ -66,7 +66,7 @@ export default function Donate() {
             </li>
           </ol>
         </nav>
-        <Link href="/" className="link-fx text-sm font-medium text-[#0f8a63]">
+        <Link href="/" className="link-fx inline-block py-2 text-sm font-medium text-[#0f8a63]">
           Cancel
         </Link>
       </div>

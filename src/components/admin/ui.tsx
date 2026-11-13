@@ -54,7 +54,7 @@ export function Button({ variant = "ghost", small, className, type = "button", .
       {...props}
       className={cx(
         "inline-flex items-center justify-center gap-2 rounded-full font-semibold transition disabled:cursor-not-allowed disabled:opacity-40",
-        small ? "px-3.5 py-1.5 text-[13px]" : "px-5 py-2.5 text-sm",
+        small ? "px-3.5 py-2.5 text-[13px] sm:py-1.5" : "px-5 py-2.5 text-sm",
         variant === "primary" && "bg-brand-gradient text-brand-dark hover:brightness-95",
         variant === "ghost" && "border border-[#cfd1c7] bg-white hover:border-brand-dark",
         variant === "danger" && "border border-[#cfd1c7] bg-white text-[#b3261e] hover:border-[#b3261e] hover:bg-[#fbe5e3]",
@@ -64,7 +64,7 @@ export function Button({ variant = "ghost", small, className, type = "button", .
   );
 }
 
-export function Badge({ tone = "grey", children }: { tone?: "grey" | "green" | "gold"; children: ReactNode }) {
+export function Badge({ tone = "grey", children }: { tone?: "grey" | "green" | "gold" | "red"; children: ReactNode }) {
   return (
     <span
       className={cx(
@@ -72,6 +72,7 @@ export function Badge({ tone = "grey", children }: { tone?: "grey" | "green" | "
         tone === "grey" && "bg-[#ecece5] text-muted",
         tone === "green" && "bg-[#dcf1e8] text-[#0f6a4d]",
         tone === "gold" && "bg-[#f6edd6] text-[#8a6410]",
+        tone === "red" && "bg-[#fbe4e1] text-[#b3261e]",
       )}
     >
       {children}
@@ -98,7 +99,7 @@ export function EmptyNote({ children }: { children: ReactNode }) {
 
 /* ---------- form fields ---------- */
 export const inputClass =
-  "w-full rounded-xl border border-[#cfd1c7] bg-white px-3.5 py-2.5 text-[15px] outline-none focus:border-[#0f8a63] focus:ring-4 focus:ring-[#dcf1e8]";
+  "w-full rounded-xl border border-[#cfd1c7] bg-white px-3.5 py-2.5 text-base outline-none focus:border-[#0f8a63] sm:text-[15px] focus:ring-4 focus:ring-[#dcf1e8]";
 
 export function Field({ label, error, hint, children }: { label: string; error?: string; hint?: string; children: ReactNode }) {
   return (

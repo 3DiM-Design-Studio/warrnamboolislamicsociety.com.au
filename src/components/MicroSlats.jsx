@@ -629,7 +629,7 @@ const MicroSlats = ({
     const resize = () => {
       width = Math.max(1, container.clientWidth);
       height = Math.max(1, container.clientHeight);
-      renderer.dpr = Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(PIXEL_BUDGET / (width * height)));
+      renderer.dpr = Math.min(window.devicePixelRatio || 1, window.matchMedia("(pointer: coarse)").matches ? 1.25 : 2, Math.sqrt(PIXEL_BUDGET / (width * height)));
       renderer.setSize(width, height);
       buildFluid();
       start();

@@ -58,6 +58,26 @@ create table if not exists public.events (
   status text not null default 'draft' check (status in ('draft', 'published')),
   created_at timestamptz not null default now()
 );
+-- (for a database created by an earlier version of this file) the fuller event details
+alter table public.events add column if not exists event_type text not null default 'other';
+alter table public.events add column if not exists short_description text not null default '';
+alter table public.events add column if not exists description text not null default '';
+alter table public.events add column if not exists photo_url text;
+alter table public.events add column if not exists end_date date;
+alter table public.events add column if not exists end_time time;
+alter table public.events add column if not exists map_url text not null default '';
+alter table public.events add column if not exists speaker text not null default '';
+alter table public.events add column if not exists audience text not null default '';
+alter table public.events add column if not exists notes text not null default '';
+alter table public.events add column if not exists updated_at timestamptz not null default now();
+alter table public.events drop constraint if exists events_status_check;
+alter table public.events add constraint events_status_check check (status in ('draft', 'published', 'cancelled'));
+alter table public.events drop constraint if exists events_type_check;
+alter table public.events add constraint events_type_check check (event_type in
+  ('bayan', 'lecture', 'quran_class', 'gathering', 'iftar', 'eid_prayer', 'youth', 'fundraising', 'other'));
+alter table public.events drop constraint if exists events_end_check;
+alter table public.events add constraint events_end_check check (
+  (end_date is null) = (end_time is null) and (end_date is null or end_date >= event_date));
 
 create table if not exists public.members (
   id uuid primary key default gen_random_uuid(),
@@ -95,6 +115,45 @@ begin
     update public.members set first_name = name where first_name = '' and name is not null;
   end if;
 end $$;
+
+-- Messages sent from the website's Contact page. Shown in the admin panel under Messages.
+create table if not exists public.contacts (
+  id uuid primary key default gen_random_uuid(),
+  name text not null check (char_length(name) between 1 and 120),
+  email text not null check (char_length(email) between 3 and 200),
+  message text not null check (char_length(message) between 1 and 5000),
+  status text not null default 'new' check (status in ('new', 'replied')),
+  submitted_date date not null default current_date
+);
+-- (for a contacts table that already existed before this file: adds any missing columns)
+alter table public.contacts add column if not exists name text not null default '';
+alter table public.contacts add column if not exists email text not null default '';
+alter table public.contacts add column if not exists message text not null default '';
+alter table public.contacts add column if not exists status text not null default 'new';
+alter table public.contacts add column if not exists submitted_date date not null default current_date;
+-- Newest first stays quick as the list grows.
+drop index if exists public.contacts_created_idx;
+create index if not exists contacts_submitted_idx on public.contacts (submitted_date desc);
+
+-- Donations made on the website's Donate page (saved after Stripe confirms the payment).
+create table if not exists public.donations (
+  id uuid primary key default gen_random_uuid(),
+  donor_name text not null default '' check (char_length(donor_name) <= 100),
+  email text not null check (char_length(email) between 3 and 200),
+  phone text not null default '' check (char_length(phone) <= 40),
+  amount_cents int not null check (amount_cents >= 0),
+  frequency text not null default 'once' check (frequency in ('once', 'monthly')),
+  anonymous boolean not null default false,
+  wants_receipt boolean not null default true,
+  dedication text not null default '' check (char_length(dedication) <= 200),
+  payment_intent text unique,
+  subscription_id text,
+  invoice_id text unique,
+  submitted_date date not null default current_date
+);
+-- (for a donations table created before monthly payments were tracked)
+alter table public.donations add column if not exists invoice_id text unique;
+create index if not exists donations_submitted_idx on public.donations (submitted_date desc);
 
 create table if not exists public.team_members (
   id uuid primary key default gen_random_uuid(),
@@ -143,6 +202,8 @@ alter table public.site_settings enable row level security;
 alter table public.posts enable row level security;
 alter table public.events enable row level security;
 alter table public.members enable row level security;
+alter table public.contacts enable row level security;
+alter table public.donations enable row level security;
 alter table public.team_members enable row level security;
 alter table public.prayer_settings enable row level security;
 alter table public.ramadan_periods enable row level security;
@@ -191,6 +252,14 @@ create policy wis_events_write on public.events for all to authenticated using (
 -- Members: visitors may only add a NEW request (they cannot read anyone's details)
 create policy wis_members_join on public.members for insert to anon, authenticated with check (status = 'new');
 create policy wis_members_admin on public.members for all to authenticated using (public.is_admin()) with check (public.is_admin());
+
+-- Contact messages: visitors may only send a NEW message (they cannot read any); admins manage them
+create policy wis_contacts_send on public.contacts for insert to anon, authenticated with check (status = 'new');
+create policy wis_contacts_admin on public.contacts for all to authenticated using (public.is_admin()) with check (public.is_admin());
+
+-- Donations: the website may add one, only admins may see or change them
+create policy wis_donations_add on public.donations for insert to anon, authenticated with check (payment_intent is not null or subscription_id is not null);
+create policy wis_donations_admin on public.donations for all to authenticated using (public.is_admin()) with check (public.is_admin());
 
 -- ============ 4. Photo storage ============
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)

@@ -26,13 +26,25 @@ export type PostRow = {
   updated_at: string;
 };
 
+export type EventStatus = Status | "cancelled";
+
 export type EventRow = {
   id: string;
   title: string;
+  event_type: string;
+  short_description: string;
+  description: string;
+  photo_url: string | null;
   event_date: string;
   event_time: string; // HH:MM:SS from Postgres
+  end_date: string | null;
+  end_time: string | null;
   place: string;
-  status: Status;
+  map_url: string;
+  speaker: string;
+  audience: string;
+  notes: string;
+  status: EventStatus;
 };
 
 export type MemberRow = {
@@ -51,6 +63,30 @@ export type MemberRow = {
   amount_cents: number | null;
   status: "new" | "member";
   /** YYYY-MM-DD */
+  submitted_date: string;
+};
+
+export type ContactRow = {
+  id: string;
+  name: string;
+  email: string;
+  message: string;
+  status: "new" | "replied";
+  /** The day the message was sent, YYYY-MM-DD (Melbourne time). */
+  submitted_date: string;
+};
+
+export type DonationRow = {
+  id: string;
+  donor_name: string;
+  email: string;
+  phone: string;
+  amount_cents: number;
+  frequency: "once" | "monthly";
+  anonymous: boolean;
+  wants_receipt: boolean;
+  dedication: string;
+  /** The day the payment was taken, YYYY-MM-DD (Melbourne time). */
   submitted_date: string;
 };
 

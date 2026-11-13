@@ -1,6 +1,7 @@
 import { ArrowUpRight, CalendarDays, Clock, MapPin } from "lucide-react";
 import Link from "next/link";
 import { LogoMark } from "@/components/logo-mark";
+import { eventTypeLabel } from "@/lib/event-types";
 import type { PublicPost } from "@/lib/content";
 import { fmtHM } from "@/lib/prayer";
 import type { EventRow } from "@/lib/types";
@@ -14,7 +15,7 @@ function Cover({ src, className = "" }: { src: string | null; className?: string
     <div className={`relative overflow-hidden bg-[#dff3cf] ${className}`}>
       {src ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={src} alt="" className="absolute inset-0 size-full object-cover transition duration-500 group-hover:scale-105" />
+        <img src={src} alt="" loading="lazy" decoding="async" className="absolute inset-0 size-full object-cover transition duration-500 group-hover:scale-105" />
       ) : (
         <div className="absolute inset-0 grid place-items-center bg-linear-to-br from-[#dff3cf] to-[#cdeee3]">
           <LogoMark className="size-14 opacity-60" />
@@ -67,31 +68,34 @@ export function PostCard({ post }: { post: PublicPost }) {
   );
 }
 
-/** Event card: a date block beside the details. */
+/** Event card: picture on top, type chip, title, date, time, place and a link to the details. */
 export function EventCard({ event }: { event: EventRow }) {
   return (
-    <div className="flex gap-4 rounded-2xl bg-card p-5">
-      <div className="grid size-16 shrink-0 place-content-center rounded-2xl bg-brand-gradient text-center text-brand-dark">
-        <span className="text-xs font-semibold uppercase leading-none">{dateLabel(event.event_date, { month: "short" })}</span>
-        <span className="text-2xl font-bold leading-tight">{dateLabel(event.event_date, { day: "numeric" })}</span>
-      </div>
-      <div className="min-w-0">
-        <h3 className="text-lg font-bold leading-snug">{event.title}</h3>
-        <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted">
-          <span className="inline-flex items-center gap-1.5">
-            <CalendarDays className="size-4" aria-hidden />
-            {dateLabel(event.event_date, { weekday: "long" })}
+    <Link href={`/events/${event.id}`} className="group flex flex-col overflow-hidden rounded-2xl bg-card transition hover:-translate-y-0.5">
+      <Cover src={event.photo_url} className="aspect-[16/10]" />
+      <div className="flex flex-1 flex-col gap-3 p-5">
+        <div>
+          <Chip solid>{eventTypeLabel(event.event_type)}</Chip>
+        </div>
+        <h3 className="line-clamp-2 text-lg font-bold leading-snug">{event.title}</h3>
+        <div className="grid gap-1.5 text-sm text-muted">
+          <span className="inline-flex items-center gap-2">
+            <CalendarDays className="size-4 shrink-0" aria-hidden />
+            {dateLabel(event.event_date, { weekday: "short", day: "numeric", month: "short" })}
           </span>
-          <span className="inline-flex items-center gap-1.5">
-            <Clock className="size-4" aria-hidden />
+          <span className="inline-flex items-center gap-2">
+            <Clock className="size-4 shrink-0" aria-hidden />
             {fmtHM(event.event_time.slice(0, 5))}
           </span>
-          <span className="inline-flex items-center gap-1.5">
-            <MapPin className="size-4" aria-hidden />
-            {event.place}
+          <span className="inline-flex items-center gap-2">
+            <MapPin className="size-4 shrink-0" aria-hidden />
+            <span className="line-clamp-1">{event.place}</span>
           </span>
-        </p>
+        </div>
+        <span className="mt-auto inline-flex items-center gap-1.5 pt-1 text-sm font-semibold">
+          View details <ArrowUpRight className="size-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden />
+        </span>
       </div>
-    </div>
+    </Link>
   );
 }

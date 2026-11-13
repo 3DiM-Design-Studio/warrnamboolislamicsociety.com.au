@@ -51,7 +51,7 @@ export function PageShell({
       <nav aria-label="Breadcrumb">
         <ol className="flex items-center gap-1.5 text-sm text-muted">
           <li>
-            <Link href="/" className="link-fx">
+            <Link href="/" className="link-fx inline-block py-2">
               Home
             </Link>
           </li>
@@ -61,7 +61,7 @@ export function PageShell({
                 <ChevronRight className="size-4" />
               </li>
               <li>
-                <Link href={parent.href} className="link-fx">
+                <Link href={parent.href} className="link-fx inline-block py-2">
                   {parent.label}
                 </Link>
               </li>

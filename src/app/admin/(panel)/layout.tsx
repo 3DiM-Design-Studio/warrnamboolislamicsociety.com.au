@@ -5,13 +5,19 @@ import { requireAdmin } from "@/lib/auth";
 export default function PanelLayout({ children }: { children: ReactNode }) {
   // Reading the login happens at request time, so it sits behind a Suspense boundary.
   return (
-    <Suspense fallback={<div className="grid min-h-screen place-items-center text-muted">Loading...</div>}>
+    <Suspense fallback={<div className="grid min-h-dvh place-items-center text-muted">Loading...</div>}>
       <Guard>{children}</Guard>
     </Suspense>
   );
 }
 
 async function Guard({ children }: { children: ReactNode }) {
-  const { email } = await requireAdmin();
-  return <AdminShell email={email}>{children}</AdminShell>;
+  const { email, supabase } = await requireAdmin();
+  // The red count beside "Messages" in the menu. If the table is not set up yet, show no count.
+  const { count } = await supabase.from("contacts").select("id", { count: "exact", head: true }).eq("status", "new");
+  return (
+    <AdminShell email={email} newMessages={count ?? 0}>
+      {children}
+    </AdminShell>
+  );
 }

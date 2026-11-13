@@ -113,7 +113,7 @@ export default async function Home() {
         <section className="pt-16">
           <div className="flex items-baseline justify-between">
             <h2 className="text-3xl font-bold">Latest from the community</h2>
-            <Link href="/news" className="text-sm font-medium link-fx">
+            <Link href="/news" className="inline-block py-2 text-sm font-medium link-fx">
               All news
             </Link>
           </div>
@@ -128,12 +128,12 @@ export default async function Home() {
           <section className="pt-16">
             <div className="flex items-baseline justify-between">
               <h2 className="text-3xl font-bold">Upcoming events</h2>
-              <Link href="/events" className="text-sm font-medium link-fx">
+              <Link href="/events" className="inline-block py-2 text-sm font-medium link-fx">
                 All events
               </Link>
             </div>
-            <div className="mt-8 grid gap-4 md:grid-cols-2">
-              {events.slice(0, 4).map((e) => (
+            <div className="mt-8 grid gap-4 sm:grid-cols-3">
+              {events.slice(0, 3).map((e) => (
                 <EventCard key={e.id} event={e} />
               ))}
             </div>

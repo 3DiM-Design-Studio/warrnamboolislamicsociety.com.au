@@ -30,7 +30,7 @@ export function FridayCalendar() {
   return (
     // Perspective on the outside, tilt on the inside, so the card reads as a plane in 3D that
     // runs off the section's left and bottom edges, where the section clips it.
-    <div className="w-full max-w-sm -translate-y-2 -mb-12 [perspective:1100px] md:-translate-x-14">
+    <div className="w-full max-w-sm -translate-y-2 mb-6 md:-mb-12 [perspective:1100px] md:-translate-x-14">
       <div className="rounded-2xl bg-white/90 p-6 shadow-[0_14px_30px_-12px_rgba(0,191,46,0.35)] text-left backdrop-blur-sm transition-transform duration-500 [transform:rotateY(14deg)_rotateX(7deg)_rotateZ(-1deg)] hover:[transform:rotateY(5deg)_rotateX(2deg)]">
         <p className="text-xl font-bold">
           {now.toLocaleString("en-AU", { month: "long", year: "numeric" })}
