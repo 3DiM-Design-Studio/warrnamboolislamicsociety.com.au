@@ -453,8 +453,8 @@ export const GUIDE: Group[] = [
           {
             heading: "When someone asks to join",
             blocks: [
-              { t: "flow", items: ["They press “Request access” on the sign-in page", "A box “Waiting for your approval” appears here", "You press Approve", "They get the email link"] },
-              { t: "tip", text: "A number beside Admin users in the menu shows how many are waiting. Press Decline if you do not know them." },
+              { t: "flow", items: ["They press “First time here?” on the sign-in page", "A yellow alert shows on your Overview page", "You open Admin users and press Approve (or Deny)", "They get the email link"] },
+              { t: "tip", text: "The alert on Overview and the number beside Admin users in the menu disappear once every request is answered. Press Deny if you do not know them." },
             ],
           },
           {

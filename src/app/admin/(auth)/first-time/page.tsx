@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { AuthPage } from "@/components/admin/auth-card";
-import { LinkRequestForm } from "@/components/admin/link-request-form";
+import { RequestAccessForm } from "@/components/admin/request-access-form";
 
 export const metadata: Metadata = { title: "First time here" };
 
 export default function FirstTimePage() {
   return (
     <AuthPage>
-      <LinkRequestForm mode="first" />
+      <RequestAccessForm />
     </AuthPage>
   );
 }

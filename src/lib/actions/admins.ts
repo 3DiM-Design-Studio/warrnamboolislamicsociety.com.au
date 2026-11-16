@@ -13,9 +13,9 @@ const schema = z.object({
 
 // What to tell the admin after we tried to email someone their "choose a password" link.
 function linkMessage(prefix: string, email: string, result: IssueResult): ActionState {
-  if (result === "sent") return ok(`${prefix} An email with a link to choose a password was sent to ${email}.`);
+  if (result === "sent") return ok(`${prefix} The email with a link to choose a password is on its way to ${email}. No approval needed.`);
   if (result === "failed") return ok(`${prefix} The email could not be sent. Press "Send link" beside their name to try again.`);
-  return ok(`${prefix} No email was sent because email is not set up yet. They can press "Need a new link?" on the sign-in page.`);
+  return ok(`${prefix} No email was sent because email is not set up yet. They can press "First time here?" on the sign-in page.`);
 }
 
 // Adding an email lets that person use the admin, and emails them a link to choose a password.
@@ -74,5 +74,5 @@ export async function declineAdminRequest(id: string): Promise<ActionState> {
   const { error } = await supabase.from("admin_requests").delete().eq("id", id);
   if (error) return fail(dbError(error));
   refresh();
-  return ok("Request declined");
+  return ok("Request denied");
 }

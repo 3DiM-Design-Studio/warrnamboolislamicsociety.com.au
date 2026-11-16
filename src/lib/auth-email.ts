@@ -46,6 +46,6 @@ export function sendAccessEmail(opts: { to: string; link: string; kind: AccessKi
     html: frame(`<h1 style="margin:0 0 12px;font-size:22px">${c.title}</h1>
   <p style="font-size:16px;line-height:1.5">${c.intro}</p>
   ${buttonHtml(opts.link, c.button)}
-  <p style="font-size:13px;color:#666;line-height:1.5">The link works once and expires in 1 hour. If it has expired, open the admin sign-in page and press &ldquo;Send a new link&rdquo;. If you did not expect this email, you can ignore it.</p>`),
+  <p style="font-size:13px;color:#666;line-height:1.5">The link works once and expires in 1 hour. If it has expired, open the admin sign-in page and press &ldquo;First time here?&rdquo;. If you did not expect this email, you can ignore it.</p>`),
   });
 }

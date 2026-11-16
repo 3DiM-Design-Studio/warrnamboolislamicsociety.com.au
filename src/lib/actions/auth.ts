@@ -54,7 +54,7 @@ export async function signOutIdle() {
 
 const EMAIL = /^[^s@]+@[^s@]+.[^s@]+$/;
 const SENT = "If this email is on the admin list, a link is on its way. Please check your inbox, and your spam folder too.";
-const REQUESTED = "Thank you. Your request was sent. An admin will look at it, and if it is approved you will get an email with a link to choose your password. If you are already an admin, just sign in.";
+const JOINED = "Thank you. If an admin has already added you, a link to choose your password is on its way (check spam too). If not, your request is waiting for an admin to approve it, and you will get an email when it is approved.";
 const MAX_WAITING = 25;
 
 // One email a minute per address is plenty. This only slows down someone who keeps pressing the button.
@@ -98,27 +98,34 @@ export async function requestResetLink(_prev: ActionState, fd: FormData): Promis
   return sendAccessLink(fd, "reset");
 }
 
-/** "Need a new link" for someone an admin already added. */
-export async function requestFirstTimeLink(_prev: ActionState, fd: FormData): Promise<ActionState> {
-  return sendAccessLink(fd, "first");
-}
-
 /**
- * "Request access": anyone can ask. It only saves a name and an email as a waiting request. No email is sent:
- * admins see a number beside "Admin users" in the menu. Nothing is allowed until an admin approves it.
+ * "First time here?": one page for everyone new.
+ * - Already on the admin list (an admin added them): they are emailed a link to choose a password.
+ * - Not on the list: their name and email are saved as a waiting request. No email is sent; admins see an alert
+ *   on the dashboard and a number beside "Admin users". Nothing is allowed until an admin approves it.
+ * The answer is the same either way, so nobody can use this page to find out who is an admin.
  */
 export async function requestAdminAccess(_prev: ActionState, fd: FormData): Promise<ActionState> {
-  if (str(fd, "website")) return ok(REQUESTED); // a hidden box only a robot fills in
+  if (str(fd, "website")) return ok(JOINED); // a hidden box only a robot fills in
   const name = str(fd, "name").trim().replace(/s+/g, " ");
   const email = str(fd, "email").trim().toLowerCase();
   if (name.length < 2 || name.length > 80) return fail("Please check the form.", { name: "Please enter your name." });
   if (!EMAIL.test(email) || email.length > 200) return fail("Please check the form.", { email: "Please enter a real email address." });
   const admin = createAdminClient();
   if (!admin) return fail("Requests are not switched on yet. Please ask an admin to add you.");
-  if (tooSoon(`request:${email}`)) return ok(REQUESTED);
+  if (tooSoon(`request:${email}`)) return ok(JOINED);
 
   const { data: already } = await admin.from("admins").select("email").eq("email", email).maybeSingle();
-  if (already) return ok(REQUESTED); // already an admin: nothing to do
+  if (already) {
+    // An admin already added them: send the link to choose a password.
+    const result = await issueAccessLink(email, "first");
+    if (result === "failed") {
+      lastAsked.delete(`request:${email}`);
+      return fail("The email could not be sent. Please try again in a few minutes.");
+    }
+    if (result !== "sent") return fail("Email is not set up yet. Please ask the person who looks after the website.");
+    return ok(JOINED);
+  }
 
   const { count } = await admin.from("admin_requests").select("id", { count: "exact", head: true });
   if ((count ?? 0) >= MAX_WAITING) return fail("Too many requests are waiting right now. Please ask an admin to add you directly.");
@@ -129,7 +136,7 @@ export async function requestAdminAccess(_prev: ActionState, fd: FormData): Prom
     return fail("Your request could not be saved. Please try again later.");
   }
 
-  return ok(REQUESTED);
+  return ok(JOINED);
 }
 
 /** Saves a new password for whoever is signed in (first time, forgot password, or changing it later). */

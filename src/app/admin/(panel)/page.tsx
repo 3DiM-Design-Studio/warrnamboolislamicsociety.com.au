@@ -29,7 +29,7 @@ export default async function OverviewPage() {
   const { supabase } = await requireAdmin();
   const today = melbourneToday();
 
-  const [posts, members, events, settings, prayer, ramadan, seasons, messages] = await Promise.all([
+  const [posts, members, events, settings, prayer, ramadan, seasons, messages, adminRequests] = await Promise.all([
     supabase.from("posts").select("status"),
     supabase.from("members").select("id", { count: "exact", head: true }),
     supabase.from("events").select("id", { count: "exact", head: true }).eq("status", "published").gte("event_date", today),
@@ -39,8 +39,11 @@ export default async function OverviewPage() {
     supabase.from("jumuah_seasons").select("id,name,start_month,start_day,end_month,end_day,jumuah_time"),
     // Left out of the error check below: before the contacts table exists this just counts as zero.
     supabase.from("contacts").select("id", { count: "exact", head: true }).eq("status", "new"),
+    // Same for people waiting to become admins: before the requests table exists this counts as zero.
+    supabase.from("admin_requests").select("id", { count: "exact", head: true }),
   ]);
   const newMessages = messages.count ?? 0;
+  const waitingAdmins = adminRequests.count ?? 0;
   const error = posts.error ?? members.error ?? prayer.error ?? seasons.error ?? settings.error;
   if (error) return <LoadError error={error} />;
 
@@ -110,6 +113,21 @@ export default async function OverviewPage() {
 
   return (
     <>
+      {waitingAdmins > 0 && (
+        <Link
+          href="/admin/admins"
+          className="flex flex-wrap items-center gap-3 rounded-2xl border border-[#c9a227] bg-[#f6edd6] p-4 text-[#6b4d0c] transition hover:brightness-95 sm:px-6"
+        >
+          <span className="grid size-10 place-items-center rounded-full bg-white">
+            <Icon name="admins" />
+          </span>
+          <span className="min-w-0 flex-1 font-semibold">
+            {waitingAdmins === 1 ? "1 person asked to become an admin" : `${waitingAdmins} people asked to become admins`}
+            <span className="block text-sm font-normal">Waiting for you to approve or deny</span>
+          </span>
+          <span className="rounded-full bg-white px-4 py-1.5 text-sm font-semibold">Review now</span>
+        </Link>
+      )}
       {newMessages > 0 && (
         <Link
           href="/admin/messages"

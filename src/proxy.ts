@@ -2,9 +2,9 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { IDLE_MS, SEEN_COOKIE, seenCookieOptions } from "@/lib/session-rules";
 
-// Pages that work without being logged in: sign in, "forgot password", "send me a new link",
-// "request access", and the page the emailed link opens.
-const PUBLIC = ["/admin/login", "/admin/forgot", "/admin/first-time", "/admin/request-access", "/admin/auth/confirm"];
+// Pages that work without being logged in: sign in, "forgot password", "first time here",
+// and the page the emailed link opens.
+const PUBLIC = ["/admin/login", "/admin/forgot", "/admin/first-time", "/admin/auth/confirm"];
 
 // Runs before every /admin request. It keeps the login fresh, signs people out after a long
 // time away, and sends people who are not logged in to the login page. This is only a first

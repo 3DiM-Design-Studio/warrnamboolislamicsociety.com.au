@@ -44,7 +44,7 @@ export function AdminsManager({ admins, requests, me }: { admins: AdminRow[]; re
                       Approve
                     </Button>
                     <Button small variant="danger" onClick={() => setDeclining(r)}>
-                      Decline
+                      Deny
                     </Button>
                   </>
                 }
@@ -92,7 +92,7 @@ export function AdminsManager({ admins, requests, me }: { admins: AdminRow[]; re
           <b>How new people join</b>
           <ul className="mt-1 list-disc space-y-1 pl-5">
             <li>You add their email here: they are emailed a link to choose a password straight away. No approval step.</li>
-            <li>They ask on the sign-in page (&ldquo;Request access&rdquo;): their request appears above, and you press Approve.</li>
+            <li>They press &ldquo;First time here?&rdquo; on the sign-in page and are not on your list: their request appears above, and you press Approve or Deny.</li>
           </ul>
           <p className="mt-2 text-muted">The link works once and lasts 1 hour. If it runs out, press &ldquo;Send link&rdquo; beside their name. Someone who is not on this list cannot sign in or change anything.</p>
         </div>
@@ -114,8 +114,8 @@ export function AdminsManager({ admins, requests, me }: { admins: AdminRow[]; re
         open={declining !== null}
         onClose={() => setDeclining(null)}
         pending={pending}
-        confirmLabel="Yes, decline"
-        message={declining ? `Decline the request from ${declining.name} (${declining.email})?` : ""}
+        confirmLabel="Yes, deny"
+        message={declining ? `Deny the request from ${declining.name} (${declining.email})? They will not be able to sign in.` : ""}
         onConfirm={() => declining && run(() => declineAdminRequest(declining.id), () => setDeclining(null))}
       />
       <ConfirmDialog

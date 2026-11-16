@@ -30,10 +30,7 @@ export function LoginForm({ notice }: { notice?: { tone: "good" | "bad"; text: s
           Forgot your password?
         </Link>
         <Link href="/admin/first-time" className="font-semibold text-[#0f6a4d] underline-offset-2 hover:underline">
-          Added by an admin? Send a new link
-        </Link>
-        <Link href="/admin/request-access" className="font-semibold text-[#0f6a4d] underline-offset-2 hover:underline">
-          Want to become an admin? Request access
+          First time here? Set up your login
         </Link>
       </div>
       <p className="text-[13px] text-muted">Only people on the admin list can sign in.</p>
