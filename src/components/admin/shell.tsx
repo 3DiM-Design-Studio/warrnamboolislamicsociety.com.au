@@ -44,7 +44,7 @@ function initials(email: string) {
   return email.split("@")[0].split(/[._-]+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase() || "A";
 }
 
-export function AdminShell({ email, newMessages = 0, children }: { email: string; newMessages?: number; children: ReactNode }) {
+export function AdminShell({ email, newMessages = 0, pendingAdmins = 0, children }: { email: string; newMessages?: number; pendingAdmins?: number; children: ReactNode }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const current = NAV.find((n) => (n.href === "/admin" ? pathname === "/admin" : pathname.startsWith(n.href)));
@@ -85,14 +85,19 @@ export function AdminShell({ email, newMessages = 0, children }: { email: string
               >
                 <Icon name={n.icon} className={active ? "text-accent" : undefined} />
                 {n.label}
-                {n.href === "/admin/messages" && newMessages > 0 && (
-                  <span
-                    aria-label={`${newMessages} new`}
-                    className="ml-auto grid min-w-6 place-items-center rounded-full bg-accent px-1.5 text-xs font-bold leading-6 text-brand-dark tabular-nums"
-                  >
-                    {newMessages > 99 ? "99+" : newMessages}
-                  </span>
-                )}
+                {(() => {
+                  const count = n.href === "/admin/messages" ? newMessages : n.href === "/admin/admins" ? pendingAdmins : 0;
+                  return (
+                    count > 0 && (
+                      <span
+                        aria-label={`${count} new`}
+                        className="ml-auto grid min-w-6 place-items-center rounded-full bg-accent px-1.5 text-xs font-bold leading-6 text-brand-dark tabular-nums"
+                      >
+                        {count > 99 ? "99+" : count}
+                      </span>
+                    )
+                  );
+                })()}
               </Link>
             );
           })}

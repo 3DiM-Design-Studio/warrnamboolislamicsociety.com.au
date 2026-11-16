@@ -136,6 +136,9 @@ export type JumuahRow = {
 
 export type AdminRow = { email: string; created_at: string };
 
+/** Someone who asked to become an admin and is waiting for an approval. */
+export type AdminRequestRow = { id: string; email: string; name: string; created_at: string };
+
 /** What server actions return to the form that called them. */
 export type ActionState = {
   ok: boolean;

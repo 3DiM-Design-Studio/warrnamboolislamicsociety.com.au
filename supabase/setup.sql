@@ -253,6 +253,14 @@ create table if not exists public.jumuah_seasons (
   jumuah_time time not null
 );
 
+-- People who asked to become an admin and are waiting for an approval.
+create table if not exists public.admin_requests (
+  id uuid primary key default gen_random_uuid(),
+  email text not null unique check (email = lower(email)),
+  name text not null default '',
+  created_at timestamptz not null default now()
+);
+
 -- The Donate page uses Stripe, so there is no donation_settings table.
 drop table if exists public.donation_settings;
 
@@ -269,6 +277,7 @@ alter table public.team_members enable row level security;
 alter table public.prayer_settings enable row level security;
 alter table public.ramadan_periods enable row level security;
 alter table public.jumuah_seasons enable row level security;
+alter table public.admin_requests enable row level security;
 
 -- Remove old versions of these rules so the file can be run again
 do $$
@@ -284,6 +293,10 @@ end $$;
 
 -- Admin list: only admins can see or change it
 create policy wis_admins_all on public.admins for all to authenticated
+  using (public.is_admin()) with check (public.is_admin());
+
+-- Admin requests: only admins can see or answer them (the website saves new ones itself)
+create policy wis_admin_requests_all on public.admin_requests for all to authenticated
   using (public.is_admin()) with check (public.is_admin());
 
 -- Content everyone may read; only admins may change

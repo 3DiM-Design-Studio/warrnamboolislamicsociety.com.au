@@ -62,7 +62,7 @@ export const GUIDE: Group[] = [
                   { icon: "jumuah", title: "Change the Friday time", text: "Jumu’ah" },
                   { icon: "info", title: "Change phone, email or top message", text: "Website info" },
                   { icon: "team", title: "Change the committee", text: "Team" },
-                  { icon: "admins", title: "Let someone log in", text: "Admin users" },
+                  { icon: "admins", title: "Let someone log in", text: "Admin users → Add someone" },
                 ],
               },
             ],
@@ -435,7 +435,7 @@ export const GUIDE: Group[] = [
       {
         slug: "admins",
         title: "Admin users",
-        summary: "Who can log in. There is no public sign-up.",
+        summary: "Who can log in. Two ways to join: you add them, or they ask.",
         parts: [
           {
             heading: "Add an admin",
@@ -446,15 +446,22 @@ export const GUIDE: Group[] = [
                 open: "Admin users → press the Add button",
                 fields: [{ label: "Email", example: "newadmin@example.com", need: true }],
               },
+              { t: "flow", items: ["You add their email", "They get an email straight away", "Open the link", "Choose a password"] },
               { t: "warn", text: "Admins can change and delete everything. Only add people you trust." },
-              { t: "p", text: "To remove someone, press Remove beside their name, then Yes, remove." },
             ],
           },
           {
-            heading: "What the new person does",
+            heading: "When someone asks to join",
             blocks: [
-              { t: "flow", items: ["Open the admin sign-in page", "First time here?", "Type their email", "Open the email link", "Choose a password"] },
-              { t: "tip", text: "Check spam if the email is slow. The link works once." },
+              { t: "flow", items: ["They press “Request access” on the sign-in page", "A box “Waiting for your approval” appears here", "You press Approve", "They get the email link"] },
+              { t: "tip", text: "A number beside Admin users in the menu shows how many are waiting. Press Decline if you do not know them." },
+            ],
+          },
+          {
+            heading: "Link missing or too old?",
+            blocks: [
+              { t: "flow", items: ["Admin users", "Press “Send link” beside their name", "They open the new email"] },
+              { t: "tip", text: "The link works once and lasts 1 hour. Check spam if it is slow. To remove someone, press Remove, then Yes, remove." },
             ],
           },
         ],

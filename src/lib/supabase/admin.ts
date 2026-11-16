@@ -9,7 +9,8 @@ import { supabaseUrl } from "@/lib/supabase/anon";
  * Returns null until SUPABASE_SERVICE_ROLE_KEY is set.
  */
 export function createAdminClient() {
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  // Pasting into a settings box often brings along spaces, a line break or quote marks. Drop them.
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim().replace(/^["']+|["']+$/g, "");
   if (!supabaseUrl || !key) return null;
   return createClient(supabaseUrl, key, { auth: { persistSession: false, autoRefreshToken: false } });
 }

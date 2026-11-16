@@ -14,8 +14,8 @@ const COPY = {
     sending: "Sending...",
   },
   first: {
-    title: "First time here?",
-    intro: "Type the email an admin added for you. We will send you a link to choose your own password.",
+    title: "Need a new link?",
+    intro: "When an admin adds you, we email you a link to choose your password. It lasts 1 hour. If it ran out or is missing, type your email and we will send a new one.",
     button: "Email me a link",
     sending: "Sending...",
   },

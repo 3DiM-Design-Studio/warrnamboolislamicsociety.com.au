@@ -1,12 +1,10 @@
 "use server";
 
-import { randomBytes } from "node:crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
-import { sendAccessEmail } from "@/lib/auth-email";
+import { issueAccessLink } from "@/lib/access-link";
 import { mailConfigured } from "@/lib/mail";
-import { SITE_URL } from "@/lib/site-url";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { fail, ok, str } from "@/lib/actions/helpers";
@@ -56,14 +54,21 @@ export async function signOutIdle() {
 
 const EMAIL = /^[^s@]+@[^s@]+.[^s@]+$/;
 const SENT = "If this email is on the admin list, a link is on its way. Please check your inbox, and your spam folder too.";
+const REQUESTED = "Thank you. Your request was sent. An admin will look at it, and if it is approved you will get an email with a link to choose your password. If you are already an admin, just sign in.";
+const MAX_WAITING = 25;
 
-// One link every minute per email is plenty. This only slows down someone who keeps pressing the button.
+// One email a minute per address is plenty. This only slows down someone who keeps pressing the button.
 const lastAsked = new Map<string, number>();
+const tooSoon = (key: string) => {
+  const now = Date.now();
+  if (now - (lastAsked.get(key) ?? 0) < 60_000) return true;
+  lastAsked.set(key, now);
+  return false;
+};
 
 /**
- * Emails a one-time link where an admin chooses a password. It is the same job for "First time here" and
- * "Forgot password": make the login if it does not exist yet, then send the link from the society's own email.
- * The answer is always the same, so nobody can use it to find out who is an admin.
+ * "First time here" and "Forgot password": checks the email is on the admin list, then emails a one-time link
+ * from the society's own email. The answer is always the same, so nobody can use it to find out who is an admin.
  */
 async function sendAccessLink(fd: FormData, kind: "first" | "reset"): Promise<ActionState> {
   const email = str(fd, "email").trim().toLowerCase();
@@ -78,28 +83,14 @@ async function sendAccessLink(fd: FormData, kind: "first" | "reset"): Promise<Ac
     return fail(`Something went wrong while checking the admin list: ${listError.message}`);
   }
   if (!listed) return ok(SENT); // not an admin: say nothing, send nothing
+  if (tooSoon(`link:${email}`)) return ok(SENT);
 
-  const now = Date.now();
-  if (now - (lastAsked.get(email) ?? 0) < 60_000) return ok(SENT);
-  lastAsked.set(email, now);
-
-  try {
-    let link = await admin.auth.admin.generateLink({ type: "recovery", email });
-    if (link.error) {
-      // No login yet: make one with a random password nobody knows, then ask again.
-      const made = await admin.auth.admin.createUser({ email, email_confirm: true, password: randomBytes(24).toString("base64url") });
-      if (made.error) throw made.error;
-      link = await admin.auth.admin.generateLink({ type: "recovery", email });
-    }
-    const token = link.data?.properties?.hashed_token;
-    if (link.error || !token) throw link.error ?? new Error("No link was made");
-    await sendAccessEmail({ to: email, kind, link: `${SITE_URL}/admin/auth/confirm?token_hash=${encodeURIComponent(token)}&type=recovery&next=/admin/set-password` });
-    return ok(SENT);
-  } catch (e) {
-    console.error("Sign-in link failed", e);
-    lastAsked.delete(email);
+  const result = await issueAccessLink(email, kind);
+  if (result === "failed") {
+    lastAsked.delete(`link:${email}`);
     return fail("The email could not be sent. Please try again in a few minutes.");
   }
+  return ok(SENT);
 }
 
 /** "Forgot password". */
@@ -107,9 +98,38 @@ export async function requestResetLink(_prev: ActionState, fd: FormData): Promis
   return sendAccessLink(fd, "reset");
 }
 
-/** "First time here". */
+/** "Need a new link" for someone an admin already added. */
 export async function requestFirstTimeLink(_prev: ActionState, fd: FormData): Promise<ActionState> {
   return sendAccessLink(fd, "first");
+}
+
+/**
+ * "Request access": anyone can ask. It only saves a name and an email as a waiting request. No email is sent:
+ * admins see a number beside "Admin users" in the menu. Nothing is allowed until an admin approves it.
+ */
+export async function requestAdminAccess(_prev: ActionState, fd: FormData): Promise<ActionState> {
+  if (str(fd, "website")) return ok(REQUESTED); // a hidden box only a robot fills in
+  const name = str(fd, "name").trim().replace(/s+/g, " ");
+  const email = str(fd, "email").trim().toLowerCase();
+  if (name.length < 2 || name.length > 80) return fail("Please check the form.", { name: "Please enter your name." });
+  if (!EMAIL.test(email) || email.length > 200) return fail("Please check the form.", { email: "Please enter a real email address." });
+  const admin = createAdminClient();
+  if (!admin) return fail("Requests are not switched on yet. Please ask an admin to add you.");
+  if (tooSoon(`request:${email}`)) return ok(REQUESTED);
+
+  const { data: already } = await admin.from("admins").select("email").eq("email", email).maybeSingle();
+  if (already) return ok(REQUESTED); // already an admin: nothing to do
+
+  const { count } = await admin.from("admin_requests").select("id", { count: "exact", head: true });
+  if ((count ?? 0) >= MAX_WAITING) return fail("Too many requests are waiting right now. Please ask an admin to add you directly.");
+
+  const { error } = await admin.from("admin_requests").upsert({ email, name }, { onConflict: "email" });
+  if (error) {
+    console.error("Admin request failed", error);
+    return fail("Your request could not be saved. Please try again later.");
+  }
+
+  return ok(REQUESTED);
 }
 
 /** Saves a new password for whoever is signed in (first time, forgot password, or changing it later). */
