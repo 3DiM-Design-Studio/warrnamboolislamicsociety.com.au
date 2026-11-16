@@ -126,7 +126,7 @@ create table if not exists public.contacts (
   name text not null check (char_length(name) between 1 and 120),
   email text not null check (char_length(email) between 3 and 200),
   message text not null check (char_length(message) between 1 and 5000),
-  status text not null default 'new' check (status in ('new', 'replied')),
+  status text not null default 'new' check (status in ('new', 'read', 'replied')),
   submitted_date date not null default current_date
 );
 -- (for a contacts table that already existed before this file: adds any missing columns)
@@ -135,6 +135,9 @@ alter table public.contacts add column if not exists email text not null default
 alter table public.contacts add column if not exists message text not null default '';
 alter table public.contacts add column if not exists status text not null default 'new';
 alter table public.contacts add column if not exists submitted_date date not null default current_date;
+-- A message moves from new to read when an admin opens it, and to replied when it has been answered.
+alter table public.contacts drop constraint if exists contacts_status_check;
+alter table public.contacts add constraint contacts_status_check check (status in ('new', 'read', 'replied'));
 -- Newest first stays quick as the list grows.
 drop index if exists public.contacts_created_idx;
 create index if not exists contacts_submitted_idx on public.contacts (submitted_date desc);

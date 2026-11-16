@@ -92,6 +92,7 @@ export const GUIDE: Group[] = [
             blocks: [
               { t: "flow", items: ["Admin address", "Email + password", "Sign in"] },
               { t: "flow", items: ["Forgot it?", "Press “Forgot your password?”", "Open the email link", "Choose a new one"] },
+              { t: "flow", items: ["New here?", "Press “First time here?”", "Type your name + email", "Open the email link (or wait for approval)", "Choose a password"] },
               { t: "flow", items: ["Phone: tap ☰ (top left)", "Pick a section", "Menu closes"] },
               { t: "tip", text: "Log out when you use a shared computer. It is at the bottom of the menu. If nobody touches the page for 8 hours, you are signed out automatically." },
               { t: "tip", text: "To change your password any time, press “Change password” at the bottom of the menu." },
@@ -107,7 +108,7 @@ export const GUIDE: Group[] = [
           {
             heading: "What you see",
             blocks: [
-              { t: "list", items: ["Green bar = new messages. Press it to read them.", "4 number cards: next prayer, Jumu’ah, news posts, members.", "Today’s prayer times with a Change button.", "To do: things to fix. “All good” means nothing to do."] },
+              { t: "list", items: ["Alert bars at the top: green = new messages, yellow = people waiting to become admins. Each one goes away once you have dealt with it.", "4 number cards: next prayer, Jumu’ah, news posts, members.", "Today’s prayer times with a Change button.", "To do: things to fix. “All good” means nothing to do."] },
               { t: "tip", text: "Look at the To do box when you log in. Each line has a button that takes you straight to the fix." },
             ],
           },
@@ -316,8 +317,8 @@ export const GUIDE: Group[] = [
           {
             heading: "Read and reply",
             blocks: [
-              { t: "flow", items: ["Press Read", "Reply by email", "Mark as replied"] },
-              { t: "tip", text: "A red number beside Messages in the menu shows how many are new. Mark as new to come back to one later." },
+              { t: "flow", items: ["Press Read (it is marked Read, and the alert clears)", "Reply by email", "Mark as replied"] },
+              { t: "tip", text: "A red number beside Messages in the menu and the green bar on Overview show messages you have not opened yet. They go away once you open them. Press Mark as new to bring one back." },
             ],
           },
         ],
@@ -443,7 +444,7 @@ export const GUIDE: Group[] = [
               {
                 t: "form",
                 title: "Add someone to the admin list",
-                open: "Admin users → press the Add button",
+                open: "Admin users → press Add someone",
                 fields: [{ label: "Email", example: "newadmin@example.com", need: true }],
               },
               { t: "flow", items: ["You add their email", "They get an email straight away", "Open the link", "Choose a password"] },
