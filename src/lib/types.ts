@@ -45,6 +45,8 @@ export type EventRow = {
   audience: string;
   notes: string;
   status: EventStatus;
+  /** When subscribers were emailed about this event; null if they never were. */
+  announced_at?: string | null;
 };
 
 export type MemberRow = {
@@ -64,6 +66,14 @@ export type MemberRow = {
   status: "new" | "member";
   /** YYYY-MM-DD */
   submitted_date: string;
+};
+
+export type SubscriberRow = {
+  id: string;
+  email: string;
+  status: "subscribed" | "unsubscribed";
+  /** The day they signed up, YYYY-MM-DD (Melbourne time). */
+  subscribed_date: string;
 };
 
 export type ContactRow = {

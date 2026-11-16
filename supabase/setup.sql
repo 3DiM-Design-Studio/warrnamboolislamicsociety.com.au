@@ -70,6 +70,8 @@ alter table public.events add column if not exists speaker text not null default
 alter table public.events add column if not exists audience text not null default '';
 alter table public.events add column if not exists notes text not null default '';
 alter table public.events add column if not exists updated_at timestamptz not null default now();
+-- When subscribers were emailed about this event (so it is only announced once)
+alter table public.events add column if not exists announced_at timestamptz;
 alter table public.events drop constraint if exists events_status_check;
 alter table public.events add constraint events_status_check check (status in ('draft', 'published', 'cancelled'));
 alter table public.events drop constraint if exists events_type_check;
@@ -155,6 +157,62 @@ create table if not exists public.donations (
 alter table public.donations add column if not exists invoice_id text unique;
 create index if not exists donations_submitted_idx on public.donations (submitted_date desc);
 
+-- People who gave their email in the website footer for community updates.
+create table if not exists public.subscribers (
+  id uuid primary key default gen_random_uuid(),
+  email text not null check (char_length(email) between 3 and 200 and email = lower(email)),
+  status text not null default 'subscribed' check (status in ('subscribed', 'unsubscribed')),
+  subscribed_date date not null default current_date
+);
+create unique index if not exists subscribers_email_key on public.subscribers (email);
+-- A private code in each email's Unsubscribe link, so only that person can unsubscribe themselves.
+alter table public.subscribers add column if not exists unsub_token uuid not null default gen_random_uuid();
+create unique index if not exists subscribers_unsub_token_key on public.subscribers (unsub_token);
+
+-- Used by the footer form: adds the address, says "already" if it is on the list, and turns
+-- someone who had unsubscribed back on. Visitors can run it but still cannot read the list.
+create or replace function public.subscribe_email(p_email text)
+returns text
+language plpgsql security definer
+set search_path = public
+as $$
+declare
+  e text := lower(trim(coalesce(p_email, '')));
+  current_status text;
+begin
+  if char_length(e) < 3 or char_length(e) > 200 or e !~ '^\S+@\S+\.\S+$' then
+    return 'invalid';
+  end if;
+  select status into current_status from public.subscribers where email = e;
+  if current_status is null then
+    insert into public.subscribers (email) values (e);
+    return 'new';
+  elsif current_status = 'subscribed' then
+    return 'already';
+  end if;
+  update public.subscribers set status = 'subscribed' where email = e;
+  return 'resubscribed';
+exception when unique_violation then
+  return 'already';
+end;
+$$;
+revoke all on function public.subscribe_email(text) from public;
+grant execute on function public.subscribe_email(text) to anon, authenticated;
+
+-- Used by the Unsubscribe page, with the private code from the email link.
+create or replace function public.unsubscribe_by_token(p_token uuid)
+returns boolean
+language plpgsql security definer
+set search_path = public
+as $$
+begin
+  update public.subscribers set status = 'unsubscribed' where unsub_token = p_token;
+  return found;
+end;
+$$;
+revoke all on function public.unsubscribe_by_token(uuid) from public;
+grant execute on function public.unsubscribe_by_token(uuid) to anon, authenticated;
+
 create table if not exists public.team_members (
   id uuid primary key default gen_random_uuid(),
   name text not null check (char_length(name) between 1 and 120),
@@ -204,6 +262,7 @@ alter table public.events enable row level security;
 alter table public.members enable row level security;
 alter table public.contacts enable row level security;
 alter table public.donations enable row level security;
+alter table public.subscribers enable row level security;
 alter table public.team_members enable row level security;
 alter table public.prayer_settings enable row level security;
 alter table public.ramadan_periods enable row level security;
@@ -260,6 +319,10 @@ create policy wis_contacts_admin on public.contacts for all to authenticated usi
 -- Donations: the website may add one, only admins may see or change them
 create policy wis_donations_add on public.donations for insert to anon, authenticated with check (payment_intent is not null or subscription_id is not null);
 create policy wis_donations_admin on public.donations for all to authenticated using (public.is_admin()) with check (public.is_admin());
+
+-- Newsletter sign-ups: anyone may add an address, only admins may see or change the list
+create policy wis_subscribers_join on public.subscribers for insert to anon, authenticated with check (status = 'subscribed');
+create policy wis_subscribers_admin on public.subscribers for all to authenticated using (public.is_admin()) with check (public.is_admin());
 
 -- ============ 4. Photo storage ============
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)

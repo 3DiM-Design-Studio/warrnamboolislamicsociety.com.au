@@ -3,7 +3,8 @@
 import { updateTag } from "next/cache";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth";
-import { DATE, TIME, dbError, fail, fieldErrors, ok, str } from "@/lib/actions/helpers";
+import { DATE, TIME, dbError, fail, fieldErrors, flag, ok, str } from "@/lib/actions/helpers";
+import { announceEvent } from "@/lib/event-email";
 import { EVENT_TYPES, HAS_SPEAKER } from "@/lib/event-types";
 import { supabaseUrl } from "@/lib/supabase/anon";
 import { TAGS } from "@/lib/tags";
@@ -76,10 +77,34 @@ export async function saveEvent(_prev: ActionState, fd: FormData): Promise<Actio
     photo_url: photo || null,
     updated_at: new Date().toISOString(),
   };
-  const { error } = id ? await supabase.from("events").update(row).eq("id", id) : await supabase.from("events").insert(row);
-  if (error) return fail(dbError(error));
+  let eventId = id;
+  if (id) {
+    const { error } = await supabase.from("events").update(row).eq("id", id);
+    if (error) return fail(dbError(error));
+  } else {
+    const { data, error } = await supabase.from("events").insert(row).select("id").single();
+    if (error || !data) return fail(dbError(error ?? { message: "" }));
+    eventId = data.id;
+  }
   updateTag(TAGS.events);
-  return ok("Event saved");
+
+  // Optional: email the newsletter subscribers. An email problem never undoes the saved event.
+  if (!flag(fd, "notify") || d.status !== "published") return ok("Event saved");
+  try {
+    const { data: current } = await supabase.from("events").select("announced_at").eq("id", eventId).maybeSingle();
+    if (current?.announced_at) return ok("Event saved. Subscribers were already emailed about it earlier.");
+
+    const result = await announceEvent(supabase, { id: eventId, ...row });
+
+    if (result.status === "not-configured") return ok("Event saved, but no email was sent because email is not set up yet.");
+    if (result.status === "no-subscribers") return ok("Event saved. There are no newsletter subscribers to email yet.");
+    if (result.sent > 0) await supabase.from("events").update({ announced_at: new Date().toISOString() }).eq("id", eventId);
+    if (result.sent === 0) return ok("Event saved, but the emails could not be sent. Please check the email settings.");
+    return ok(`Event saved. Emailed ${result.sent} subscriber${result.sent === 1 ? "" : "s"}${result.failed ? ` (${result.failed} failed)` : ""}.`);
+  } catch (e) {
+    console.error("Event email failed", e);
+    return ok("Event saved, but the emails could not be sent. Please try again.");
+  }
 }
 
 export async function deleteEvent(id: string): Promise<ActionState> {

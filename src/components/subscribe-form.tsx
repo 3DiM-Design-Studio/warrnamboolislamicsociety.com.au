@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { useState } from "react";
 
 export function SubscribeForm() {
-  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">(
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "already" | "error">(
     "idle",
   );
 
@@ -12,18 +12,31 @@ export function SubscribeForm() {
     e.preventDefault();
     setStatus("sending");
     const email = new FormData(e.currentTarget).get("email");
-    const res = await fetch("/api/subscribe", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
-    setStatus(res.ok ? "sent" : "error");
+    try {
+      const res = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const body = await res.json().catch(() => null);
+      setStatus(!res.ok ? "error" : body?.already ? "already" : "sent");
+    } catch {
+      setStatus("error");
+    }
   }
 
   if (status === "sent") {
     return (
       <p className="font-medium">
         Thank you. We will keep you posted, InshaAllah.
+      </p>
+    );
+  }
+  if (status === "already") {
+    return (
+      <p className="font-medium">
+        This email is already subscribed here. You will keep getting our
+        updates, InshaAllah.
       </p>
     );
   }

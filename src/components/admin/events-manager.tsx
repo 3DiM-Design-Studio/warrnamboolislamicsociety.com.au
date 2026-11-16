@@ -9,9 +9,9 @@ import { Icon } from "@/components/admin/icons";
 import { fmtDate } from "@/components/admin/format";
 import { List, Row } from "@/components/admin/list";
 import { PhotoField } from "@/components/admin/photo-field";
-import { Badge, Button, Card, CardHead, ConfirmDialog, EmptyNote, Field, Modal, ModalActions, TextField, inputClass, useFormAction, useRunAction } from "@/components/admin/ui";
+import { Badge, Button, Card, CardHead, ConfirmDialog, EmptyNote, Field, Modal, ModalActions, Switch, TextField, inputClass, useFormAction, useRunAction } from "@/components/admin/ui";
 
-export function EventsManager({ events, today }: { events: EventRow[]; today: string }) {
+export function EventsManager({ events, today, subscriberCount }: { events: EventRow[]; today: string; subscriberCount: number }) {
   const [editing, setEditing] = useState<EventRow | "new" | null>(null);
   const [deleting, setDeleting] = useState<EventRow | null>(null);
   const { run, pending } = useRunAction();
@@ -69,7 +69,7 @@ export function EventsManager({ events, today }: { events: EventRow[]; today: st
       </Card>
 
       <Modal open={editing !== null} onClose={() => setEditing(null)} title={editing === "new" ? "Add event" : "Edit event"}>
-        {editing && <EventForm key={editing === "new" ? "new" : editing.id} event={editing === "new" ? null : editing} today={today} onClose={() => setEditing(null)} />}
+        {editing && <EventForm key={editing === "new" ? "new" : editing.id} event={editing === "new" ? null : editing} today={today} subscriberCount={subscriberCount} onClose={() => setEditing(null)} />}
       </Modal>
       <ConfirmDialog
         open={deleting !== null}
@@ -82,7 +82,8 @@ export function EventsManager({ events, today }: { events: EventRow[]; today: st
   );
 }
 
-function EventForm({ event, today, onClose }: { event: EventRow | null; today: string; onClose: () => void }) {
+function EventForm({ event, today, subscriberCount, onClose }: { event: EventRow | null; today: string; subscriberCount: number; onClose: () => void }) {
+  const [status, setStatus] = useState<string>(event?.status ?? "published");
   const { state, formAction, pending } = useFormAction(saveEvent, onClose);
   const e = state?.errors ?? {};
   const [type, setType] = useState(event?.event_type ?? "bayan");
@@ -125,12 +126,22 @@ function EventForm({ event, today, onClose }: { event: EventRow | null; today: s
       </Field>
 
       <Field label="Show on the website?" error={e.status}>
-        <select name="status" defaultValue={event?.status ?? "published"} className={inputClass}>
+        <select name="status" value={status} onChange={(ev) => setStatus(ev.target.value)} className={inputClass}>
           <option value="published">Yes, show it</option>
           <option value="draft">No, keep it as a draft</option>
           <option value="cancelled">Cancelled (hide it)</option>
         </select>
       </Field>
+      {status === "published" &&
+        (event?.announced_at ? (
+          <p className="rounded-xl bg-background p-3 text-[13px] text-muted">Newsletter subscribers were already emailed about this event.</p>
+        ) : (
+          <Switch
+            label={`Email the newsletter subscribers about this event (${subscriberCount} ${subscriberCount === 1 ? "person" : "people"})`}
+            name="notify"
+            defaultChecked={!event && subscriberCount > 0}
+          />
+        ))}
       <ModalActions onCancel={onClose} pending={pending} message={state && !state.ok ? state.message : undefined} />
     </form>
   );
