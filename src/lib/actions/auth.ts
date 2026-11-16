@@ -73,7 +73,10 @@ async function sendAccessLink(fd: FormData, kind: "first" | "reset"): Promise<Ac
   if (!admin) return fail("Sign-in emails are not switched on yet. Please ask the person who looks after the website.");
 
   const { data: listed, error: listError } = await admin.from("admins").select("email").eq("email", email).maybeSingle();
-  if (listError) return fail("Something went wrong. Please try again in a moment.");
+  if (listError) {
+    console.error("Admin list check failed", listError);
+    return fail(`Something went wrong while checking the admin list: ${listError.message}`);
+  }
   if (!listed) return ok(SENT); // not an admin: say nothing, send nothing
 
   const now = Date.now();
