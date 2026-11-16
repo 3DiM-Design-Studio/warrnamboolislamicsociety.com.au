@@ -72,6 +72,8 @@ alter table public.events add column if not exists notes text not null default '
 alter table public.events add column if not exists updated_at timestamptz not null default now();
 -- When subscribers were emailed about this event (so it is only announced once)
 alter table public.events add column if not exists announced_at timestamptz;
+-- The day (Melbourne) the last reminder email went out, so a reminder is sent at most once a day
+alter table public.events add column if not exists last_reminder_on date;
 alter table public.events drop constraint if exists events_status_check;
 alter table public.events add constraint events_status_check check (status in ('draft', 'published', 'cancelled'));
 alter table public.events drop constraint if exists events_type_check;

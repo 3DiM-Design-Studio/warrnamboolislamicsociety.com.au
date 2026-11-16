@@ -46,10 +46,10 @@ export function AdminsManager({ admins, me }: { admins: AdminRow[]; me: string }
         <div className="mt-5 rounded-xl bg-[#f6edd6] p-4 text-sm">
           <b>Adding a new person takes two steps.</b>
           <ol className="mt-1 list-decimal space-y-1 pl-5">
-            <li>Add their email here. This is what lets them make changes.</li>
-            <li>Create their login in Supabase: Authentication, then Users, then Add user (same email, and a password they will keep).</li>
+            <li>Add their email here.</li>
+            <li>Ask them to open the admin sign-in page and press &ldquo;First time here?&rdquo;. They get an email link and choose their own password.</li>
           </ol>
-          <p className="mt-2 text-muted">There is no public sign-up. Someone with a login who is not on this list cannot change anything.</p>
+          <p className="mt-2 text-muted">Only emails on this list can set up a login. Someone who is not on this list cannot sign in or change anything.</p>
         </div>
       </Card>
 
@@ -60,7 +60,7 @@ export function AdminsManager({ admins, me }: { admins: AdminRow[]; me: string }
         open={removing !== null}
         onClose={() => setRemoving(null)}
         pending={pending}
-        confirmLabel="Remove"
+        confirmLabel="Yes, remove"
         message={removing ? `Remove ${removing.email}? They will not be able to change anything any more.` : ""}
         onConfirm={() => removing && run(() => removeAdmin(removing.email), () => setRemoving(null))}
       />

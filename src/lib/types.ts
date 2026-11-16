@@ -47,6 +47,8 @@ export type EventRow = {
   status: EventStatus;
   /** When subscribers were emailed about this event; null if they never were. */
   announced_at?: string | null;
+  /** The day the last reminder email was sent, YYYY-MM-DD (Melbourne time). */
+  last_reminder_on?: string | null;
 };
 
 export type MemberRow = {

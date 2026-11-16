@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { eventTypeLabel } from "@/lib/event-types";
 import { mailConfigured, sendMail } from "@/lib/mail";
-import { fmtHM } from "@/lib/prayer";
+import { fmtHM, melbourneToday } from "@/lib/prayer";
 import { SITE_URL } from "@/lib/site-url";
 
 type EventForEmail = {
@@ -20,11 +20,20 @@ const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&l
 const dateText = (d: string) =>
   new Intl.DateTimeFormat("en-AU", { timeZone: "UTC", weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(new Date(`${d}T12:00:00Z`));
 
+// "Today", "Tomorrow", "In 3 days", or "On now" for a multi-day event that has already started.
+function untilLabel(eventDate: string, endDate: string | null): string {
+  const days = Math.round((Date.parse(`${eventDate}T00:00:00Z`) - Date.parse(`${melbourneToday()}T00:00:00Z`)) / 86_400_000);
+  if (days < 0) return endDate && endDate >= melbourneToday() ? "On now" : "Today";
+  if (days === 0) return "Today";
+  if (days === 1) return "Tomorrow";
+  return `In ${days} days`;
+}
+
 export type AnnounceResult = { status: "sent"; sent: number; failed: number } | { status: "not-configured" } | { status: "no-subscribers" };
 
 // Emails every current subscriber about an event, one message each so every message carries
 // that person's own unsubscribe link. Uses the admin's login to read the list.
-export async function announceEvent(supabase: SupabaseClient, event: EventForEmail): Promise<AnnounceResult> {
+export async function announceEvent(supabase: SupabaseClient, event: EventForEmail, kind: "new" | "reminder" = "new"): Promise<AnnounceResult> {
   const origin = SITE_URL;
   if (!mailConfigured()) return { status: "not-configured" };
   const { data, error } = await supabase.from("subscribers").select("email,unsub_token").eq("status", "subscribed");
@@ -34,7 +43,9 @@ export async function announceEvent(supabase: SupabaseClient, event: EventForEma
 
   const when = `${dateText(event.event_date)}, ${fmtHM(event.event_time.slice(0, 5))}${event.end_time ? ` to ${fmtHM(event.end_time.slice(0, 5))}` : ""}`;
   const link = `${origin}/events/${event.id}`;
-  const subject = `New event: ${event.title}`;
+  const label = untilLabel(event.event_date, event.end_date);
+  const subject = kind === "reminder" ? `Reminder: ${event.title} (${label.toLowerCase()})` : `New event: ${event.title}`;
+  const kicker = kind === "reminder" ? `Reminder: ${label}` : eventTypeLabel(event.event_type);
 
   let sent = 0;
   let failed = 0;
@@ -46,13 +57,13 @@ export async function announceEvent(supabase: SupabaseClient, event: EventForEma
           to: p.email,
           subject,
           headers: { "List-Unsubscribe": `<${unsubscribe}>` },
-          text: `${event.title}\n${eventTypeLabel(event.event_type)}\n\n${when}\n${event.place}\n\n${event.short_description}\n\nMore details: ${link}\n\nTo stop these emails: ${unsubscribe}`,
+          text: `${event.title}\n${kicker}\n\n${when}\n${event.place}\n\n${event.short_description}\n\nMore details: ${link}\n\nTo stop these emails: ${unsubscribe}`,
           html: `<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;color:#121512">
   <table role="presentation" style="margin:0 0 20px;border-collapse:collapse"><tr>
     <td style="padding:0 12px 0 0"><img src="${origin}/logo.jpg" width="56" height="56" alt="Warrnambool Islamic Society" style="display:block;border-radius:28px"></td>
     <td style="font-size:16px;font-weight:bold;color:#0f6a4d">Warrnambool Islamic Society</td>
   </tr></table>
-  <p style="margin:0 0 8px;font-size:13px;color:#0f6a4d;font-weight:bold;text-transform:uppercase">${esc(eventTypeLabel(event.event_type))}</p>
+  <p style="margin:0 0 8px;font-size:13px;color:#0f6a4d;font-weight:bold;text-transform:uppercase">${esc(kicker)}</p>
   <h1 style="margin:0 0 16px;font-size:24px">${esc(event.title)}</h1>
   ${event.short_description ? `<p style="font-size:16px;line-height:1.5">${esc(event.short_description)}</p>` : ""}
   <p style="font-size:16px;line-height:1.6"><strong>When:</strong> ${esc(when)}<br><strong>Where:</strong> ${esc(event.place)}</p>

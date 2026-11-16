@@ -12,7 +12,7 @@ export const maxDuration = 60;
 export default async function EventsPage() {
   const { supabase } = await requireAdmin();
   const [events, subscribers] = await Promise.all([
-    supabase.from("events").select("id,title,event_type,short_description,description,photo_url,event_date,event_time,end_date,end_time,place,map_url,speaker,audience,notes,status,announced_at").order("event_date", { ascending: true }),
+    supabase.from("events").select("id,title,event_type,short_description,description,photo_url,event_date,event_time,end_date,end_time,place,map_url,speaker,audience,notes,status,announced_at,last_reminder_on").order("event_date", { ascending: true }),
     // Left out of the error check: before the subscribers table exists this just counts as zero.
     supabase.from("subscribers").select("id", { count: "exact", head: true }).eq("status", "subscribed"),
   ]);

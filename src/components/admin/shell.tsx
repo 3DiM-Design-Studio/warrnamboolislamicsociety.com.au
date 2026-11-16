@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { signOut } from "@/lib/actions/auth";
 import { Icon, type IconName } from "@/components/admin/icons";
+import { IdleGuard } from "@/components/admin/idle-guard";
 import { LogoMark } from "@/components/logo-mark";
 import { ToastProvider, cx } from "@/components/admin/ui";
 
@@ -23,6 +24,22 @@ const NAV: { href: string; label: string; icon: IconName }[] = [
   { href: "/admin/admins", label: "Admin users", icon: "admins" },
 ];
 
+// Which guide page belongs to which admin page, so the round button opens the right one.
+const GUIDE_PAGE: Record<string, string> = {
+  "/admin": "overview",
+  "/admin/posts": "posts",
+  "/admin/events": "events",
+  "/admin/members": "members",
+  "/admin/donations": "donations",
+  "/admin/messages": "messages",
+  "/admin/subscribers": "newsletter",
+  "/admin/team": "team",
+  "/admin/prayer": "prayer",
+  "/admin/jumuah": "jumuah",
+  "/admin/info": "info",
+  "/admin/admins": "admins",
+};
+
 function initials(email: string) {
   return email.split("@")[0].split(/[._-]+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase() || "A";
 }
@@ -32,11 +49,15 @@ export function AdminShell({ email, newMessages = 0, children }: { email: string
   const [open, setOpen] = useState(false);
   const current = NAV.find((n) => (n.href === "/admin" ? pathname === "/admin" : pathname.startsWith(n.href)));
   const name = email.split("@")[0];
+  const inGuide = pathname.startsWith("/admin/guide");
+  const guideTopic = (current && GUIDE_PAGE[current.href]) || "start-here";
 
-  const navItem = "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-[15px] font-medium transition";
+  // Tighter on short screens so the whole menu, including Log out, fits without scrolling.
+  const navItem = "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-[15px] font-medium transition [@media(max-height:780px)]:py-1.5";
 
   return (
     <ToastProvider>
+      <IdleGuard />
       <div className="grid min-h-dvh bg-background lg:grid-cols-[250px_minmax(0,1fr)]">
         <aside
           aria-label="Menu"
@@ -45,7 +66,7 @@ export function AdminShell({ email, newMessages = 0, children }: { email: string
             open ? "translate-x-0" : "-translate-x-full",
           )}
         >
-          <div className="flex items-center gap-3 px-2 pb-6 text-white">
+          <div className="flex items-center gap-3 px-2 pb-6 text-white [@media(max-height:780px)]:pb-3">
             <LogoMark className="size-10" src="/admin-logo.png" />
             <span className="text-base font-bold leading-tight">
               WIS Admin
@@ -80,6 +101,10 @@ export function AdminShell({ email, newMessages = 0, children }: { email: string
               <Icon name="external" />
               View website
             </a>
+            <Link href="/admin/set-password" className={cx(navItem, "hover:bg-white/10 hover:text-white")}>
+              <Icon name="admins" />
+              Change password
+            </Link>
             <form action={signOut}>
               <button className={cx(navItem, "hover:bg-white/10 hover:text-white")}>
                 <Icon name="out" />
@@ -99,7 +124,7 @@ export function AdminShell({ email, newMessages = 0, children }: { email: string
             >
               <Icon name="menu" />
             </button>
-            <h1 className="min-w-0 flex-1 text-2xl font-bold tracking-tight sm:text-[28px]">{current?.label ?? "Admin"}</h1>
+            <h1 className="min-w-0 flex-1 text-2xl font-bold tracking-tight sm:text-[28px]">{current?.label ?? (inGuide ? "Guide" : "Admin")}</h1>
             <div className="flex items-center gap-2.5">
               <span className="grid size-10 place-items-center rounded-full bg-brand-dark text-sm font-bold text-accent">{initials(email)}</span>
               <span className="hidden leading-tight sm:block">
@@ -108,11 +133,22 @@ export function AdminShell({ email, newMessages = 0, children }: { email: string
               </span>
             </div>
           </header>
-          <div className="mx-auto grid w-full max-w-[1160px] flex-1 content-start gap-5 px-4 pb-6 pt-3 sm:px-8">{children}</div>
+          <div className="mx-auto grid w-full max-w-[1160px] flex-1 content-start gap-5 px-4 pb-24 pt-3 sm:px-8">{children}</div>
           <footer className="px-4 py-6 text-center text-[13px] text-muted">
             Powered by <b className="font-semibold text-foreground">3DiM Design Studio</b>
           </footer>
         </div>
+
+        {!inGuide && (
+          <Link
+            href={`/admin/guide?topic=${guideTopic}`}
+            aria-label="Open the guide"
+            title="Guide: how to use this page"
+            className="fixed bottom-4 left-4 z-10 grid size-12 place-items-center rounded-full bg-brand-dark text-xl font-bold text-accent shadow-lg ring-2 ring-white transition hover:scale-105 lg:left-[266px]"
+          >
+            ?
+          </Link>
+        )}
       </div>
     </ToastProvider>
   );

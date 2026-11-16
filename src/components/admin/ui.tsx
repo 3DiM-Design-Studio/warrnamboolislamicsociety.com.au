@@ -225,7 +225,8 @@ export function ConfirmDialog({
   open,
   onClose,
   message,
-  confirmLabel = "Delete",
+  confirmLabel = "Yes, delete",
+  variant = "danger",
   onConfirm,
   pending,
 }: {
@@ -233,15 +234,16 @@ export function ConfirmDialog({
   onClose: () => void;
   message: string;
   confirmLabel?: string;
+  variant?: "danger" | "primary";
   onConfirm: () => void;
   pending?: boolean;
 }) {
   return (
     <Modal open={open} onClose={onClose} title="Are you sure?" small>
-      <p className="text-sm">{message}</p>
+      <p className="text-[15px] leading-relaxed">{message}</p>
       <div className="mt-5 flex justify-end gap-2">
-        <Button onClick={onClose}>Cancel</Button>
-        <Button variant="danger" disabled={pending} onClick={onConfirm}>
+        <Button onClick={onClose}>{variant === "danger" ? "No, keep it" : "No, cancel"}</Button>
+        <Button variant={variant} disabled={pending} onClick={onConfirm}>
           {confirmLabel}
         </Button>
       </div>

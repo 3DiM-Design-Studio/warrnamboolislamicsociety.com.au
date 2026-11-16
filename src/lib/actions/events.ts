@@ -1,11 +1,13 @@
 "use server";
 
-import { updateTag } from "next/cache";
+import { refresh, updateTag } from "next/cache";
 import { z } from "zod";
+import { melbourneDay } from "@/components/admin/format";
 import { requireAdmin } from "@/lib/auth";
 import { DATE, TIME, dbError, fail, fieldErrors, flag, ok, str } from "@/lib/actions/helpers";
 import { announceEvent } from "@/lib/event-email";
 import { EVENT_TYPES, HAS_SPEAKER } from "@/lib/event-types";
+import { melbourneToday } from "@/lib/prayer";
 import { supabaseUrl } from "@/lib/supabase/anon";
 import { TAGS } from "@/lib/tags";
 import type { ActionState } from "@/lib/types";
@@ -104,6 +106,36 @@ export async function saveEvent(_prev: ActionState, fd: FormData): Promise<Actio
   } catch (e) {
     console.error("Event email failed", e);
     return ok("Event saved, but the emails could not be sent. Please try again.");
+  }
+}
+
+// Emails every current subscriber a reminder about one event. Allowed once a day, until the event is over.
+export async function sendEventReminder(id: string): Promise<ActionState> {
+  const { supabase } = await requireAdmin();
+  const { data: ev, error } = await supabase
+    .from("events")
+    .select("id,title,event_type,short_description,event_date,event_time,end_date,end_time,place,status,announced_at,last_reminder_on")
+    .eq("id", id)
+    .maybeSingle();
+  if (error || !ev) return fail("That event could not be found.");
+
+  const today = melbourneToday();
+  if (ev.status !== "published") return fail("Only events shown on the website can have a reminder.");
+  if ((ev.end_date ?? ev.event_date) < today) return fail("This event has already finished.");
+  if (ev.last_reminder_on === today) return fail("A reminder was already sent today. You can send another one tomorrow.");
+  if (ev.announced_at && melbourneDay(ev.announced_at) === today) return fail("Subscribers were already emailed about this event today. You can send a reminder tomorrow.");
+
+  try {
+    const result = await announceEvent(supabase, ev, "reminder");
+    if (result.status === "not-configured") return fail("No email was sent because email is not set up yet.");
+    if (result.status === "no-subscribers") return fail("There are no newsletter subscribers to email yet.");
+    if (result.sent === 0) return fail("The emails could not be sent. Please check the email settings.");
+    await supabase.from("events").update({ last_reminder_on: today }).eq("id", id);
+    refresh();
+    return ok(`Reminder sent to ${result.sent} subscriber${result.sent === 1 ? "" : "s"}${result.failed ? ` (${result.failed} failed)` : ""}.`);
+  } catch (e) {
+    console.error("Event reminder failed", e);
+    return fail("The reminder could not be sent. Please try again.");
   }
 }
 

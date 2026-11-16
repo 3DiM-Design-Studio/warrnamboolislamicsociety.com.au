@@ -68,7 +68,7 @@ export function TeamManager({ team }: { team: TeamRow[] }) {
         open={deleting !== null}
         onClose={() => setDeleting(null)}
         pending={pending}
-        confirmLabel="Remove"
+        confirmLabel="Yes, remove"
         message={deleting ? `Remove ${deleting.name} from the team page?` : ""}
         onConfirm={() => deleting && run(() => deleteTeamMember(deleting.id), () => setDeleting(null))}
       />

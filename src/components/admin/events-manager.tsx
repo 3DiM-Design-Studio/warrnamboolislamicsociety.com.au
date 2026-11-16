@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { deleteEvent, saveEvent } from "@/lib/actions/events";
+import { deleteEvent, saveEvent, sendEventReminder } from "@/lib/actions/events";
 import { EVENT_TYPES, HAS_SPEAKER, eventTypeLabel } from "@/lib/event-types";
 import { fmtHM } from "@/lib/prayer";
 import type { EventRow } from "@/lib/types";
@@ -14,6 +14,7 @@ import { Badge, Button, Card, CardHead, ConfirmDialog, EmptyNote, Field, Modal, 
 export function EventsManager({ events, today, subscriberCount }: { events: EventRow[]; today: string; subscriberCount: number }) {
   const [editing, setEditing] = useState<EventRow | "new" | null>(null);
   const [deleting, setDeleting] = useState<EventRow | null>(null);
+  const [reminding, setReminding] = useState<EventRow | null>(null);
   const { run, pending } = useRunAction();
 
   return (
@@ -38,6 +39,11 @@ export function EventsManager({ events, today, subscriberCount }: { events: Even
                   lead={e.title}
                   actions={
                     <>
+                      {e.status === "published" && !past && (
+                        <Button small disabled={e.last_reminder_on === today} onClick={() => setReminding(e)}>
+                          {e.last_reminder_on === today ? "Reminder sent today" : "Send reminder"}
+                        </Button>
+                      )}
                       <Button small onClick={() => setEditing(e)}>
                         Edit
                       </Button>
@@ -60,6 +66,7 @@ export function EventsManager({ events, today, subscriberCount }: { events: Even
                   ) : (
                     <Badge>Draft</Badge>
                   )}
+                  {e.last_reminder_on && <span className="text-[13px] text-muted">Last reminder: {fmtDate(e.last_reminder_on)}</span>}
                 </Row>
               );
             })}
@@ -71,6 +78,15 @@ export function EventsManager({ events, today, subscriberCount }: { events: Even
       <Modal open={editing !== null} onClose={() => setEditing(null)} title={editing === "new" ? "Add event" : "Edit event"}>
         {editing && <EventForm key={editing === "new" ? "new" : editing.id} event={editing === "new" ? null : editing} today={today} subscriberCount={subscriberCount} onClose={() => setEditing(null)} />}
       </Modal>
+      <ConfirmDialog
+        open={reminding !== null}
+        onClose={() => setReminding(null)}
+        pending={pending}
+        variant="primary"
+        confirmLabel="Yes, send it"
+        message={reminding ? `Email a reminder about "${reminding.title}" to ${subscriberCount} newsletter ${subscriberCount === 1 ? "subscriber" : "subscribers"} now? You can send one reminder a day until the event is over.` : ""}
+        onConfirm={() => reminding && run(() => sendEventReminder(reminding.id), () => setReminding(null))}
+      />
       <ConfirmDialog
         open={deleting !== null}
         onClose={() => setDeleting(null)}

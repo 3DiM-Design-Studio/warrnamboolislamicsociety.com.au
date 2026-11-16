@@ -1,5 +1,5 @@
 export const EVENT_TYPES = [
-  { value: "bayan", label: "Bayan" },
+  { value: "bayan", label: "Sermon" },
   { value: "lecture", label: "Islamic Lecture" },
   { value: "quran_class", label: "Quran Class" },
   { value: "gathering", label: "Community Gathering" },
