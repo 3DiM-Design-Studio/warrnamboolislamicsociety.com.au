@@ -311,7 +311,7 @@ export const GUIDE: Group[] = [
             heading: "How it works",
             blocks: [
               { t: "flow", items: ["Visitor donates on the website", "Payment goes through", "A line appears here"] },
-              { t: "list", items: ["Top cards: total, this month, monthly givers.", "View opens the full details: phone, email, dedication.", "Anonymous: never show this name in public.", "Receipt wanted: send them an email receipt."] },
+              { t: "list", items: ["Top cards: total, this month, monthly givers.", "View opens the full details: phone, email, dedication.", "Anonymous: never show this name in public.", "Receipt wanted: the donor is emailed a thank-you receipt automatically. You do not need to send one."] },
               { t: "warn", text: "Delete only removes the line here. It does not refund money. Refunds are done in Stripe." },
             ],
           },

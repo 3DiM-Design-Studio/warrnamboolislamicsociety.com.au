@@ -1,6 +1,7 @@
 import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 import { createAnonClient, hasSupabase } from "@/lib/supabase/anon";
+import { sendDonationReceipt } from "@/lib/receipt-email";
 
 type Metadata = Record<string, string> | null | undefined;
 
@@ -28,8 +29,24 @@ async function record(
       // YYYY-MM-DD in Melbourne time, from when Stripe took the payment.
       submitted_date: new Intl.DateTimeFormat("en-CA", { timeZone: "Australia/Melbourne" }).format(new Date(payment.created * 1000)),
     });
-  // 23505 = this payment was already saved (Stripe sends some messages twice): nothing to do.
-  if (error && error.code !== "23505") throw new Error(error.message);
+  // 23505 = this payment was already saved (Stripe sends some messages twice): nothing to do, and no second receipt.
+  if (error && error.code === "23505") return;
+  if (error) throw new Error(error.message);
+
+  // The donor asked for a receipt (the form's default is yes). Sent only once, when the gift is first saved.
+  const email = (md.donor_email ?? "").trim();
+  if (md.wants_receipt !== "no" && /^S+@S+.S+$/.test(email)) {
+    const receiptNo = "WIS-" + (payment.payment_intent ?? payment.invoice_id ?? "").replace(/^(pi_|in_)/, "").slice(-8).toUpperCase();
+    await sendDonationReceipt({
+      to: email,
+      // The donor always sees their own name on their receipt; "anonymous" only hides it from the admin list.
+      name: md.donor_name || "Friend",
+      amountCents: payment.amount,
+      date: new Intl.DateTimeFormat("en-CA", { timeZone: "Australia/Melbourne" }).format(new Date(payment.created * 1000)),
+      monthly: Boolean(payment.subscription_id),
+      receiptNo,
+    });
+  }
 }
 
 export async function POST(req: Request) {
