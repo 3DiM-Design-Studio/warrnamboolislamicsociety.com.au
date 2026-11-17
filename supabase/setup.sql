@@ -126,18 +126,19 @@ create table if not exists public.contacts (
   name text not null check (char_length(name) between 1 and 120),
   email text not null check (char_length(email) between 3 and 200),
   message text not null check (char_length(message) between 1 and 5000),
-  status text not null default 'new' check (status in ('new', 'read', 'replied')),
+  status text not null default 'new' check (status in ('new', 'replied')),
   submitted_date date not null default current_date
 );
+-- A time stamp on each new row lets the alerts count what arrived since an admin last looked.
+alter table public.members add column if not exists created_at timestamptz not null default now();
+alter table public.contacts add column if not exists created_at timestamptz not null default now();
+alter table public.donations add column if not exists created_at timestamptz not null default now();
 -- (for a contacts table that already existed before this file: adds any missing columns)
 alter table public.contacts add column if not exists name text not null default '';
 alter table public.contacts add column if not exists email text not null default '';
 alter table public.contacts add column if not exists message text not null default '';
 alter table public.contacts add column if not exists status text not null default 'new';
 alter table public.contacts add column if not exists submitted_date date not null default current_date;
--- A message moves from new to read when an admin opens it, and to replied when it has been answered.
-alter table public.contacts drop constraint if exists contacts_status_check;
-alter table public.contacts add constraint contacts_status_check check (status in ('new', 'read', 'replied'));
 -- Newest first stays quick as the list grows.
 drop index if exists public.contacts_created_idx;
 create index if not exists contacts_submitted_idx on public.contacts (submitted_date desc);
@@ -264,6 +265,14 @@ create table if not exists public.admin_requests (
   created_at timestamptz not null default now()
 );
 
+-- When each admin last opened each page. The alerts count what arrived after that.
+create table if not exists public.admin_seen (
+  email text not null check (email = lower(email)),
+  section text not null,
+  seen_at timestamptz not null default now(),
+  primary key (email, section)
+);
+
 -- The Donate page uses Stripe, so there is no donation_settings table.
 drop table if exists public.donation_settings;
 
@@ -281,6 +290,7 @@ alter table public.prayer_settings enable row level security;
 alter table public.ramadan_periods enable row level security;
 alter table public.jumuah_seasons enable row level security;
 alter table public.admin_requests enable row level security;
+alter table public.admin_seen enable row level security;
 
 -- Remove old versions of these rules so the file can be run again
 do $$
@@ -301,6 +311,11 @@ create policy wis_admins_all on public.admins for all to authenticated
 -- Admin requests: only admins can see or answer them (the website saves new ones itself)
 create policy wis_admin_requests_all on public.admin_requests for all to authenticated
   using (public.is_admin()) with check (public.is_admin());
+
+-- Last-seen times: each admin can only see and change their own
+create policy wis_admin_seen_own on public.admin_seen for all to authenticated
+  using (public.is_admin() and email = lower(coalesce(auth.jwt() ->> 'email', '')))
+  with check (public.is_admin() and email = lower(coalesce(auth.jwt() ->> 'email', '')));
 
 -- Content everyone may read; only admins may change
 create policy wis_settings_read on public.site_settings for select to anon, authenticated using (true);
@@ -405,3 +420,10 @@ select v.name, v.role, v.sort_order from (values
   ($wis$Mr. Syed Usama Shahid Zaidi$wis$, $wis$IT and Website Support$wis$, 90)
 ) as v(name, role, sort_order)
 where not exists (select 1 from public.team_members);
+
+-- Start every current admin with "everything so far has been seen", so old history does not show as new.
+insert into public.admin_seen (email, section)
+select a.email, s.section
+from public.admins a
+cross join (values ('messages'), ('members'), ('donations'), ('admins')) as s(section)
+on conflict do nothing;

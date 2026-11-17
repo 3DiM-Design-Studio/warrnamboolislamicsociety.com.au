@@ -3,6 +3,8 @@ import Link from "next/link";
 import { Icon, type IconName } from "@/components/admin/icons";
 import { LoadError } from "@/components/admin/setup-notice";
 import { Badge, Card, CardHead } from "@/components/admin/ui";
+import { getAlertCounts } from "@/lib/alert-counts";
+import { SECTIONS, type AlertSection } from "@/lib/alerts";
 import { requireAdmin } from "@/lib/auth";
 import {
   DEFAULT_RULES,
@@ -26,10 +28,11 @@ export const metadata: Metadata = { title: "Overview" };
 const inMinutes = (m: number) => (m >= 60 ? `${Math.floor(m / 60)}h ${m % 60}m` : `${m} min`);
 
 export default async function OverviewPage() {
-  const { supabase } = await requireAdmin();
+  const { supabase, email } = await requireAdmin();
   const today = melbourneToday();
+  const alerts = await getAlertCounts(supabase, email);
 
-  const [posts, members, events, settings, prayer, ramadan, seasons, messages, adminRequests] = await Promise.all([
+  const [posts, members, events, settings, prayer, ramadan, seasons] = await Promise.all([
     supabase.from("posts").select("status"),
     supabase.from("members").select("id", { count: "exact", head: true }),
     supabase.from("events").select("id", { count: "exact", head: true }).eq("status", "published").gte("event_date", today),
@@ -37,13 +40,7 @@ export default async function OverviewPage() {
     supabase.from("prayer_settings").select("rules,show_on_site").eq("id", 1).maybeSingle(),
     supabase.from("ramadan_periods").select("id,name,start_date,end_date,isha_iqamah,taraweeh"),
     supabase.from("jumuah_seasons").select("id,name,start_month,start_day,end_month,end_day,jumuah_time"),
-    // Left out of the error check below: before the contacts table exists this just counts as zero.
-    supabase.from("contacts").select("id", { count: "exact", head: true }).eq("status", "new"),
-    // Same for people waiting to become admins: before the requests table exists this counts as zero.
-    supabase.from("admin_requests").select("id", { count: "exact", head: true }),
   ]);
-  const newMessages = messages.count ?? 0;
-  const waitingAdmins = adminRequests.count ?? 0;
   const error = posts.error ?? members.error ?? prayer.error ?? seasons.error ?? settings.error;
   if (error) return <LoadError error={error} />;
 
@@ -111,38 +108,31 @@ export default async function OverviewPage() {
     { href: "/admin/info", label: "Website info", icon: "info" },
   ];
 
+  // Alert bars: what is new since this admin last opened each page. Opening the page clears the bar.
+  const plural = (n: number, one: string, many: string) => (n === 1 ? one : many.replace("{n}", String(n)));
+  const green = "border-[#0f8a63] bg-[#dcf1e8] text-[#0f6a4d]";
+  const gold = "border-[#c9a227] bg-[#f6edd6] text-[#6b4d0c]";
+  const bars: { section: AlertSection; icon: IconName; title: string; sub: string; button: string; className: string }[] = [
+    { section: "messages" as const, icon: "messages" as const, title: plural(alerts.messages, "You have 1 new message", "You have {n} new messages"), sub: "From the website’s Contact page", button: "Read now", className: green },
+    { section: "admins" as const, icon: "admins" as const, title: plural(alerts.admins, "1 person asked to become an admin", "{n} people asked to become admins"), sub: "Waiting for you to approve or deny", button: "Review now", className: gold },
+    { section: "members" as const, icon: "members" as const, title: plural(alerts.members, "1 new member joined", "{n} new members joined"), sub: "From the website’s Membership form", button: "See members", className: green },
+    { section: "donations" as const, icon: "donations" as const, title: plural(alerts.donations, "1 new donation", "{n} new donations"), sub: "From the website’s Donate page", button: "See donations", className: green },
+  ].filter((b) => alerts[b.section] > 0);
+
   return (
     <>
-      {waitingAdmins > 0 && (
-        <Link
-          href="/admin/admins"
-          className="flex flex-wrap items-center gap-3 rounded-2xl border border-[#c9a227] bg-[#f6edd6] p-4 text-[#6b4d0c] transition hover:brightness-95 sm:px-6"
-        >
+      {bars.map((b) => (
+        <Link key={b.section} href={SECTIONS[b.section].href} className={`flex flex-wrap items-center gap-3 rounded-2xl border p-4 transition hover:brightness-95 sm:px-6 ${b.className}`}>
           <span className="grid size-10 place-items-center rounded-full bg-white">
-            <Icon name="admins" />
+            <Icon name={b.icon} />
           </span>
           <span className="min-w-0 flex-1 font-semibold">
-            {waitingAdmins === 1 ? "1 person asked to become an admin" : `${waitingAdmins} people asked to become admins`}
-            <span className="block text-sm font-normal">Waiting for you to approve or deny</span>
+            {b.title}
+            <span className="block text-sm font-normal">{b.sub}</span>
           </span>
-          <span className="rounded-full bg-white px-4 py-1.5 text-sm font-semibold">Review now</span>
+          <span className="rounded-full bg-white px-4 py-1.5 text-sm font-semibold">{b.button}</span>
         </Link>
-      )}
-      {newMessages > 0 && (
-        <Link
-          href="/admin/messages"
-          className="flex flex-wrap items-center gap-3 rounded-2xl border border-[#0f8a63] bg-[#dcf1e8] p-4 text-[#0f6a4d] transition hover:brightness-95 sm:px-6"
-        >
-          <span className="grid size-10 place-items-center rounded-full bg-white">
-            <Icon name="messages" />
-          </span>
-          <span className="min-w-0 flex-1 font-semibold">
-            {newMessages === 1 ? "You have 1 new message" : `You have ${newMessages} new messages`}
-            <span className="block text-sm font-normal">From the website&rsquo;s Contact page</span>
-          </span>
-          <span className="rounded-full bg-white px-4 py-1.5 text-sm font-semibold">Read now</span>
-        </Link>
-      )}
+      ))}
 
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
         {kpi("clock", "Next prayer", `${next.name} ${fmtTime(next.azan)}`, `In ${inMinutes(next.mins)}${next.tomorrow ? " (tomorrow)" : ""}`)}

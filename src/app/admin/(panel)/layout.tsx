@@ -1,5 +1,6 @@
 import { Suspense, type ReactNode } from "react";
 import { AdminShell } from "@/components/admin/shell";
+import { getAlertCounts } from "@/lib/alert-counts";
 import { requireAdmin } from "@/lib/auth";
 
 export default function PanelLayout({ children }: { children: ReactNode }) {
@@ -13,14 +14,10 @@ export default function PanelLayout({ children }: { children: ReactNode }) {
 
 async function Guard({ children }: { children: ReactNode }) {
   const { email, supabase } = await requireAdmin();
-  // The red count beside "Messages" in the menu. If the table is not set up yet, show no count.
-  const [messages, requests] = await Promise.all([
-    supabase.from("contacts").select("id", { count: "exact", head: true }).eq("status", "new"),
-    // The same for people waiting to become admins.
-    supabase.from("admin_requests").select("id", { count: "exact", head: true }),
-  ]);
+  // The numbers beside menu items: what is new since this admin last opened each page.
+  const alerts = await getAlertCounts(supabase, email);
   return (
-    <AdminShell email={email} newMessages={messages.count ?? 0} pendingAdmins={requests.count ?? 0}>
+    <AdminShell email={email} alerts={alerts}>
       {children}
     </AdminShell>
   );

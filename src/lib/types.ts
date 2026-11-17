@@ -83,8 +83,8 @@ export type ContactRow = {
   name: string;
   email: string;
   message: string;
-  /** new = not opened yet, read = opened, replied = answered. Only "new" shows in the alerts. */
-  status: "new" | "read" | "replied";
+  /** new = not answered yet, replied = answered. */
+  status: "new" | "replied";
   /** The day the message was sent, YYYY-MM-DD (Melbourne time). */
   submitted_date: string;
 };

@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState, type ReactNode } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState, type ReactNode } from "react";
 import { signOut } from "@/lib/actions/auth";
 import { Icon, type IconName } from "@/components/admin/icons";
 import { IdleGuard } from "@/components/admin/idle-guard";
+import { markSeen } from "@/lib/actions/seen";
+import { NO_ALERTS, SECTIONS, sectionOfPath, type AlertCounts, type AlertSection } from "@/lib/alerts";
 import { LogoMark } from "@/components/logo-mark";
 import { ToastProvider, cx } from "@/components/admin/ui";
 
@@ -44,13 +46,29 @@ function initials(email: string) {
   return email.split("@")[0].split(/[._-]+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase() || "A";
 }
 
-export function AdminShell({ email, newMessages = 0, pendingAdmins = 0, children }: { email: string; newMessages?: number; pendingAdmins?: number; children: ReactNode }) {
+export function AdminShell({ email, alerts = NO_ALERTS, children }: { email: string; alerts?: AlertCounts; children: ReactNode }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const current = NAV.find((n) => (n.href === "/admin" ? pathname === "/admin" : pathname.startsWith(n.href)));
   const name = email.split("@")[0];
   const inGuide = pathname.startsWith("/admin/guide");
   const guideTopic = (current && GUIDE_PAGE[current.href]) || "start-here";
+
+  // New alerts appear on their own: check again every minute while this tab is open and in view.
+  const router = useRouter();
+  useEffect(() => {
+    const id = setInterval(() => {
+      if (document.visibilityState === "visible") router.refresh();
+    }, 60_000);
+    return () => clearInterval(id);
+  }, [router]);
+
+  // Being on a page with an alert is the same as having seen it: clear it (for this admin only).
+  const here = sectionOfPath(pathname);
+  const waitingHere = here ? alerts[here] : 0;
+  useEffect(() => {
+    if (here && waitingHere > 0) void markSeen(here);
+  }, [here, waitingHere]);
 
   // Tighter on short screens so the whole menu, including Log out, fits without scrolling.
   const navItem = "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-[15px] font-medium transition [@media(max-height:780px)]:py-1.5";
@@ -86,7 +104,9 @@ export function AdminShell({ email, newMessages = 0, pendingAdmins = 0, children
                 <Icon name={n.icon} className={active ? "text-accent" : undefined} />
                 {n.label}
                 {(() => {
-                  const count = n.href === "/admin/messages" ? newMessages : n.href === "/admin/admins" ? pendingAdmins : 0;
+                  const section = (Object.keys(SECTIONS) as AlertSection[]).find((s) => SECTIONS[s].href === n.href);
+                  // No number on the page you are already looking at.
+                  const count = section && !active ? alerts[section] : 0;
                   return (
                     count > 0 && (
                       <span

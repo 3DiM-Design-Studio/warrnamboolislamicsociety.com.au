@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { deleteMessage, markRead, setReplied } from "@/lib/actions/messages";
+import { deleteMessage, setReplied } from "@/lib/actions/messages";
 import type { ContactRow } from "@/lib/types";
 import { fmtDate } from "@/components/admin/format";
 import { Avatar, List, Row } from "@/components/admin/list";
@@ -10,7 +10,7 @@ import { Badge, Button, Card, CardHead, ConfirmDialog, EmptyNote, Modal, cx, use
 
 export function MessagesManager({ messages }: { messages: ContactRow[] }) {
   const [query, setQuery] = useState("");
-  const [status, setStatus] = useState<"all" | "new" | "read" | "replied">("all");
+  const [status, setStatus] = useState<"all" | "new" | "replied">("all");
   const [oldestFirst, setOldestFirst] = useState(false);
   const [page, setPage] = useState(1);
   const [reading, setReading] = useState<ContactRow | null>(null);
@@ -24,7 +24,6 @@ export function MessagesManager({ messages }: { messages: ContactRow[] }) {
   };
 
   const fresh = messages.filter((m) => m.status === "new").length;
-  const readCount = messages.filter((m) => m.status === "read").length;
   const shown = messages
     .filter((m) => (status === "all" || m.status === status) && matchesSearch(query, m.name, m.email, m.message))
     .sort((a, b) => (oldestFirst ? a.submitted_date.localeCompare(b.submitted_date) : b.submitted_date.localeCompare(a.submitted_date)));
@@ -38,7 +37,7 @@ export function MessagesManager({ messages }: { messages: ContactRow[] }) {
     <>
       <Card>
         <CardHead title="Contact messages">
-          {fresh > 0 && <Badge tone="gold">{fresh} new</Badge>}
+          {fresh > 0 && <Badge tone="gold">{fresh} not replied</Badge>}
         </CardHead>
         <p className="mb-4 text-[13px] text-muted">Messages sent from the website&rsquo;s Contact page appear here.</p>
 
@@ -47,9 +46,8 @@ export function MessagesManager({ messages }: { messages: ContactRow[] }) {
             <SearchBox value={query} onChange={(v) => change(() => setQuery(v))} placeholder="Search messages" />
             <select aria-label="Show messages" value={status} onChange={(e) => change(() => setStatus(e.target.value as typeof status))} className={filterClass}>
               <option value="all">All ({messages.length})</option>
-              <option value="new">New ({fresh})</option>
-              <option value="read">Read ({readCount})</option>
-              <option value="replied">Replied ({messages.length - fresh - readCount})</option>
+              <option value="new">Not replied ({fresh})</option>
+              <option value="replied">Replied ({messages.length - fresh})</option>
             </select>
             <select aria-label="Sort messages" value={oldestFirst ? "oldest" : "newest"} onChange={(e) => change(() => setOldestFirst(e.target.value === "oldest"))} className={filterClass}>
               <option value="newest">Sort: Newest first</option>
@@ -85,21 +83,13 @@ export function MessagesManager({ messages }: { messages: ContactRow[] }) {
                     <span className="flex items-center gap-3.5">
                       <Avatar name={m.name} round />
                       <span className={cx(m.status === "new" ? "font-bold" : "font-semibold")}>
-                        {m.name} {m.status === "new" ? <Badge tone="gold">New</Badge> : m.status === "read" ? <Badge>Read</Badge> : <Badge tone="green">Replied</Badge>}
+                        {m.name} {m.status === "new" ? <Badge tone="gold">Not replied</Badge> : <Badge tone="green">Replied</Badge>}
                       </span>
                     </span>
                   }
                   actions={
                     <>
-                      <Button
-                        small
-                        variant="primary"
-                        onClick={() => {
-                          setReading(m);
-                          // Opening it counts as read, which clears the alert and the number in the menu.
-                          if (m.status === "new") void run(() => markRead(m.id));
-                        }}
-                      >
+                      <Button small variant="primary" onClick={() => setReading(m)}>
                         Read
                       </Button>
                       <Button small variant="danger" onClick={() => setDeleting(m)}>

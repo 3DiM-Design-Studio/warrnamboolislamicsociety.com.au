@@ -108,7 +108,7 @@ export const GUIDE: Group[] = [
           {
             heading: "What you see",
             blocks: [
-              { t: "list", items: ["Alert bars at the top: green = new messages, yellow = people waiting to become admins. Each one goes away once you have dealt with it.", "4 number cards: next prayer, Jumu’ah, news posts, members.", "Today’s prayer times with a Change button.", "To do: things to fix. “All good” means nothing to do."] },
+              { t: "list", items: ["Alert bars at the top: new messages, new members, new donations, and people asking to become admins. Open that page (from the bar, the menu, or any way) and the bar disappears.", "4 number cards: next prayer, Jumu’ah, news posts, members.", "Today’s prayer times with a Change button.", "To do: things to fix. “All good” means nothing to do."] },
               { t: "tip", text: "Look at the To do box when you log in. Each line has a button that takes you straight to the fix." },
             ],
           },
@@ -318,7 +318,7 @@ export const GUIDE: Group[] = [
             heading: "Read and reply",
             blocks: [
               { t: "flow", items: ["Press Read (it is marked Read, and the alert clears)", "Reply by email", "Mark as replied"] },
-              { t: "tip", text: "A red number beside Messages in the menu and the green bar on Overview show messages you have not opened yet. They go away once you open them. Press Mark as new to bring one back." },
+              { t: "tip", text: "A number beside Messages in the menu and a bar on Overview show new messages. Both disappear as soon as you open the Messages page. “Not replied” tags stay until you press Mark as replied." },
             ],
           },
         ],
@@ -455,7 +455,7 @@ export const GUIDE: Group[] = [
             heading: "When someone asks to join",
             blocks: [
               { t: "flow", items: ["They press “First time here?” on the sign-in page", "A yellow alert shows on your Overview page", "You open Admin users and press Approve (or Deny)", "They get the email link"] },
-              { t: "tip", text: "The alert on Overview and the number beside Admin users in the menu disappear once every request is answered. Press Deny if you do not know them." },
+              { t: "tip", text: "The alert on Overview and the number beside Admin users disappear as soon as you open Admin users. The request stays in the box until you press Approve or Deny. Press Deny if you do not know them." },
             ],
           },
           {
