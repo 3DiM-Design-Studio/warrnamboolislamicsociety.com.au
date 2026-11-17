@@ -1,9 +1,9 @@
 import type Stripe from "stripe";
+import { detailTable, emailLayout, heading, note } from "@/lib/email-template";
 import { sendMail } from "@/lib/mail";
 import { stripe } from "@/lib/stripe";
 import { createAnonClient, hasSupabase } from "@/lib/supabase/anon";
 
-const esc = (s: string) => s.replace(/[<>&]/g, "");
 
 // Saves a paid membership to the admin's Members list, once per payment (the payment id is unique).
 // A problem here must never show the member an error: their payment already went through.
@@ -62,11 +62,18 @@ export async function POST(req: Request) {
       await sendMail({
         to: process.env.MAIL_FROM!,
         subject: "New member registration",
-        html: `<h2>New member registration</h2>
-        <p><strong>Paid:</strong> $${(pi.amount / 100).toFixed(2)} AUD</p>
-        <p><strong>Member:</strong> ${esc(pi.metadata.member ?? "")}</p>
-        <p><strong>Family:</strong> ${esc(pi.metadata.family ?? "")}</p>
-        <p>Stripe payment: ${pi.id}</p>`,
+        html: emailLayout(
+          [
+            heading("New member registration"),
+            detailTable([
+              ["Paid", `$${(pi.amount / 100).toFixed(2)} AUD`],
+              ["Member", pi.metadata.member ?? ""],
+              ["Family", pi.metadata.family ?? ""],
+              ["Stripe payment", pi.id],
+            ]),
+            note("You can also see this member in the admin panel under Members."),
+          ].join("\n"),
+        ),
       });
       await stripe.paymentIntents.update(pi.id, {
         metadata: { ...pi.metadata, notified: "1" },

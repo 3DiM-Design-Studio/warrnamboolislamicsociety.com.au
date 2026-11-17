@@ -37,7 +37,9 @@ function Card({
 
   const { frequency, name, email, phone, anonymous, receipt, dedicate, dedication } = fields;
   const value = Number(fields.amount) || 0;
-  const valid = Number.isInteger(value) && value >= 2 && value <= 10000;
+  const valid = Number.isInteger(value) && value >= 1 && value <= 10000;
+  // Say plainly what is wrong with the amount, right under the box, instead of only greying out the button.
+  const amountError = valid ? "" : value > 10000 ? "The most we can take online is $10,000. For a larger gift, please contact the committee." : "The smallest donation is $1.";
 
   // Keep the card form's amount in step with the amount box.
   useEffect(() => {
@@ -143,7 +145,9 @@ function Card({
           </p>
 
           <p className="mt-6 font-bold">Amount</p>
-          <label className="mt-3 flex items-center gap-2 rounded-xl bg-background px-5 py-4">
+          <label
+            className={`mt-3 flex items-center gap-2 rounded-xl bg-background px-5 py-4 ${amountError ? "ring-2 ring-red-600" : ""}`}
+          >
             <span className="text-3xl font-bold">$</span>
             <input
               inputMode="numeric"
@@ -152,10 +156,21 @@ function Card({
                 set("amount", e.target.value.replace(/\D/g, "").slice(0, 5))
               }
               aria-label="Donation amount in Australian dollars"
+              aria-invalid={amountError ? true : undefined}
+              aria-describedby={amountError ? "amount-error" : undefined}
               className="w-full bg-transparent text-3xl font-bold outline-none"
             />
             <span className="font-bold text-[#0f8a63]">AUD</span>
           </label>
+          {amountError && (
+            <p
+              id="amount-error"
+              role="alert"
+              className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm font-medium text-red-700"
+            >
+              {amountError}
+            </p>
+          )}
           <div className="mt-3 flex flex-wrap gap-2">
             {adds.map((a) => (
               <button
@@ -250,7 +265,9 @@ function Card({
       >
         {busy
           ? "Processing..."
-          : `Donate $${valid ? value : 0}${frequency === "monthly" ? " every month" : ""}`}
+          : valid
+            ? `Donate $${value}${frequency === "monthly" ? " every month" : ""}`
+            : "Enter $1 or more to donate"}
       </button>
     </form>
   );
@@ -280,7 +297,7 @@ export function DonateForm() {
         stripe={stripePromise}
         options={{
           mode: fields.frequency === "monthly" ? "subscription" : "payment",
-          amount: Math.max(value, 2) * 100,
+          amount: Math.max(value, 1) * 100,
           currency: "aud",
           appearance: {
             theme: "stripe",

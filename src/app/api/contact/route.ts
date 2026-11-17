@@ -1,7 +1,7 @@
+import { detailTable, emailLayout, esc as escHtml, heading, note } from "@/lib/email-template";
 import { sendMail } from "@/lib/mail";
 import { createAnonClient, hasSupabase } from "@/lib/supabase/anon";
 
-const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const clean = (v: unknown) => (typeof v === "string" ? v.trim() : "");
 
 // Saves a message from the Contact page to the contacts table (the admin panel reads it from there),
@@ -50,7 +50,17 @@ export async function POST(req: Request) {
         to: process.env.MAIL_FROM,
         replyTo: email,
         subject: `Website enquiry from ${name.replace(/[\r\n]+/g, " ")}`,
-        html: `<p>${esc(name)} &lt;${esc(email)}&gt;</p><p>${esc(message).replace(/\n/g, "<br>")}</p>`,
+        html: emailLayout(
+          [
+            heading("New website enquiry"),
+            detailTable([
+              ["Name", name],
+              ["Email", email],
+            ]),
+            `<div style="margin-top:18px;padding:16px 18px;background:#f4f4f0;border:1px solid #e3e4dd;border-radius:14px;font-size:15px;line-height:1.6;white-space:pre-wrap">${escHtml(message)}</div>`,
+            note("Reply to this email to answer them. You can also read it in the admin panel under Messages."),
+          ].join("\n"),
+        ),
       });
     } catch (e) {
       console.error("Contact email alert failed", e);

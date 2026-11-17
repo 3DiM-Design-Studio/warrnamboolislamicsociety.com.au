@@ -23,9 +23,9 @@ export async function POST(req: Request) {
   const { amount, frequency, name, email, phone, anonymous, receipt, dedication } =
     await req.json();
   const dollars = Number(amount);
-  if (!Number.isInteger(dollars) || dollars < 2 || dollars > 10000) {
+  if (!Number.isInteger(dollars) || dollars < 1 || dollars > 10000) {
     return Response.json(
-      { error: "Amount must be a whole number from $2 to $10,000." },
+      { error: "Amount must be a whole number from $1 to $10,000." },
       { status: 400 },
     );
   }

@@ -4,7 +4,6 @@ import { refresh } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
 import { dbError, fail, ok } from "@/lib/actions/helpers";
 import { receiptNumber, sendDonationReceipt } from "@/lib/receipt-email";
-import { melbourneDay } from "@/components/admin/format";
 import type { ActionState } from "@/lib/types";
 
 export async function deleteDonation(id: string): Promise<ActionState> {
