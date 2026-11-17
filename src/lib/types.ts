@@ -101,6 +101,9 @@ export type DonationRow = {
   dedication: string;
   /** The day the payment was taken, YYYY-MM-DD (Melbourne time). */
   submitted_date: string;
+  /** Stripe ids, used to rebuild the same receipt number. */
+  payment_intent?: string | null;
+  invoice_id?: string | null;
 };
 
 export type TeamRow = {

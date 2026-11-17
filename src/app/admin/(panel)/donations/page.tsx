@@ -11,7 +11,7 @@ export default async function DonationsPage() {
   const { supabase } = await requireAdmin();
   const { data, error } = await supabase
     .from("donations")
-    .select("id,donor_name,email,phone,amount_cents,frequency,anonymous,wants_receipt,dedication,submitted_date")
+    .select("id,donor_name,email,phone,amount_cents,frequency,anonymous,wants_receipt,dedication,submitted_date,payment_intent,invoice_id")
     .order("submitted_date", { ascending: false });
   if (error) return <LoadError error={error} />;
   return <DonationsManager donations={(data ?? []) as DonationRow[]} month={melbourneToday().slice(0, 7)} />;

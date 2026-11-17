@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { deleteDonation } from "@/lib/actions/donations";
+import { deleteDonation, resendDonationReceipt } from "@/lib/actions/donations";
 import type { DonationRow } from "@/lib/types";
 import { fmtDate } from "@/components/admin/format";
 import { Avatar, List, Row } from "@/components/admin/list";
@@ -62,6 +62,7 @@ export function DonationsManager({ donations, month }: { donations: DonationRow[
   const [page, setPage] = useState(1);
   const [viewing, setViewing] = useState<DonationRow | null>(null);
   const [deleting, setDeleting] = useState<DonationRow | null>(null);
+  const [resending, setResending] = useState<DonationRow | null>(null);
   const { run, pending } = useRunAction();
 
   const change = (fn: () => void) => {
@@ -169,6 +170,11 @@ export function DonationsManager({ donations, month }: { donations: DonationRow[
                       <Button small variant="primary" onClick={() => setViewing(d)}>
                         View
                       </Button>
+                      {d.wants_receipt && d.email && (
+                        <Button small onClick={() => setResending(d)}>
+                          Resend receipt
+                        </Button>
+                      )}
                       <Button small variant="danger" onClick={() => setDeleting(d)}>
                         Delete
                       </Button>
@@ -229,6 +235,15 @@ export function DonationsManager({ donations, month }: { donations: DonationRow[
         )}
       </Modal>
 
+      <ConfirmDialog
+        open={resending !== null}
+        onClose={() => setResending(null)}
+        pending={pending}
+        variant="primary"
+        confirmLabel="Yes, send it"
+        message={resending ? `Email a thank-you receipt for ${money(resending.amount_cents)} to ${resending.email}?` : ""}
+        onConfirm={() => resending && run(() => resendDonationReceipt(resending.id), () => setResending(null))}
+      />
       <ConfirmDialog
         open={deleting !== null}
         onClose={() => setDeleting(null)}

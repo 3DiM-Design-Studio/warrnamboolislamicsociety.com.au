@@ -1,7 +1,7 @@
 import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 import { createAnonClient, hasSupabase } from "@/lib/supabase/anon";
-import { sendDonationReceipt } from "@/lib/receipt-email";
+import { receiptNumber, sendDonationReceipt } from "@/lib/receipt-email";
 
 type Metadata = Record<string, string> | null | undefined;
 
@@ -36,7 +36,7 @@ async function record(
   // The donor asked for a receipt (the form's default is yes). Sent only once, when the gift is first saved.
   const email = (md.donor_email ?? "").trim();
   if (md.wants_receipt !== "no" && /^\S+@\S+\.\S+$/.test(email)) {
-    const receiptNo = "WIS-" + (payment.payment_intent ?? payment.invoice_id ?? "").replace(/^(pi_|in_)/, "").slice(-8).toUpperCase();
+    const receiptNo = receiptNumber(payment.payment_intent, payment.invoice_id);
     await sendDonationReceipt({
       to: email,
       // The donor always sees their own name on their receipt; "anonymous" only hides it from the admin list.

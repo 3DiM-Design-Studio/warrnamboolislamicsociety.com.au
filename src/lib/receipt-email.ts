@@ -19,6 +19,11 @@ const PHONE_LINK = "+61447003546";
 const HADITH = "Whoever spends a pair of something in the way of Allah will be called from the gates of Paradise.";
 const HADITH_SOURCE = "Sahih al-Bukhari 2841, Sahih Muslim 1027";
 
+/** The receipt number printed on the email. The same payment always gives the same number. */
+export function receiptNumber(paymentIntent?: string | null, invoice?: string | null) {
+  return "WIS-" + (paymentIntent ?? invoice ?? "").replace(/^(pi_|in_)/, "").slice(-8).toUpperCase();
+}
+
 const money = (cents: number) => `A$${(cents / 100).toFixed(2)}`;
 const longDate = (d: string) =>
   new Intl.DateTimeFormat("en-AU", { timeZone: "UTC", day: "numeric", month: "long", year: "numeric" }).format(new Date(`${d}T12:00:00Z`));
