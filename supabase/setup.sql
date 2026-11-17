@@ -265,6 +265,16 @@ create table if not exists public.admin_requests (
   created_at timestamptz not null default now()
 );
 
+-- The questions shown on the Home and Donate pages (edited under Website info).
+create table if not exists public.faqs (
+  id uuid primary key default gen_random_uuid(),
+  page text not null check (page in ('home', 'donate')),
+  question text not null check (char_length(question) between 1 and 300),
+  answer text not null check (char_length(answer) between 1 and 2000),
+  sort_order int not null default 0,
+  created_at timestamptz not null default now()
+);
+
 -- When each admin last opened each page. The alerts count what arrived after that.
 create table if not exists public.admin_seen (
   email text not null check (email = lower(email)),
@@ -291,6 +301,7 @@ alter table public.ramadan_periods enable row level security;
 alter table public.jumuah_seasons enable row level security;
 alter table public.admin_requests enable row level security;
 alter table public.admin_seen enable row level security;
+alter table public.faqs enable row level security;
 
 -- Remove old versions of these rules so the file can be run again
 do $$
@@ -323,6 +334,9 @@ create policy wis_settings_write on public.site_settings for all to authenticate
 
 create policy wis_team_read on public.team_members for select to anon, authenticated using (true);
 create policy wis_team_write on public.team_members for all to authenticated using (public.is_admin()) with check (public.is_admin());
+
+create policy wis_faqs_read on public.faqs for select to anon, authenticated using (true);
+create policy wis_faqs_write on public.faqs for all to authenticated using (public.is_admin()) with check (public.is_admin());
 
 create policy wis_prayer_read on public.prayer_settings for select to anon, authenticated using (true);
 create policy wis_prayer_write on public.prayer_settings for all to authenticated using (public.is_admin()) with check (public.is_admin());
@@ -420,6 +434,22 @@ select v.name, v.role, v.sort_order from (values
   ($wis$Mr. Syed Usama Shahid Zaidi$wis$, $wis$IT and Website Support$wis$, 90)
 ) as v(name, role, sort_order)
 where not exists (select 1 from public.team_members);
+
+-- The questions the website already showed, so nothing changes until an admin edits them.
+insert into public.faqs (page, question, answer, sort_order)
+select v.page, v.question, v.answer, v.sort_order from (values
+  ('home', $wis$When is Jumu'ah?$wis$, $wis$Jumu'ah is every Friday. The time can change by season, so check the prayer times page.$wis$, 10),
+  ('home', $wis$How can I donate?$wis$, $wis$Use the donate page. Online card donations are being set up; until then contact the committee for bank details.$wis$, 20),
+  ('home', $wis$Is WIS a registered charity?$wis$, $wis$Yes. Warrnambool Islamic Society is registered with the Australian Charities and Not-for-profits Commission (ACNC).$wis$, 30),
+  ('home', $wis$How do I become a member?$wis$, $wis$Visit the membership page or contact the committee and we will help you register.$wis$, 40),
+  ('home', $wis$Who can attend?$wis$, $wis$Everyone. We welcome people of all backgrounds to visit and show their support.$wis$, 50),
+  ('donate', $wis$How is my donation processed?$wis$, $wis$Payments are processed securely by Stripe. Your card details are entered in a Stripe-hosted field and never reach our servers.$wis$, 10),
+  ('donate', $wis$Are there any fees?$wis$, $wis$Stripe charges the society its standard processing fee on each payment. We add no extra fees on top.$wis$, 20),
+  ('donate', $wis$Is this donation tax-deductible?$wis$, $wis$The society is registered with the ACNC. Please contact the committee to confirm whether a tax-deductible receipt is available for your gift.$wis$, 30),
+  ('donate', $wis$Will I receive a receipt?$wis$, $wis$Enter your email and Stripe sends a payment receipt when receipts are enabled on the society's account. You can also contact us to confirm your gift.$wis$, 40),
+  ('donate', $wis$Can I cancel a monthly donation?$wis$, $wis$Yes. Contact us at any time and we will cancel it for you.$wis$, 50)
+) as v(page, question, answer, sort_order)
+where not exists (select 1 from public.faqs);
 
 -- Start every current admin with "everything so far has been seen", so old history does not show as new.
 insert into public.admin_seen (email, section)

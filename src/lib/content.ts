@@ -2,6 +2,7 @@
 // save in the admin expires it straight away (see src/lib/tags.ts). If Supabase cannot be
 // reached, the site falls back to the content that ships with the code (src/content/site.ts).
 import { cacheLife, cacheTag } from "next/cache";
+import { defaultFaqs, type FaqPage } from "@/content/faqs";
 import { posts as staticPosts, officeBearers, site } from "@/content/site";
 import {
   DEFAULT_RULES,
@@ -66,6 +67,18 @@ export async function getSettings(): Promise<SettingsRow> {
   const { data, error } = await createAnonClient().from("site_settings").select("phones,email,facebook,banner_on,banner_text").eq("id", 1).maybeSingle();
   if (error || !data) return fallbackSettings;
   return data as SettingsRow;
+}
+
+// The questions for one public page. If the database cannot be reached (or the table is not set up yet),
+// the questions that ship with the code are shown. An empty list hides the section.
+export async function getFaqs(page: FaqPage): Promise<{ q: string; a: string }[]> {
+  "use cache";
+  cacheTag(TAGS.faqs);
+  cacheLife("minutes");
+  if (!hasSupabase) return defaultFaqs[page];
+  const { data, error } = await createAnonClient().from("faqs").select("question,answer").eq("page", page).order("sort_order", { ascending: true });
+  if (error || !data) return defaultFaqs[page];
+  return data.map((r) => ({ q: r.question as string, a: r.answer as string }));
 }
 
 export async function getPosts(): Promise<PublicPost[]> {

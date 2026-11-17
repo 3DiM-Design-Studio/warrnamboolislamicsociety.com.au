@@ -11,6 +11,7 @@ import Link from "next/link";
 import { DonateForm } from "@/components/donate-form";
 import { RichHeading } from "@/components/rich-heading";
 import { site } from "@/content/site";
+import { getFaqs } from "@/lib/content";
 
 export const metadata = { title: "Donate" };
 
@@ -24,30 +25,8 @@ const headingIcons = {
   generations: <Sprout className={icon} aria-hidden />,
 };
 
-const faqs = [
-  {
-    q: "How is my donation processed?",
-    a: "Payments are processed securely by Stripe. Your card details are entered in a Stripe-hosted field and never reach our servers.",
-  },
-  {
-    q: "Are there any fees?",
-    a: "Stripe charges the society its standard processing fee on each payment. We add no extra fees on top.",
-  },
-  {
-    q: "Is this donation tax-deductible?",
-    a: "The society is registered with the ACNC. Please contact the committee to confirm whether a tax-deductible receipt is available for your gift.",
-  },
-  {
-    q: "Will I receive a receipt?",
-    a: "Enter your email and Stripe sends a payment receipt when receipts are enabled on the society's account. You can also contact us to confirm your gift.",
-  },
-  {
-    q: "Can I cancel a monthly donation?",
-    a: "Yes. Contact us at any time and we will cancel it for you.",
-  },
-];
-
-export default function Donate() {
+export default async function Donate() {
+  const faqs = await getFaqs("donate");
   return (
     <div className="mx-auto max-w-6xl px-4 pt-6">
       <div className="flex items-center justify-between">
@@ -115,6 +94,7 @@ export default function Donate() {
               </Link>
             </p>
           </div>
+          {faqs.length > 0 && (
           <div className="divide-y divide-border rounded-2xl bg-card">
             {faqs.map((f) => (
               <details key={f.q} className="group p-5">
@@ -128,6 +108,7 @@ export default function Donate() {
               </details>
             ))}
           </div>
+          )}
         </aside>
 
         <section className="order-1 lg:order-2">

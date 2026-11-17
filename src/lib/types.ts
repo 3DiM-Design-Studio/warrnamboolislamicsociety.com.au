@@ -137,6 +137,9 @@ export type JumuahRow = {
 
 export type AdminRow = { email: string; created_at: string };
 
+/** One question and answer shown on a public page. */
+export type FaqRow = { id: string; page: "home" | "donate"; question: string; answer: string; sort_order: number };
+
 /** Someone who asked to become an admin and is waiting for an approval. */
 export type AdminRequestRow = { id: string; email: string; name: string; created_at: string };
 

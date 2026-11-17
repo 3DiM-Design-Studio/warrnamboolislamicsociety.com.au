@@ -4,31 +4,8 @@ import { AcncBadge } from "@/components/acnc-badge";
 import { FridayCalendar } from "@/components/friday-calendar";
 import { HeroGreeting } from "@/components/hero-greeting";
 import { mission, site } from "@/content/site";
-import { getJumuah, getPosts, getUpcomingEvents } from "@/lib/content";
+import { getFaqs, getJumuah, getPosts, getUpcomingEvents } from "@/lib/content";
 import { EventCard, PostCard } from "@/components/story-cards";
-
-const faqs = [
-  {
-    q: "When is Jumu'ah?",
-    a: "Jumu'ah is every Friday. The time can change by season, so check the prayer times page.",
-  },
-  {
-    q: "How can I donate?",
-    a: "Use the donate page. Online card donations are being set up; until then contact the committee for bank details.",
-  },
-  {
-    q: "Is WIS a registered charity?",
-    a: "Yes. Warrnambool Islamic Society is registered with the Australian Charities and Not-for-profits Commission (ACNC).",
-  },
-  {
-    q: "How do I become a member?",
-    a: "Visit the membership page or contact the committee and we will help you register.",
-  },
-  {
-    q: "Who can attend?",
-    a: "Everyone. We welcome people of all backgrounds to visit and show their support.",
-  },
-];
 
 const featureImages = [
   "/cards/services.png",
@@ -38,10 +15,11 @@ const featureImages = [
 const features = mission.slice(0, 3);
 
 export default async function Home() {
-  const [posts, jumuah, events] = await Promise.all([
+  const [posts, jumuah, events, faqs] = await Promise.all([
     getPosts(),
     getJumuah(),
     getUpcomingEvents(),
+    getFaqs("home"),
   ]);
   return (
     <>
@@ -172,6 +150,7 @@ export default async function Home() {
           </div>
         </section>
 
+        {faqs.length > 0 && (
         <section className="pt-16">
           <h2 className="text-3xl font-bold">Frequently asked questions</h2>
           <div className="mt-6 divide-y divide-border rounded-2xl bg-card">
@@ -188,6 +167,7 @@ export default async function Home() {
             ))}
           </div>
         </section>
+        )}
       </div>
     </>
   );

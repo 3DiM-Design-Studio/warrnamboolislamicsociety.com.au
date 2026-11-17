@@ -61,6 +61,7 @@ export const GUIDE: Group[] = [
                   { icon: "prayer", title: "Change an Iqamah time", text: "Prayer times" },
                   { icon: "jumuah", title: "Change the Friday time", text: "Jumu’ah" },
                   { icon: "info", title: "Change phone, email or top message", text: "Website info" },
+                  { icon: "info", title: "Change the FAQ questions", text: "Website info → FAQ" },
                   { icon: "team", title: "Change the committee", text: "Team" },
                   { icon: "admins", title: "Let someone log in", text: "Admin users → Add someone" },
                 ],
@@ -110,6 +111,13 @@ export const GUIDE: Group[] = [
             blocks: [
               { t: "list", items: ["Alert bars at the top: new messages, new members, new donations, and people asking to become admins. Open that page (from the bar, the menu, or any way) and the bar disappears.", "4 number cards: next prayer, Jumu’ah, news posts, members.", "Today’s prayer times with a Change button.", "To do: things to fix. “All good” means nothing to do."] },
               { t: "tip", text: "Look at the To do box when you log in. Each line has a button that takes you straight to the fix." },
+            ],
+          },
+          {
+            heading: "Alerts",
+            blocks: [
+              { t: "flow", items: ["Something new arrives", "A bar and a number appear", "You open that page", "They disappear"] },
+              { t: "list", items: ["New messages, new members, new donations and people asking to become admins each have an alert.", "The number sits beside that item in the menu. The bar sits at the top of Overview.", "It clears for you as soon as you open the page, by the bar, the menu, or the address. Other admins keep their own alerts.", "New alerts show up by themselves while the panel is open."] },
             ],
           },
         ],
@@ -268,7 +276,7 @@ export const GUIDE: Group[] = [
             heading: "How people appear",
             blocks: [
               { t: "flow", items: ["Visitor fills the Membership form", "They appear here", "Nothing to approve"] },
-              { t: "tip", text: "Use the suburb filter and the sort choice above the list to find people." },
+              { t: "tip", text: "Use the suburb filter and the sort choice above the list to find people. A bar on Overview and a number beside Members show new joiners until you open this page." },
             ],
           },
           {
@@ -411,7 +419,7 @@ export const GUIDE: Group[] = [
       {
         slug: "info",
         title: "Website info",
-        summary: "Phone, email, Facebook and the top message.",
+        summary: "Phone, email, Facebook, the top message and the FAQ questions.",
         parts: [
           {
             heading: "The form",
@@ -429,6 +437,22 @@ export const GUIDE: Group[] = [
                   { label: "Show this message", kind: "switch", example: "Turn off when it is old news" },
                 ],
               },
+            ],
+          },
+          {
+            heading: "Frequently asked questions",
+            blocks: [
+              { t: "flow", items: ["Website info", "Scroll to “Frequently asked questions”", "Add question (or Edit)", "Save"] },
+              {
+                t: "form",
+                title: "Add question",
+                open: "Website info → scroll down → press Add question beside Home page or Donate page",
+                fields: [
+                  { label: "Question", example: "Who can attend?", need: true },
+                  { label: "Answer", kind: "long", example: "Everyone. We welcome people of all backgrounds.", need: true },
+                ],
+              },
+              { t: "list", items: ["There are two lists: one for the Home page and one for the Donate page.", "Use the up and down arrows to change the order the website shows them in.", "Delete asks Yes or No first.", "An empty list hides the whole question section on that page.", "Changes show on the website straight away."] },
             ],
           },
         ],
@@ -486,6 +510,12 @@ export const GUIDE: Group[] = [
             blocks: [
               { t: "flow", items: ["Sign-in page", "Forgot your password?", "Type your email", "Open the link", "Choose a new password"] },
               { t: "tip", text: "The link works once. If it says “expired”, ask for a new one." },
+            ],
+          },
+          {
+            heading: "A bar or number will not go away",
+            blocks: [
+              { t: "list", items: ["Open the page it points to (Messages, Members, Donations or Admin users). It clears for you.", "If it comes back, something new arrived since you looked.", "Another admin's alerts are separate from yours."] },
             ],
           },
           {
