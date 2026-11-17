@@ -87,13 +87,13 @@ export default async function OverviewPage() {
 
   const kpi = (icon: IconName, label: string, value: string, sub: string) => (
     <Card className="grid gap-3">
-      <div className="flex items-center gap-3 font-semibold">
-        <span className="grid size-10 place-items-center rounded-full bg-[#dcf1e8] text-[#0f6a4d]">
+      <div className="flex flex-col items-start gap-2 font-semibold sm:flex-row sm:items-center sm:gap-3">
+        <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#dcf1e8] text-[#0f6a4d]">
           <Icon name={icon} />
         </span>
         {label}
       </div>
-      <div className="text-3xl font-bold leading-tight tracking-tight tabular-nums">{value}</div>
+      <div className="text-xl font-bold leading-tight tracking-tight tabular-nums sm:text-3xl">{value}</div>
       <div className="text-sm text-muted">{sub}</div>
     </Card>
   );
@@ -134,7 +134,7 @@ export default async function OverviewPage() {
         </Link>
       ))}
 
-      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-5 xl:grid-cols-4">
         {kpi("clock", "Next prayer", `${next.name} ${fmtTime(next.azan)}`, `In ${inMinutes(next.mins)}${next.tomorrow ? " (tomorrow)" : ""}`)}
         {kpi("jumuah", "Jumu’ah", jumuah ? fmtHM(jumuah.jumuah_time) : "Not set", "Every Friday")}
         {kpi("posts", "News posts", String(live), `${drafts} not on the website`)}

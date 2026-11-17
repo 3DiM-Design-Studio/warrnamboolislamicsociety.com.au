@@ -1,5 +1,6 @@
 import "server-only";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -7,6 +8,8 @@ import { createClient } from "@/lib/supabase/server";
  * admin action. It checks the login, then checks the email is on the admins list.
  */
 export async function requireAdmin() {
+  // Everything below depends on who is asking, so it is always done when a request arrives, never ahead of time.
+  await connection();
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
   const email = typeof data?.claims?.email === "string" ? data.claims.email.toLowerCase() : "";
