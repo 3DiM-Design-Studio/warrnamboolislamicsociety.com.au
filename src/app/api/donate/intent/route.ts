@@ -86,7 +86,6 @@ export async function POST(req: Request) {
     amount: dollars * 100,
     currency: "aud",
     automatic_payment_methods: { enabled: true },
-    receipt_email: metadata.wants_receipt === "yes" ? email : undefined,
     description: "Donation to Warrnambool Islamic Society",
     metadata,
   });
