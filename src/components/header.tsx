@@ -3,7 +3,7 @@
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { LogoMark } from "@/components/logo-mark";
 import { nav, site } from "@/content/site";
 
@@ -37,7 +37,10 @@ export function Header() {
     return () => window.removeEventListener("keydown", onKey);
   }, [menuOpen]);
 
-  useEffect(() => {
+  // Check the scroll position before the first paint, so a reload that restores a mid-page scroll
+  // never shows the header in the wrong state for a frame.
+  useLayoutEffect(() => {
+    if ("scrollRestoration" in window.history) window.history.scrollRestoration = "manual";
     const onScroll = () => setScrolled(window.scrollY > 40);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });

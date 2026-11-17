@@ -18,9 +18,24 @@ and mention only the choices that are genuinely open.
 1. Update the in-panel guide (`src/lib/guide-content.ts`) so it matches the screens.
 2. If the database changes, edit `supabase/setup.sql` in place (safe to run twice) **and** give the user the exact SQL snippet to paste.
 3. Run `tsc`, `eslint` and `next build` (use `node node_modules/...` on Windows). Fix every error before saying done.
-4. Run the `logic-reviewer` agent (`.claude/agents/logic-reviewer.md`) and fix what it finds, or tell the user plainly what is left.
+4. Check the change yourself, by reading the code path end to end and by opening the page in the browser (both first load and reload). Say plainly what was checked and what was not.
 
 ## Workflow
 - Do not commit or deploy until the user says "push". Leave `package-lock.json` out of commits.
 - Never print or ask for secret keys. Server-only keys live in Vercel settings.
 - Keep wording simple. Tell the user about any Supabase or Vercel step *before* it is needed.
+
+## QA checklist (run on every change, no extra agent needed)
+Source: standard QA practice, as listed by the AT*SQA tools directory (accessibility, responsive, performance, visual, security, bug reporting).
+- **Looks right:** check each changed page at phone (390 px), tablet (768 px) and desktop (1280 px). Check first load AND reload.
+- **Contrast:** text over photos and alert bars is readable.
+- **Works:** every button and form does what its label says; errors say how to fix them.
+- **Alerts:** clear when the page is opened, per admin (see src/lib/alerts.ts).
+- **Speed:** no new slow queries on a page; no polling faster than needed.
+- **Labels:** every input and icon-only button has a visible label or aria-label; every image has alt text (empty alt only for decoration).
+- **Data:** the matching SQL is in supabase/setup.sql and is named in the reply to the user.
+
+## Bug report format
+Severity: Critical (blocks use or leaks data) / High (visible wrong behaviour) / Medium (works but poor) / Low (polish).
+Priority: P1 now, P2 soon, P3 later.
+Each bug: page, steps, what happened, what should happen, file and line.
