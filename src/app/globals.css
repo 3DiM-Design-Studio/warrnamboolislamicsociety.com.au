@@ -175,3 +175,8 @@ body {
   transition: border-color 150ms;
 }
 .btn-secondary:hover { border-color: var(--brand-dark); }
+
+/* The space the header takes while it loads. It matches the real header (88px, or 120px on the home page),
+   so nothing below it jumps when the header appears. */
+.site-header-space { height: 88px; }
+html[data-home="1"] .site-header-space { height: 120px; }

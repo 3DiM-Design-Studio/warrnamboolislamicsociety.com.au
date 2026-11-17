@@ -9,7 +9,7 @@ export default function SiteLayout({ children }: LayoutProps<"/">) {
       <Announcement />
       <Banner />
       {/* The header reads the current address, which is unknown for pages like /news/[slug] until a visitor arrives. */}
-      <Suspense fallback={<div aria-hidden className="h-[88px]" />}>
+      <Suspense fallback={<div aria-hidden className="site-header-space" />}>
         <Header />
       </Suspense>
       <main className="flex-1">{children}</main>

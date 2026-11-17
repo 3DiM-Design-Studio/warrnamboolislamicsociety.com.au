@@ -43,9 +43,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${libreFranklin.variable} ${arabic.variable} ${urdu.variable} ${devanagari.variable} ${tamil.variable} h-full antialiased`}
     >
       <body id="top" className="min-h-full flex flex-col">
+        {/* Runs before the first paint: the home page has a taller header than the other pages, so its reserved space must be right from the start. */}
+        <script dangerouslySetInnerHTML={{ __html: 'document.documentElement.dataset.home=location.pathname==="/"?"1":"0"' }} />
         <SmoothScroll />
         {children}
         {process.env.NEXT_PUBLIC_GA_ID && (

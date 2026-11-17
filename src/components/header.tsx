@@ -47,6 +47,11 @@ export function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Keep the "home" marker (set before the first paint) right when moving between pages without a reload.
+  useLayoutEffect(() => {
+    document.documentElement.dataset.home = isHome ? "1" : "0";
+  }, [isHome]);
+
   const overHero = isHome && !scrolled && !menuOpen;
 
   return (
