@@ -52,7 +52,7 @@ export async function signOutIdle() {
   redirect("/admin/login?error=idle");
 }
 
-const EMAIL = /^[^s@]+@[^s@]+.[^s@]+$/;
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const SENT = "If this email is on the admin list, a link is on its way. Please check your inbox, and your spam folder too.";
 const JOINED = "Thank you. If an admin has already added you, a link to choose your password is on its way (check spam too). If not, your request is waiting for an admin to approve it, and you will get an email when it is approved.";
 const MAX_WAITING = 25;

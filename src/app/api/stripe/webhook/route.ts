@@ -35,7 +35,7 @@ async function record(
 
   // The donor asked for a receipt (the form's default is yes). Sent only once, when the gift is first saved.
   const email = (md.donor_email ?? "").trim();
-  if (md.wants_receipt !== "no" && /^S+@S+.S+$/.test(email)) {
+  if (md.wants_receipt !== "no" && /^\S+@\S+\.\S+$/.test(email)) {
     const receiptNo = "WIS-" + (payment.payment_intent ?? payment.invoice_id ?? "").replace(/^(pi_|in_)/, "").slice(-8).toUpperCase();
     await sendDonationReceipt({
       to: email,
