@@ -47,8 +47,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${libreFranklin.variable} ${arabic.variable} ${urdu.variable} ${devanagari.variable} ${tamil.variable} h-full antialiased`}
     >
       <body id="top" className="min-h-full flex flex-col">
-        {/* Runs before the first paint: the home page has a taller header than the other pages, so its reserved space must be right from the start. */}
-        <script dangerouslySetInnerHTML={{ __html: 'document.documentElement.dataset.home=location.pathname==="/"?"1":"0"' }} />
+        {/* Runs before the first paint. The home page has a taller, see-through header, so these two marks (home, at the top) must be right from the very first frame. */}
+        <script dangerouslySetInnerHTML={{ __html: 'var d=document.documentElement;d.dataset.home=location.pathname==="/"?"1":"0";d.dataset.top=(window.pageYOffset||0)>40?"0":"1"' }} />
         <SmoothScroll />
         {children}
         {process.env.NEXT_PUBLIC_GA_ID && (

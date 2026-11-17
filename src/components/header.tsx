@@ -3,7 +3,7 @@
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState, useSyncExternalStore } from "react";
 import { LogoMark } from "@/components/logo-mark";
 import { nav, site } from "@/content/site";
 
@@ -21,14 +21,22 @@ export function Banner() {
   );
 }
 
+// The address the visitor is really on. On some hosts the page's first HTML is made without knowing the address,
+// so the router's value can be out of date until the first click. The browser's own address is always right.
+const noSubscribe = () => () => {};
+
 // Sticky. On the home page it floats over the hero until the page scrolls.
+//
+// How big the header is, and whether it is see-through, depends only on two marks on <html> that a tiny script
+// sets before anything is drawn (see app/layout.tsx): data-home ("1" on the home page) and data-top ("1" while the
+// page is at the top). Styles for them are in globals.css. That way the first frame is right on every host, and
+// nothing moves when the page finishes loading.
 export function Header() {
-  const pathname = usePathname();
-  const isHome = pathname === "/";
-  const [scrolled, setScrolled] = useState(false);
+  const routerPath = usePathname();
+  const path = useSyncExternalStore(noSubscribe, () => window.location.pathname, () => routerPath);
   // The phone menu is remembered together with the page it was opened on, so moving to another page closes it.
   const [openOn, setOpenOn] = useState<string | null>(null);
-  const menuOpen = openOn === pathname;
+  const menuOpen = openOn === path;
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -37,33 +45,27 @@ export function Header() {
     return () => window.removeEventListener("keydown", onKey);
   }, [menuOpen]);
 
-  // Check the scroll position before the first paint, so a reload that restores a mid-page scroll
-  // never shows the header in the wrong state for a frame.
+  // Keep the "top" mark right while scrolling. A reload that restores a mid-page scroll must not show the wrong look.
   useLayoutEffect(() => {
     if ("scrollRestoration" in window.history) window.history.scrollRestoration = "manual";
-    const onScroll = () => setScrolled(window.scrollY > 40);
+    const root = document.documentElement;
+    const onScroll = () => {
+      root.dataset.top = window.scrollY > 40 ? "0" : "1";
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Keep the "home" marker (set before the first paint) right when moving between pages without a reload.
+  // Keep the "home" mark right when moving between pages without a reload.
   useLayoutEffect(() => {
-    document.documentElement.dataset.home = isHome ? "1" : "0";
-  }, [isHome]);
-
-  const overHero = isHome && !scrolled && !menuOpen;
+    document.documentElement.dataset.home = window.location.pathname === "/" ? "1" : "0";
+  }, [path]);
 
   return (
-    <header
-      className={`sticky z-50 ${isHome ? "-top-8 h-[120px] pt-12" : "top-0 h-[88px] pt-4"}`}
-    >
-      <div className={`relative mx-auto max-w-6xl ${isHome ? "px-6 sm:px-10" : "px-4"}`}>
-        <div
-          className={`flex h-14 items-center justify-between gap-3 rounded-full px-3 pl-4 transition-colors ${
-            overHero ? "text-white" : "bg-white/90 backdrop-blur"
-          }`}
-        >
+    <header className="site-header">
+      <div className="site-header-inner relative mx-auto max-w-6xl">
+        <div className="site-pill flex h-14 items-center justify-between gap-3 rounded-full px-3 pl-4" data-menu={menuOpen ? "open" : undefined}>
           <Link href="/" className="flex items-center gap-2 font-bold">
             <LogoMark className="size-9" />
             <span className="hidden sm:inline">{site.name}</span>
@@ -86,7 +88,7 @@ export function Header() {
               type="button"
               aria-label={menuOpen ? "Close menu" : "Open menu"}
               aria-expanded={menuOpen}
-              onClick={() => setOpenOn(menuOpen ? null : pathname)}
+              onClick={() => setOpenOn(menuOpen ? null : path)}
               className="grid size-11 place-items-center rounded-full lg:hidden"
             >
               {menuOpen ? <X className="size-6" aria-hidden /> : <Menu className="size-6" aria-hidden />}
@@ -97,15 +99,12 @@ export function Header() {
           <button type="button" aria-hidden tabIndex={-1} onClick={() => setOpenOn(null)} className="fixed inset-0 -z-10 cursor-default lg:hidden" />
         )}
         {menuOpen && (
-          <nav
-            aria-label="Main menu"
-            className={`absolute top-full z-50 mt-2 grid rounded-3xl bg-white p-2 text-brand-dark shadow-xl lg:hidden ${isHome ? "inset-x-6 sm:inset-x-10" : "inset-x-4"}`}
-          >
+          <nav aria-label="Main menu" className="site-menu absolute top-full z-50 mt-2 grid rounded-3xl bg-white p-2 text-brand-dark shadow-xl lg:hidden">
             {nav.map((n) => (
               <Link
                 key={n.href}
                 href={n.href}
-                aria-current={pathname === n.href ? "page" : undefined}
+                aria-current={path === n.href ? "page" : undefined}
                 className="rounded-2xl px-4 py-3.5 text-base font-medium hover:bg-background aria-[current=page]:bg-[#c9f26b]/50 aria-[current=page]:font-bold"
               >
                 {n.label}

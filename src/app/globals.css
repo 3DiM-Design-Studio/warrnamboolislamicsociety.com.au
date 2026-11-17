@@ -180,3 +180,16 @@ body {
    so nothing below it jumps when the header appears. */
 .site-header-space { height: 88px; }
 html[data-home="1"] .site-header-space { height: 120px; }
+
+/* The header. Its size and see-through look depend only on two marks on <html>, set by a tiny script before the
+   first paint: data-home ("1" on the home page) and data-top ("1" while the page is at the top). */
+.site-header { position: sticky; top: 0; z-index: 50; height: 88px; padding-top: 1rem; }
+html[data-home="1"] .site-header { top: -2rem; height: 120px; padding-top: 3rem; }
+.site-header-inner { padding-inline: 1rem; }
+html[data-home="1"] .site-header-inner { padding-inline: 1.5rem; }
+@media (min-width: 640px) { html[data-home="1"] .site-header-inner { padding-inline: 2.5rem; } }
+.site-pill { background-color: rgb(255 255 255 / 0.9); backdrop-filter: blur(8px); transition: background-color 150ms, color 150ms; }
+html[data-home="1"][data-top="1"] .site-pill:not([data-menu]) { background-color: transparent; backdrop-filter: none; color: #fff; }
+.site-menu { inset-inline: 1rem; }
+html[data-home="1"] .site-menu { inset-inline: 1.5rem; }
+@media (min-width: 640px) { html[data-home="1"] .site-menu { inset-inline: 2.5rem; } }
