@@ -69,7 +69,11 @@ export function PrayerTimetable({ iqamah }: { iqamah?: TodayIqamah | null }) {
   // Open scrolled to around Fajr instead of the middle of the night.
   const ready = now !== null;
   useLayoutEffect(() => {
-    if (scroller.current) scroller.current.scrollTop = PX * 0.5;
+    if (!scroller.current) return;
+    // Start just above today's Fajr, never below it, so the first prayer of the day is not cut off.
+    const d = new Date();
+    const fajr = table[d.getMonth() + 1]?.find((r) => r.d === d.getDate())?.fajr;
+    scroller.current.scrollTop = fajr ? Math.max(0, (toMinutes(fajr) / 60 - START) * PX - 28) : 0;
   }, [ready]);
 
   if (!now) return <div className="h-96 rounded-2xl bg-card" />;
@@ -108,7 +112,7 @@ export function PrayerTimetable({ iqamah }: { iqamah?: TodayIqamah | null }) {
   const btn =
     "grid size-9 place-items-center rounded-lg border border-border bg-white hover:bg-background";
   const seg = (active: boolean) =>
-    `px-4 py-2 text-sm font-semibold ${active ? "bg-[#16c05a] text-white" : "bg-white hover:bg-background"}`;
+    `px-4 py-2 text-sm font-semibold ${active ? "bg-brand-gradient text-brand-dark" : "bg-white hover:bg-background"}`;
 
   return (
     <div className="space-y-10">

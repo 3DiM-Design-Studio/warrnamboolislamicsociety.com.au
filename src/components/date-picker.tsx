@@ -107,7 +107,7 @@ export function DatePicker({
               aria-pressed={sameDay(d, value)}
               className={`mx-auto grid size-9 place-items-center rounded-full text-sm ${
                 sameDay(d, value)
-                  ? "bg-[#16c05a] font-bold text-white"
+                  ? "bg-brand-gradient font-bold text-brand-dark"
                   : sameDay(d, today)
                     ? "bg-[#c9f26b]/60 font-bold hover:bg-[#c9f26b]"
                     : "hover:bg-background"

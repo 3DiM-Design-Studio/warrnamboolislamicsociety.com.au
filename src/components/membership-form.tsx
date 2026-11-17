@@ -200,9 +200,9 @@ function Card({
                     <span
                       className={`grid size-9 place-items-center rounded-full text-xs font-bold lg:size-7 ${
                         active
-                          ? "bg-[#16c05a] text-white"
+                          ? "bg-brand-gradient text-brand-dark"
                           : done
-                            ? "border-2 border-[#16c05a] bg-white text-[#16c05a]"
+                            ? "border-2 border-[#0f8a63] bg-white text-[#0f8a63]"
                             : "bg-background text-muted"
                       }`}
                     >
@@ -216,7 +216,7 @@ function Card({
                   </button>
                   {i < steps.length - 1 && (
                     <span
-                      className={`h-0.5 w-5 rounded ${done ? "bg-[#16c05a]" : "bg-border"}`}
+                      className={`h-0.5 w-5 rounded ${done ? "bg-[#0f8a63]" : "bg-border"}`}
                       aria-hidden
                     />
                   )}
@@ -421,7 +421,7 @@ function Card({
             disabled={
               !stepValid || busy || (step === 3 && (!stripe || !elements))
             }
-            className="rounded-lg bg-[#16c05a] px-8 py-2.5 font-semibold text-white transition-[filter] hover:brightness-95 disabled:opacity-50"
+            className="btn-primary"
           >
             {step < 3
               ? "Next"

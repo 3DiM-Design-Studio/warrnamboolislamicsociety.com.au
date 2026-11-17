@@ -73,7 +73,7 @@ export function ContactForm({ contact }: { contact: ContactDetails }) {
 
           {status === "sent" ? (
             <div className="flex flex-1 flex-col items-start px-6 pb-8 pt-2 sm:px-8">
-              <span className="grid size-10 place-items-center rounded-full bg-[#16c05a] text-white">
+              <span className="grid size-10 place-items-center rounded-full bg-brand-gradient text-brand-dark">
                 <Check className="size-5" aria-hidden />
               </span>
               <h2 className="mt-4 text-2xl font-bold tracking-tight sm:text-3xl">
@@ -148,7 +148,7 @@ export function ContactForm({ contact }: { contact: ContactDetails }) {
               <div className="flex items-center justify-end px-6 pb-6 sm:px-8 sm:pb-8">
                 <button
                   disabled={status === "sending"}
-                  className="rounded-lg bg-[#16c05a] px-8 py-2.5 font-semibold text-white transition-[filter] hover:brightness-95 disabled:opacity-50"
+                  className="btn-primary"
                 >
                   {status === "sending" ? "Sending..." : "Send message"}
                 </button>

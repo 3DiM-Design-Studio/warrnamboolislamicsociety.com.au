@@ -143,3 +143,35 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* The website's main button: lime to green pill with dark text. Use it for every main action. */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  background-image: linear-gradient(135deg, #c9f26b 0%, #00bf2e 100%);
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  color: var(--brand-dark);
+  cursor: pointer;
+  transition: filter 150ms;
+}
+.btn-primary:hover { filter: brightness(0.95); }
+.btn-primary:disabled { cursor: not-allowed; opacity: 0.6; }
+
+/* The website's second button: a plain pill with a dark outline. */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  border: 2px solid color-mix(in srgb, var(--brand-dark) 30%, transparent);
+  padding: 0.625rem 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 150ms;
+}
+.btn-secondary:hover { border-color: var(--brand-dark); }

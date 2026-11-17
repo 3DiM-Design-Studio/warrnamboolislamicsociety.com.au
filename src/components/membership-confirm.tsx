@@ -71,7 +71,7 @@ export function MembershipConfirm({
           Allah accept it from you and reward you.
         </p>
         <form method="dialog" className="mt-6">
-          <button className="rounded-lg bg-[#16c05a] px-8 py-2.5 font-semibold text-white hover:brightness-95">
+          <button className="btn-primary">
             Close
           </button>
         </form>
