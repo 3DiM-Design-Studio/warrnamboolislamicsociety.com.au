@@ -12,6 +12,7 @@ import {
   Sunset,
   type LucideIcon,
 } from "lucide-react";
+import { PrayerSkeleton } from "@/components/skeletons";
 import { DatePicker } from "@/components/date-picker";
 import type { TodayIqamah } from "@/lib/content";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
@@ -76,7 +77,7 @@ export function PrayerTimetable({ iqamah }: { iqamah?: TodayIqamah | null }) {
     scroller.current.scrollTop = fajr ? Math.max(0, (toMinutes(fajr) / 60 - START) * PX - 28) : 0;
   }, [ready]);
 
-  if (!now) return <div className="h-96 rounded-2xl bg-card" />;
+  if (!now) return <PrayerSkeleton />;
 
   const todayRow = table[now.getMonth() + 1]?.find(
     (r) => r.d === now.getDate(),

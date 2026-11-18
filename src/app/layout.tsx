@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import { SmoothScroll } from "@/components/smooth-scroll";
-import { ScrollReveal } from "@/components/scroll-reveal";
 import type { Metadata } from "next";
 import {
   Libre_Franklin,
@@ -10,6 +9,7 @@ import {
   Noto_Sans_Tamil,
 } from "next/font/google";
 import { AnalyticsConsent } from "@/components/analytics-consent";
+import { RouteProgress, RouteProgressBar } from "@/components/route-progress";
 import { SITE_URL } from "@/lib/site-url";
 import { site } from "@/content/site";
 import "./globals.css";
@@ -59,11 +59,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body id="top" className="min-h-full flex flex-col">
         {/* Runs before the first paint. The home page has a taller, see-through header, so these two marks (home, at the top) must be right from the very first frame. */}
-        <script dangerouslySetInnerHTML={{ __html: 'var d=document.documentElement;d.dataset.home=location.pathname==="/"?"1":"0";d.dataset.top=(window.pageYOffset||0)>40?"0":"1"' }} />
-        <SmoothScroll />
+        <script dangerouslySetInnerHTML={{ __html: 'var d=document.documentElement;d.dataset.home=location.pathname==="/"?"1":"0";d.dataset.top=(window.pageYOffset||0)>40?"0":"1";d.dataset.loading="1"' }} />
+        <RouteProgressBar />
         <Suspense fallback={null}>
-          <ScrollReveal />
+          <RouteProgress />
         </Suspense>
+        <SmoothScroll />
         {children}
         <AnalyticsConsent gaId={process.env.NEXT_PUBLIC_GA_ID} />
       </body>

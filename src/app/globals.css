@@ -194,17 +194,65 @@ html[data-home="1"][data-top="1"] .site-pill:not([data-menu]) { background-color
 html[data-home="1"] .site-menu { inset-inline: 1.5rem; }
 @media (min-width: 640px) { html[data-home="1"] .site-menu { inset-inline: 2.5rem; } }
 
-/* Soft rise-in for sections as they scroll into view (see components/scroll-reveal.tsx) */
-.reveal {
-  opacity: 0;
-  transform: translateY(14px);
-  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+/* Sections rise in softly as they scroll into view. Pure CSS (scroll-driven animation): no script, nothing to
+   go wrong while the page loads. Browsers without support simply show everything. Content already on screen is
+   untouched, and visitors who ask for less motion get none. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    main section,
+    [data-admin-content] > * {
+      animation: section-rise linear backwards;
+      animation-timeline: view();
+      animation-range: entry 0% entry 35%;
+    }
+  }
 }
-.reveal.reveal-in {
-  opacity: 1;
-  transform: none;
+@keyframes section-rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
 }
 html { scroll-padding-top: 6rem; }
+
+/* Top loading bar (components/route-progress.tsx): lime to green, runs while a page loads, fills and fades out */
+.wis-progress {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 200;
+  height: 3px;
+  pointer-events: none;
+  opacity: 0;
+}
+.wis-progress-bar {
+  height: 100%;
+  width: 0;
+  border-radius: 0 3px 3px 0;
+  background-image: linear-gradient(90deg, #c9f26b 0%, #00bf2e 100%);
+  box-shadow: 0 0 8px rgb(0 191 46 / 0.4), 0 0 2px rgb(201 242 107 / 0.8);
+}
+html[data-loading="1"] .wis-progress,
+.wis-progress.is-running {
+  opacity: 1;
+}
+html[data-loading="1"] .wis-progress-bar,
+.wis-progress.is-running .wis-progress-bar {
+  animation: wis-crawl 18s linear forwards;
+}
+.wis-progress.is-done {
+  opacity: 0;
+  transition: opacity 0.5s ease 0.45s;
+}
+.wis-progress.is-done .wis-progress-bar {
+  width: 100%;
+  transition: width 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* A gentle start, then a steady glide that keeps slowing down and never quite reaches the end on its own */
+@keyframes wis-crawl {
+  0% { width: 0; animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1); }
+  4% { width: 14%; animation-timing-function: cubic-bezier(0.3, 0.2, 0.4, 1); }
+  16% { width: 38%; animation-timing-function: cubic-bezier(0.3, 0.3, 0.4, 1); }
+  40% { width: 62%; animation-timing-function: cubic-bezier(0.3, 0.3, 0.5, 1); }
+  100% { width: 90%; }
+}
 
 /* 404 page illustration (components/not-found-view.tsx) */
 .nf-star { animation: nf-twinkle 3.2s ease-in-out infinite; }
@@ -234,3 +282,21 @@ html { scroll-padding-top: 6rem; }
 .skip-link:focus { transform: none; }
 
 .link-fx[aria-current="page"] { background-position: 0% 100%; background-size: 100% 1.5px; }
+
+/* Loading placeholders (components/skeletons.tsx): warm grey shapes with a slow, soft shine */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  background-color: #ebe9e1;
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(90deg, transparent 0%, rgb(255 255 255 / 0.65) 50%, transparent 100%);
+  animation: skeleton-shine 1.8s ease-in-out infinite;
+}
+@keyframes skeleton-shine { to { transform: translateX(100%); } }
+@media (prefers-reduced-motion: reduce) { .skeleton::after { display: none; } }

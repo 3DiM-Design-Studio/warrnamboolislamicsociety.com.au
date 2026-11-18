@@ -1,12 +1,13 @@
 import { Suspense, type ReactNode } from "react";
 import { AdminShell } from "@/components/admin/shell";
+import { AdminShellSkeleton } from "@/components/skeletons";
 import { getAlertCounts } from "@/lib/alert-counts";
 import { requireAdmin } from "@/lib/auth";
 
 export default function PanelLayout({ children }: { children: ReactNode }) {
   // Reading the login happens at request time, so it sits behind a Suspense boundary.
   return (
-    <Suspense fallback={<div className="grid min-h-dvh place-items-center text-muted">Loading...</div>}>
+    <Suspense fallback={<AdminShellSkeleton />}>
       <Guard>{children}</Guard>
     </Suspense>
   );

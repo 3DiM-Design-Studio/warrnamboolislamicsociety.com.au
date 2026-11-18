@@ -4,8 +4,7 @@ import { AcncBadge } from "@/components/acnc-badge";
 import { FridayCalendar } from "@/components/friday-calendar";
 import { HeroGreeting } from "@/components/hero-greeting";
 import { mission, site } from "@/content/site";
-import { getFaqs, getJumuah, getPosts, getUpcomingEvents } from "@/lib/content";
-import { EventCard, PostCard } from "@/components/story-cards";
+import { HomeEvents, HomeFaqs, HomeJumuahTime, HomeNews } from "@/components/home-sections";
 
 const featureImages = [
   "/cards/services.png",
@@ -14,13 +13,7 @@ const featureImages = [
 ];
 const features = mission.slice(0, 3);
 
-export default async function Home() {
-  const [posts, jumuah, events, faqs] = await Promise.all([
-    getPosts(),
-    getJumuah(),
-    getUpcomingEvents(),
-    getFaqs("home"),
-  ]);
+export default function Home() {
   return (
     <>
       <div className="mx-auto -mt-[120px] max-w-6xl px-4 pt-8">
@@ -88,35 +81,9 @@ export default async function Home() {
           </div>
         </section>
 
-        <section className="pt-16">
-          <div className="flex items-baseline justify-between">
-            <h2 className="text-3xl font-bold">Latest from the community</h2>
-            <Link href="/news" className="inline-block py-2 text-sm font-medium link-fx">
-              All news
-            </Link>
-          </div>
-          <div className="mt-8 grid gap-4 sm:grid-cols-3">
-            {posts.slice(0, 3).map((p) => (
-              <PostCard key={p.id} post={p} />
-            ))}
-          </div>
-        </section>
+        <HomeNews />
 
-        {events.length > 0 && (
-          <section className="pt-16">
-            <div className="flex items-baseline justify-between">
-              <h2 className="text-3xl font-bold">Upcoming events</h2>
-              <Link href="/events" className="inline-block py-2 text-sm font-medium link-fx">
-                All events
-              </Link>
-            </div>
-            <div className="mt-8 grid gap-4 sm:grid-cols-3">
-              {events.slice(0, 3).map((e) => (
-                <EventCard key={e.id} event={e} />
-              ))}
-            </div>
-          </section>
-        )}
+        <HomeEvents />
 
         <section className="relative isolate mt-16 overflow-hidden rounded-3xl bg-card px-6 py-8 sm:px-10">
           <div className="absolute inset-0 -z-10 overflow-hidden rounded-3xl">
@@ -135,7 +102,7 @@ export default async function Home() {
                 Join us for Jumu&apos;ah, every Friday
               </p>
               <p className="mt-2 text-6xl font-bold tracking-tight sm:text-8xl">
-                {jumuah.today ?? "Fridays"}
+                <HomeJumuahTime />
               </p>
               <p className="mt-3 max-w-md text-muted">
                 Everyone is welcome. See the full prayer times for the day.
@@ -150,24 +117,7 @@ export default async function Home() {
           </div>
         </section>
 
-        {faqs.length > 0 && (
-        <section className="pt-16">
-          <h2 className="text-3xl font-bold">Frequently asked questions</h2>
-          <div className="mt-6 divide-y divide-border rounded-2xl bg-card">
-            {faqs.map((f) => (
-              <details key={f.q} className="group p-5">
-                <summary className="flex cursor-pointer list-none items-center justify-between font-medium">
-                  {f.q}
-                  <span className="text-xl transition group-open:rotate-45">
-                    +
-                  </span>
-                </summary>
-                <p className="mt-3 text-sm text-muted">{f.a}</p>
-              </details>
-            ))}
-          </div>
-        </section>
-        )}
+        <HomeFaqs />
       </div>
     </>
   );

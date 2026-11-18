@@ -2,6 +2,7 @@ import { Bell, BookOpen, Users } from "lucide-react";
 import { Suspense } from "react";
 import { PageShell } from "@/components/page-shell";
 import { Pagination } from "@/components/pagination";
+import { CardsSkeleton, FeaturedPostSkeleton, Skeleton } from "@/components/skeletons";
 import { FeaturedPost, PostCard } from "@/components/story-cards";
 import { getPosts } from "@/lib/content";
 
@@ -44,6 +45,27 @@ async function NewsList({ searchParams }: { searchParams: PageProps<"/news">["se
   );
 }
 
+// Grey shapes in the same layout as page 1: the large story, the "Latest news" heading, 6 cards and the page buttons.
+function NewsSkeleton() {
+  return (
+    <div className="space-y-10">
+      <FeaturedPostSkeleton />
+      <section>
+        <div aria-hidden className="mb-5 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+          <Skeleton className="h-8 w-44" />
+          <Skeleton className="h-4 w-40" />
+        </div>
+        <CardsSkeleton kind="post" count={6} label="Loading news" />
+        <div aria-hidden className="mt-8 flex justify-center gap-2">
+          <Skeleton className="size-11 rounded-full" />
+          <Skeleton className="size-11 rounded-full" />
+          <Skeleton className="size-11 rounded-full" />
+        </div>
+      </section>
+    </div>
+  );
+}
+
 export default function News({ searchParams }: PageProps<"/news">) {
   return (
     <PageShell
@@ -57,7 +79,7 @@ export default function News({ searchParams }: PageProps<"/news">) {
       }}
       intro="Announcements, events and notices from Warrnambool Islamic Society."
     >
-      <Suspense fallback={<div aria-hidden className="min-h-[60vh]" />}>
+      <Suspense fallback={<NewsSkeleton />}>
         <NewsList searchParams={searchParams} />
       </Suspense>
     </PageShell>
