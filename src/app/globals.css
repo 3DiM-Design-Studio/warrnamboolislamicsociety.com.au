@@ -205,3 +205,13 @@ html[data-home="1"] .site-menu { inset-inline: 1.5rem; }
   transform: none;
 }
 html { scroll-padding-top: 6rem; }
+
+/* 404 page illustration (components/not-found-view.tsx) */
+.nf-star { animation: nf-twinkle 3.2s ease-in-out infinite; }
+.nf-window { animation: nf-flicker 4.5s ease-in-out infinite; }
+.nf-float { animation: nf-float 7s ease-in-out infinite; }
+.nf-swing { animation: nf-swing 4.5s ease-in-out infinite; }
+@keyframes nf-twinkle { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
+@keyframes nf-flicker { 0%, 100% { opacity: 0.95; } 50% { opacity: 0.6; } }
+@keyframes nf-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes nf-swing { 0%, 100% { transform: rotate(5deg); } 50% { transform: rotate(-5deg); } }

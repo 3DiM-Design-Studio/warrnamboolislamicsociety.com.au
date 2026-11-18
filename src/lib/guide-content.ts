@@ -96,6 +96,7 @@ export const GUIDE: Group[] = [
               { t: "flow", items: ["New here?", "Press “First time here?”", "Type your name + email", "Open the email link (or wait for approval)", "Choose a password"] },
               { t: "flow", items: ["Phone: tap ☰ (top left)", "Pick a section", "Menu closes"] },
               { t: "tip", text: "Log out when you use a shared computer. It is at the bottom of the menu. If nobody touches the page for 8 hours, you are signed out automatically." },
+              { t: "tip", text: "If you see a night picture of a mosque with “This page has gone missing”, the address does not exist. Press “Back to the admin panel”. Check that the address was copied in full." },
               { t: "tip", text: "To change your password any time, press “Change password” at the bottom of the menu." },
             ],
           },
