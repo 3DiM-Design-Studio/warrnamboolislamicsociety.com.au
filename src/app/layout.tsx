@@ -1,4 +1,6 @@
+import { Suspense } from "react";
 import { SmoothScroll } from "@/components/smooth-scroll";
+import { ScrollReveal } from "@/components/scroll-reveal";
 import type { Metadata } from "next";
 import {
   Libre_Franklin,
@@ -50,6 +52,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         {/* Runs before the first paint. The home page has a taller, see-through header, so these two marks (home, at the top) must be right from the very first frame. */}
         <script dangerouslySetInnerHTML={{ __html: 'var d=document.documentElement;d.dataset.home=location.pathname==="/"?"1":"0";d.dataset.top=(window.pageYOffset||0)>40?"0":"1"' }} />
         <SmoothScroll />
+        <Suspense fallback={null}>
+          <ScrollReveal />
+        </Suspense>
         {children}
         {process.env.NEXT_PUBLIC_GA_ID && (
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />

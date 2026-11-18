@@ -15,7 +15,7 @@ function Cover({ src, className = "" }: { src: string | null; className?: string
     <div className={`relative overflow-hidden bg-[#dff3cf] ${className}`}>
       {src ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={src} alt="" loading="lazy" decoding="async" className="absolute inset-0 size-full object-cover transition duration-500 group-hover:scale-105" />
+        <img src={src} alt="" loading="lazy" decoding="async" className="absolute inset-0 size-full object-cover" />
       ) : (
         <div className="absolute inset-0 grid place-items-center bg-linear-to-br from-[#dff3cf] to-[#cdeee3]">
           <LogoMark className="size-14 opacity-60" />
@@ -44,7 +44,7 @@ export function FeaturedPost({ post }: { post: PublicPost }) {
         <h2 className="text-2xl font-bold leading-tight tracking-tight sm:text-3xl">{post.title}</h2>
         <p className="line-clamp-4 text-muted">{post.preview}</p>
         <span className="inline-flex items-center gap-1.5 font-semibold">
-          Read story <ArrowUpRight className="size-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden />
+          Read story <ArrowUpRight className="size-4" aria-hidden />
         </span>
       </div>
     </Link>
@@ -54,7 +54,7 @@ export function FeaturedPost({ post }: { post: PublicPost }) {
 /** Standard story card: picture on top, date chip, headline, short text. */
 export function PostCard({ post }: { post: PublicPost }) {
   return (
-    <Link href={`/news/${post.slug}`} className="group flex flex-col overflow-hidden rounded-2xl bg-card transition hover:-translate-y-0.5">
+    <Link href={`/news/${post.slug}`} className="group flex flex-col overflow-hidden rounded-2xl bg-card">
       <Cover src={post.photo_url} className="aspect-[16/10]" />
       <div className="flex flex-1 flex-col gap-3 p-5">
         <div className="flex flex-wrap items-center gap-2">
@@ -71,7 +71,7 @@ export function PostCard({ post }: { post: PublicPost }) {
 /** Event card: picture on top, type chip, title, date, time, place and a link to the details. */
 export function EventCard({ event }: { event: EventRow }) {
   return (
-    <Link href={`/events/${event.id}`} className="group flex flex-col overflow-hidden rounded-2xl bg-card transition hover:-translate-y-0.5">
+    <Link href={`/events/${event.id}`} className="group flex flex-col overflow-hidden rounded-2xl bg-card">
       <Cover src={event.photo_url} className="aspect-[16/10]" />
       <div className="flex flex-1 flex-col gap-3 p-5">
         <div>
@@ -93,7 +93,7 @@ export function EventCard({ event }: { event: EventRow }) {
           </span>
         </div>
         <span className="mt-auto inline-flex items-center gap-1.5 pt-1 text-sm font-semibold">
-          View details <ArrowUpRight className="size-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden />
+          View details <ArrowUpRight className="size-4" aria-hidden />
         </span>
       </div>
     </Link>

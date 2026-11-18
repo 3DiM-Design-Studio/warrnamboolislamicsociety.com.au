@@ -158,7 +158,7 @@ export function AdminShell({ email, alerts = NO_ALERTS, children }: { email: str
               </span>
             </div>
           </header>
-          <div className="mx-auto grid w-full max-w-[1160px] flex-1 content-start gap-5 px-4 pb-24 pt-3 sm:px-8">{children}</div>
+          <div data-admin-content className="mx-auto grid w-full max-w-[1160px] flex-1 content-start gap-5 px-4 pb-24 pt-3 sm:px-8">{children}</div>
           <footer className="px-4 py-6 text-center text-[13px] text-muted">
             Powered by <b className="font-semibold text-foreground">3DiM Design Studio</b>
           </footer>
