@@ -3,7 +3,7 @@
 import { ArrowLeft, Clock, Mail, Phone } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState, useTransition } from "react";
 
 const input =
   "w-full rounded-xl border-2 border-border bg-white px-4 py-3 outline-none focus:border-brand-dark";
@@ -12,6 +12,9 @@ export type ContactDetails = { email: string; phones: string[]; jumuah: string }
 
 export function ContactForm({ contact }: { contact: ContactDetails }) {
   const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
+  // Next.js keeps a visited page alive in the background, so the form must never be left half-way when we move to the thank-you page.
+  const [opening, startOpening] = useTransition();
   const [status, setStatus] = useState<"idle" | "sending" | "error">("idle");
   const [error, setError] = useState("");
 
@@ -26,8 +29,11 @@ export function ContactForm({ contact }: { contact: ContactDetails }) {
         body: JSON.stringify(data),
       });
       if (res.ok) {
-        // The thank-you page takes over. The button stays on "Sending..." until it opens.
-        router.push("/contact/thank-you");
+        // Empty the form and put it back to normal now. While the thank-you page opens, "opening" keeps the button on "Sending...".
+        formRef.current?.reset();
+        setError("");
+        setStatus("idle");
+        startOpening(() => router.push("/contact/thank-you"));
         return;
       }
       const body = await res.json().catch(() => null);
@@ -53,7 +59,7 @@ export function ContactForm({ contact }: { contact: ContactDetails }) {
             <span className="text-sm font-medium text-muted">Contact us</span>
           </div>
 
-          <form onSubmit={onSubmit} className="flex min-h-0 flex-1 flex-col">
+          <form ref={formRef} onSubmit={onSubmit} className="flex min-h-0 flex-1 flex-col">
               <div className="flex-1 overflow-y-auto px-6 pb-6 pt-2 sm:px-8">
                 <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
                   Send us a message
@@ -105,10 +111,10 @@ export function ContactForm({ contact }: { contact: ContactDetails }) {
               )}
               <div className="flex items-center justify-end px-6 pb-6 sm:px-8 sm:pb-8">
                 <button
-                  disabled={status === "sending"}
+                  disabled={status === "sending" || opening}
                   className="btn-primary"
                 >
-                  {status === "sending" ? "Sending..." : "Send message"}
+                  {status === "sending" || opening ? "Sending..." : "Send message"}
                 </button>
               </div>
           </form>

@@ -77,7 +77,7 @@ export function ThankYouView({
   children?: ReactNode;
 }) {
   return (
-    <section className="relative isolate mx-auto my-8 w-full max-w-3xl overflow-hidden rounded-3xl bg-brand-dark px-6 py-10 text-center text-white sm:my-12 sm:px-10 sm:py-14">
+    <section className="relative isolate mx-auto w-full max-w-3xl overflow-hidden rounded-3xl bg-brand-dark px-6 py-10 text-center text-white sm:px-10 sm:py-14">
       <Scene />
       <h1 className="mt-4 text-balance text-3xl font-bold tracking-tight sm:text-4xl">{title}</h1>
       <div className="mx-auto mt-3 max-w-md text-[15px] leading-relaxed text-white/80 sm:text-base">{message}</div>

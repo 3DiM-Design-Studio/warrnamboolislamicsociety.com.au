@@ -83,7 +83,7 @@ function Scene() {
 // The 404 card, used by every missing page: the website (inside its header and footer) and the admin panel.
 export function NotFoundView() {
   return (
-    <section className="relative isolate mx-auto my-8 w-full max-w-3xl overflow-hidden rounded-3xl bg-brand-dark px-6 py-10 text-center text-white sm:my-12 sm:px-10 sm:py-14">
+    <section className="relative isolate mx-auto w-full max-w-3xl overflow-hidden rounded-3xl bg-brand-dark px-6 py-10 text-center text-white sm:px-10 sm:py-14">
       <Scene />
       <p className="mt-5 text-6xl font-bold leading-none tracking-tight text-brand-gradient sm:text-7xl" aria-hidden>
         404

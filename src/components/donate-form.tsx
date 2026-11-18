@@ -34,6 +34,14 @@ function Card({
   const elements = useElements();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  // The browser's Back button can bring this page back exactly as it was left (still "working"). Put it back to normal.
+  useEffect(() => {
+    const reset = (e: PageTransitionEvent) => {
+      if (e.persisted) setBusy(false);
+    };
+    window.addEventListener("pageshow", reset);
+    return () => window.removeEventListener("pageshow", reset);
+  }, []);
 
   const { frequency, name, email, phone, anonymous, receipt, dedicate, dedication } = fields;
   const value = Number(fields.amount) || 0;
