@@ -99,7 +99,7 @@ const sections: LegalSection[] = [
     title: "Your choice",
     body: (
       <>
-        <p>You can change your answer here at any time:</p>
+        <p>You can change your answer here at any time, or by pressing “Cookie settings” at the bottom of any page:</p>
         <div className="rounded-2xl bg-card p-4">
           <AnalyticsChoiceButton />
         </div>

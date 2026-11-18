@@ -4,6 +4,7 @@ import Link from "next/link";
 import { NavLink } from "@/components/nav-link";
 import GradientWaves from "@/components/GradientWaves";
 import { BackToTop } from "@/components/back-to-top";
+import { CookieSettingsButton } from "@/components/analytics-consent";
 import { SubscribeForm } from "@/components/subscribe-form";
 import { nav, site } from "@/content/site";
 import { getSettings } from "@/lib/content";
@@ -122,6 +123,7 @@ export async function Footer() {
                     {n.label}
                   </NavLink>
                 ))}
+                <CookieSettingsButton className="link-fx py-2.5 text-left lg:py-1" />
               </p>
             </div>
 
