@@ -92,7 +92,7 @@ async function NewsList({ searchParams }: { searchParams: PageProps<"/news">["se
                   Showing {from + 1}–{from + shown.length} of {grid.length} {grid.length === 1 ? "story" : "stories"}
                 </p>
               </div>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="reveal-cards grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {shown.map((p) => (
                   <PostCard key={p.id} post={p} />
                 ))}

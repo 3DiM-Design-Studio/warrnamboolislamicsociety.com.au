@@ -1,8 +1,9 @@
-import { ArrowRight, ArrowUp, HeartHandshake, Mail, Phone } from "lucide-react";
+import { ArrowRight, HeartHandshake, Mail, Phone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { NavLink } from "@/components/nav-link";
 import GradientWaves from "@/components/GradientWaves";
+import { BackToTop } from "@/components/back-to-top";
 import { SubscribeForm } from "@/components/subscribe-form";
 import { nav, site } from "@/content/site";
 import { getSettings } from "@/lib/content";
@@ -133,13 +134,7 @@ export async function Footer() {
                   ))}
                 </p>
               </div>
-              <a
-                href="#top"
-                aria-label="Back to top"
-                className="grid size-11 place-items-center self-end rounded-full bg-brand-dark text-white"
-              >
-                <ArrowUp className="size-5" aria-hidden />
-              </a>
+              <BackToTop className="self-end" />
             </div>
           </div>
         </div>

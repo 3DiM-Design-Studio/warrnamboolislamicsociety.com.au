@@ -104,8 +104,9 @@ export default async function About() {
             {people.map((p, i) => (
               <div
                 key={p.id}
-                className="w-56 shrink-0 snap-start"
+                className="w-full shrink-0 snap-center sm:w-56 sm:snap-start"
               >
+                <div className="mx-auto w-full max-w-[17rem] sm:max-w-none">
                 <div
                   className="relative grid aspect-[4/5] place-items-end overflow-hidden rounded-xl"
                   style={{
@@ -121,6 +122,7 @@ export default async function About() {
                 </div>
                 <p className="mt-4 font-bold">{p.name}</p>
                 <p className="text-sm text-muted">{p.role}</p>
+                </div>
               </div>
             ))}
           </ScrollRow>

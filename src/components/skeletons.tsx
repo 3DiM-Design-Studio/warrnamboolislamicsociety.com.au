@@ -35,6 +35,9 @@ export function PostCardSkeleton() {
           <Skeleton className="h-3.5 w-full" />
           <Skeleton className="h-3.5 w-5/6" />
         </div>
+        <div className="pt-1">
+          <Skeleton className="h-4 w-24" />
+        </div>
       </div>
     </div>
   );

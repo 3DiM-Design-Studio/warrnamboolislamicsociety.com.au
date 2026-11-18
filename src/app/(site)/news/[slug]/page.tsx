@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/json-ld";
 import { PageShell } from "@/components/page-shell";
+import { SectionHeading } from "@/components/section-heading";
 import { ShareButtons } from "@/components/share-buttons";
 import { PostCard } from "@/components/story-cards";
 import { site } from "@/content/site";
@@ -112,15 +113,10 @@ async function Post({ params }: { params: PageProps<"/news/[slug]">["params"] })
 
       {more.length > 0 && (
         <section className="pt-10" aria-labelledby="more-news">
-          <div className="mb-5 flex items-baseline justify-between gap-4">
-            <h2 id="more-news" className="text-2xl font-bold">
-              More from the community
-            </h2>
-            <Link href="/news" className="inline-block py-2 text-sm font-medium link-fx">
-              All news
-            </Link>
+          <div className="mb-5">
+            <SectionHeading id="more-news" title="More from the community" href="/news" label="All news" />
           </div>
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="reveal-cards grid gap-4 sm:grid-cols-3">
             {more.map((p) => (
               <PostCard key={p.id} post={p} />
             ))}

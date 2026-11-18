@@ -24,7 +24,7 @@ export function EventsGrid({ events, today }: { events: EventRow[]; today: strin
 
   return (
     <div ref={top} className="scroll-mt-24">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="reveal-cards grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {shown.map((e) => (
           <EventCard key={e.id} event={e} today={today} />
         ))}

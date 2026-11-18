@@ -64,6 +64,9 @@ export function PostCard({ post }: { post: PublicPost }) {
         </div>
         <h3 className="line-clamp-3 text-lg font-bold leading-snug">{post.title}</h3>
         <p className="line-clamp-2 text-sm text-muted">{post.preview}</p>
+        <span className="mt-auto inline-flex items-center gap-1.5 pt-1 text-sm font-semibold">
+          Read story <ArrowUpRight className="size-4" aria-hidden />
+        </span>
       </div>
     </Link>
   );

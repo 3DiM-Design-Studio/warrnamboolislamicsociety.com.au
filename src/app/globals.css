@@ -306,3 +306,67 @@ html[data-loading="1"] .wis-progress-bar,
 .ty-check { stroke-dasharray: 80; animation: ty-draw 0.55s ease-out 0.55s both; }
 @keyframes ty-pop { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 @keyframes ty-draw { from { stroke-dashoffset: 80; } to { stroke-dashoffset: 0; } }
+
+/* ---- Top banner on phones: one slim line that slides across (components/header.tsx) ---- */
+.banner-marquee {
+  overflow: hidden;
+  padding-block: 0.4rem;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%);
+}
+.banner-track {
+  display: flex;
+  width: max-content;
+  animation: banner-slide 32s linear infinite;
+}
+.banner-marquee:hover .banner-track,
+.banner-marquee:active .banner-track {
+  animation-play-state: paused;
+}
+@keyframes banner-slide {
+  to { transform: translateX(-50%); }
+}
+.banner-static { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .banner-marquee { display: none; }
+  .banner-static { display: block; }
+}
+
+/* ---- Scrolling animations. They follow the scroll, so they play on the way down and again on the way up.
+   Browsers without support, and visitors who prefer less motion, simply see everything as normal. ---- */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* Cards in a grid rise one after another (each a little later than the one before) */
+    .reveal-cards > * {
+      animation: card-rise linear backwards;
+      animation-timeline: view();
+      animation-range: entry 4% entry 42%;
+    }
+    .reveal-cards > *:nth-child(3n + 2) { animation-range: entry 10% entry 48%; }
+    .reveal-cards > *:nth-child(3n + 3) { animation-range: entry 16% entry 54%; }
+    /* The picture in a service card floats up and grows a little as it arrives */
+    .feature-art {
+      animation: art-arrive linear backwards;
+      animation-timeline: view();
+      animation-range: entry 0% entry 70%;
+    }
+    /* The big picture at the top drifts slower than the page, which gives the page some depth */
+    .hero-parallax {
+      animation: hero-drift linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 90vh;
+    }
+  }
+}
+@keyframes card-rise {
+  from { opacity: 0; transform: translateY(34px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes art-arrive {
+  from { opacity: 0; transform: translateY(26px) scale(0.92); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes hero-drift {
+  from { transform: scale(1.14) translateY(0); }
+  to { transform: scale(1.14) translateY(9%); }
+}

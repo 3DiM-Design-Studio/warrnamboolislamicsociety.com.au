@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { Suspense } from "react";
 import { EventCard, PostCard } from "@/components/story-cards";
 import { CardsSkeleton, FaqSkeleton, SectionHeadingSkeleton, Skeleton } from "@/components/skeletons";
 import { NextUp } from "@/components/next-up";
+import { SectionHeading } from "@/components/section-heading";
 import { eventDateText, eventPhase } from "@/lib/event-dates";
 import { getFaqs, getJumuah, getPosts, getToday, getTodayIqamah, getUpcomingEvents } from "@/lib/content";
 import { fmtHM } from "@/lib/prayer";
@@ -10,7 +10,7 @@ import { fmtHM } from "@/lib/prayer";
 // Each part of the home page that reads from the database loads on its own, so the hero, the three service
 // cards and the menu show straight away while these fill in (each one shows a grey placeholder meanwhile).
 
-const grid = "mt-8 grid gap-4 sm:grid-cols-3";
+const grid = "reveal-cards mt-8 grid gap-4 sm:grid-cols-3";
 
 async function News() {
   const posts = await getPosts();
@@ -28,12 +28,7 @@ async function News() {
 export function HomeNews() {
   return (
     <section className="pt-16">
-      <div className="flex items-baseline justify-between">
-        <h2 className="text-3xl font-bold">Latest from the community</h2>
-        <Link href="/news" className="inline-block py-2 text-sm font-medium link-fx">
-          All news
-        </Link>
-      </div>
+      <SectionHeading title="Latest from the community" href="/news" label="All news" />
       <Suspense fallback={<CardsSkeleton kind="post" count={3} label="Loading latest news" className={grid} />}>
         <News />
       </Suspense>
@@ -46,12 +41,7 @@ async function Events() {
   if (events.length === 0) return null;
   return (
     <section className="pt-16">
-      <div className="flex items-baseline justify-between">
-        <h2 className="text-3xl font-bold">Upcoming events</h2>
-        <Link href="/events" className="inline-block py-2 text-sm font-medium link-fx">
-          All events
-        </Link>
-      </div>
+      <SectionHeading title="Upcoming events" href="/events" label="All events" />
       <div className={grid}>
         {events.slice(0, 3).map((e) => (
           <EventCard key={e.id} event={e} today={today} />

@@ -17,7 +17,7 @@ export default function Home() {
   return (
     <>
       <div className="mx-auto -mt-[120px] max-w-6xl px-4 pt-8">
-        <div className="relative mb-12 sm:mb-16">
+        <div className="relative mb-20 sm:mb-16">
           <section className="relative isolate overflow-hidden rounded-3xl bg-brand-dark text-white">
             <Image
               src="/hero.jpeg"
@@ -25,10 +25,10 @@ export default function Home() {
               fill
               priority
               sizes="(min-width: 1152px) 1152px, 100vw"
-              className="-z-20 object-cover object-center"
+              className="hero-parallax -z-20 object-cover object-center"
             />
             <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/85 via-black/55 to-black/40" />
-            <div className="flex min-h-[34rem] flex-col justify-end p-6 pb-20 pt-44 sm:min-h-[42rem] sm:p-10 sm:pb-24 sm:pt-52">
+            <div className="flex min-h-[36rem] flex-col justify-end px-5 pb-28 pt-44 sm:min-h-[42rem] sm:p-10 sm:pb-24 sm:pt-52">
               <div className="grid items-end gap-6 md:grid-cols-[1fr_22rem]">
                 <h1 className="max-w-3xl text-5xl font-bold leading-[1.05] tracking-tight sm:text-7xl">
                   {site.name}
@@ -38,7 +38,7 @@ export default function Home() {
                   <p className="text-white/85">{site.tagline}</p>
                   <Link
                     href="/donate"
-                    className="mt-4 inline-block rounded-full bg-brand-gradient px-6 py-3 font-semibold text-brand-dark"
+                    className="btn-primary mt-5 w-full sm:w-auto"
                   >
                     Start giving
                   </Link>
@@ -59,7 +59,7 @@ export default function Home() {
             {site.name} serves our community through service, education and
             empowerment, guided by compassion, unity and justice.
           </p>
-          <div className="mt-8 grid gap-4 sm:grid-cols-3">
+          <div className="reveal-cards mt-8 grid gap-4 sm:grid-cols-3">
             {features.map((f, i) => (
               <div
                 key={f.title}
@@ -75,7 +75,7 @@ export default function Home() {
                     alt=""
                     fill
                     sizes="(min-width: 640px) 33vw, 100vw"
-                    className="feature-fade object-cover object-bottom"
+                    className="feature-fade feature-art object-contain object-bottom"
                   />
                 </div>
               </div>
