@@ -80,7 +80,6 @@ export const GUIDE: Group[] = [
                   "Who is logged in.",
                   "Quick numbers. Press one to open that page.",
                   "Today’s prayer times.",
-                  "Quick actions.",
                   "To do. What needs your attention.",
                   "View website and Log out.",
                   "This guide button. It opens the right page.",
@@ -111,7 +110,7 @@ export const GUIDE: Group[] = [
           {
             heading: "What you see",
             blocks: [
-              { t: "list", items: ["Alert bars at the top: new messages, new members, new donations, and people asking to become admins. Open that page (from the bar, the menu, or any way) and the bar disappears.", "4 number cards: donations this month, messages waiting for a reply, the next event, and newsletter subscribers. Press a card to open that page.", "To do: things to fix. “All good” means nothing to do.", "Today’s prayer times with the next prayer, the Jumu’ah time and a Change button.", "Recent activity: the latest donations, members, messages, posts and events.", "Donations for the last 6 months, month by month.", "Quick actions: shortcuts to the pages you use most."] },
+              { t: "list", items: ["Alert bars at the top: new messages, new members, new donations, and people asking to become admins. Open that page (from the bar, the menu, or any way) and the bar disappears.", "4 number cards: donations this month, messages waiting for a reply, the next event, and newsletter subscribers. Press a card to open that page.", "Recent activity: the latest donations, members, messages, posts and events.", "Today’s prayer times with the next prayer, the Jumu’ah time and a Change button.", "To do: things to fix. “All good” means nothing to do.", "Donations for the last 6 months, month by month."] },
               { t: "tip", text: "Look at the To do box when you log in. Each line has a button that takes you straight to the fix." },
             ],
           },

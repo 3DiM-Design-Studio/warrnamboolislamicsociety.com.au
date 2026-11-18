@@ -232,17 +232,6 @@ export default async function OverviewPage() {
     </Link>
   );
 
-  const quick: { href: string; label: string; icon: IconName }[] = [
-    { href: "/admin/posts", label: "Write a post", icon: "posts" },
-    { href: "/admin/events", label: "Add an event", icon: "events" },
-    { href: "/admin/members", label: "See members", icon: "members" },
-    { href: "/admin/donations", label: "See donations", icon: "donations" },
-    { href: "/admin/messages", label: "Read messages", icon: "messages" },
-    { href: "/admin/prayer", label: "Jumu’ah time", icon: "jumuah" },
-    { href: "/admin/subscribers", label: "Newsletter", icon: "newsletter" },
-    { href: "/admin/info", label: "Website info", icon: "info" },
-  ];
-
   // Alert bars: what is new since this admin last opened each page. Opening the page clears the bar.
   const plural = (n: number, one: string, many: string) => (n === 1 ? one : many.replace("{n}", String(n)));
   const green = "border-[#0f8a63] bg-[#dcf1e8] text-[#0f6a4d]";
@@ -281,20 +270,23 @@ export default async function OverviewPage() {
 
       <div className="grid items-start gap-5 xl:grid-cols-2">
         <Card>
-          <CardHead title="To do" />
-          {todo.length === 0 ? (
-            <p className="text-sm text-muted">Nothing to do. All good.</p>
+          <CardHead title="Recent activity" />
+          {activity.length === 0 ? (
+            <p className="text-sm text-muted">Nothing yet. New donations, members, messages and posts will show here.</p>
           ) : (
-            <div className="grid">
-              {todo.map((t) => (
-                <div key={t.text} className="flex items-center justify-between gap-3 border-t border-border py-2.5 text-sm first:border-0 first:pt-0">
-                  <span>{t.text}</span>
-                  <Link href={t.href} className={smallButton}>
-                    {t.label}
+            <ul className="grid min-w-0">
+              {activity.map((a) => (
+                <li key={a.id} className="min-w-0 border-t border-border first:border-0">
+                  <Link href={a.href} className="flex min-w-0 items-center gap-3 rounded-lg py-2.5 hover:bg-background">
+                    <span className="grid size-8 shrink-0 place-items-center rounded-full bg-[#dcf1e8] text-[#0f6a4d]">
+                      <Icon name={a.icon} size={16} />
+                    </span>
+                    <span className="min-w-0 flex-1 truncate text-sm font-medium">{a.text}</span>
+                    <span className="shrink-0 text-[13px] text-muted">{ago(a.at)}</span>
                   </Link>
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
           )}
         </Card>
 
@@ -340,23 +332,20 @@ export default async function OverviewPage() {
 
       <div className="grid items-start gap-5 xl:grid-cols-2">
         <Card>
-          <CardHead title="Recent activity" />
-          {activity.length === 0 ? (
-            <p className="text-sm text-muted">Nothing yet. New donations, members, messages and posts will show here.</p>
+          <CardHead title="To do" />
+          {todo.length === 0 ? (
+            <p className="text-sm text-muted">Nothing to do. All good.</p>
           ) : (
-            <ul className="grid min-w-0">
-              {activity.map((a) => (
-                <li key={a.id} className="min-w-0 border-t border-border first:border-0">
-                  <Link href={a.href} className="flex min-w-0 items-center gap-3 rounded-lg py-2.5 hover:bg-background">
-                    <span className="grid size-8 shrink-0 place-items-center rounded-full bg-[#dcf1e8] text-[#0f6a4d]">
-                      <Icon name={a.icon} size={16} />
-                    </span>
-                    <span className="min-w-0 flex-1 truncate text-sm font-medium">{a.text}</span>
-                    <span className="shrink-0 text-[13px] text-muted">{ago(a.at)}</span>
+            <div className="grid">
+              {todo.map((t) => (
+                <div key={t.text} className="flex items-center justify-between gap-3 border-t border-border py-2.5 text-sm first:border-0 first:pt-0">
+                  <span>{t.text}</span>
+                  <Link href={t.href} className={smallButton}>
+                    {t.label}
                   </Link>
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           )}
         </Card>
 
@@ -391,19 +380,6 @@ export default async function OverviewPage() {
         </Card>
       </div>
 
-      <Card>
-        <CardHead title="Quick actions" />
-        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-          {quick.map((q) => (
-            <Link key={q.href} href={q.href} className="flex items-center gap-3 rounded-2xl border border-border bg-background p-3.5 font-semibold hover:border-brand-dark">
-              <span className="grid size-9 shrink-0 place-items-center rounded-full bg-[#dcf1e8] text-[#0f6a4d]">
-                <Icon name={q.icon} size={18} />
-              </span>
-              <span className="min-w-0">{q.label}</span>
-            </Link>
-          ))}
-        </div>
-      </Card>
     </>
   );
 }
