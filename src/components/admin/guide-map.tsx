@@ -81,10 +81,10 @@ function Dashboard() {
         </div>
 
         {/* number cards */}
-        {["Next prayer", "Jumu’ah", "News posts", "Members"].map((l, i) => (
+        {["Donations", "Messages", "Next event", "Subscribers"].map((l, i) => (
           <Card key={l} x={21.5 + i * 19.6} y={11} w={18.2} h={11}>
             <div className="text-muted" style={text(1.3)}>{l}</div>
-            <div className="font-bold" style={{ ...text(2.4), marginTop: cq(1.2) }}>{["Asr 3:45", "12:30", "8", "126"][i]}</div>
+            <div className="font-bold" style={{ ...text(2.4), marginTop: cq(1.2) }}>{["$4,280", "3", "Mon 16", "412"][i]}</div>
           </Card>
         ))}
 
