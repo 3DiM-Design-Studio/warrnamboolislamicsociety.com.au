@@ -25,6 +25,7 @@ const headingIcons = {
   generations: <Sprout className={icon} aria-hidden />,
 };
 
+import { ContactCta } from "@/components/contact-cta";
 export default async function Donate() {
   const faqs = await getFaqs("donate");
   return (
@@ -141,6 +142,7 @@ export default async function Donate() {
           </div>
         </section>
       </div>
+      <ContactCta title="Prefer to donate another way?" text="Ask us about bank transfer, Zakat, a large gift or a regular donation, and we will guide you." button="Talk to us" />
     </div>
   );
 }

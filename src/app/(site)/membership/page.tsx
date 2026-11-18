@@ -1,5 +1,6 @@
 import { Sparkles, Users } from "lucide-react";
 import Link from "next/link";
+import { ContactCta } from "@/components/contact-cta";
 import { MembershipForm } from "@/components/membership-form";
 import { PageShell } from "@/components/page-shell";
 
@@ -32,6 +33,7 @@ export default function Membership() {
           </p>
         </section>
       </div>
+      <ContactCta title="Not sure about membership? Ask us first." text="We are happy to explain how membership works and what it supports before you join." button="Ask a question" />
     </PageShell>
   );
 }

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { JsonLd } from "@/components/json-ld";
+import { ContactCta } from "@/components/contact-cta";
 import { PageShell } from "@/components/page-shell";
 import { ShareButtons } from "@/components/share-buttons";
 import { getEvent, getToday } from "@/lib/content";
@@ -140,6 +141,7 @@ async function Event({ params }: { params: PageProps<"/events/[id]">["params"] }
           All events
         </Link>
       </div>
+      <ContactCta compact title="Questions about this event?" text="Not sure about the time, place or who can come? Ask us and we will gladly help." button="Ask about this event" />
     </PageShell>
   );
 }

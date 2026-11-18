@@ -1,5 +1,6 @@
 import { CalendarDays, Users } from "lucide-react";
 import { Suspense } from "react";
+import { ContactCta } from "@/components/contact-cta";
 import { PageShell } from "@/components/page-shell";
 import { EventsGrid } from "@/components/events-grid";
 import { CardsSkeleton } from "@/components/skeletons";
@@ -56,6 +57,7 @@ export default function Events() {
       <Suspense fallback={<CardsSkeleton kind="event" count={3} label="Loading events" />}>
         <EventsList />
       </Suspense>
+      <ContactCta title="Want to host or suggest an event?" text="Have an idea for a talk, class or gathering? Tell us and we will help make it happen." button="Share your idea" />
     </PageShell>
   );
 }

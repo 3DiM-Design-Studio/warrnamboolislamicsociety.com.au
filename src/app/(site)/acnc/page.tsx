@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ContactCta } from "@/components/contact-cta";
 import { PageShell } from "@/components/page-shell";
 
 export const metadata = { title: "ACNC Registration" };
@@ -23,6 +24,7 @@ export default function Acnc() {
         </Link>
         .
       </p>
+      <ContactCta title="Want to speak with someone?" text="We are glad to answer questions about our registration, our plans and how your support is used." button="Contact us" />
     </PageShell>
   );
 }

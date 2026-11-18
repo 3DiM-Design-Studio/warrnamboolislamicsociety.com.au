@@ -1,5 +1,6 @@
 import { CalendarDays, Clock } from "lucide-react";
 import { Suspense } from "react";
+import { ContactCta } from "@/components/contact-cta";
 import { PageShell } from "@/components/page-shell";
 import { PrayerTimetable } from "@/components/prayer-timetable";
 import { PrayerSkeleton, Skeleton } from "@/components/skeletons";
@@ -78,6 +79,7 @@ export default function PrayerTimes() {
       >
         <PrayerBody />
       </Suspense>
+      <ContactCta title="Questions about prayer times?" text="Ask us about Eid, Ramadan or Jumu’ah timings, or anything else about praying with us." button="Ask a question" />
     </PageShell>
   );
 }
