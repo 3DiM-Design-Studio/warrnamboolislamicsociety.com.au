@@ -11,6 +11,8 @@ import { getSettings } from "@/lib/content";
 const support = [
   { href: "/acnc", label: "ACNC registration" },
   { href: "/privacy-policy", label: "Privacy policy" },
+  { href: "/cookie-policy", label: "Cookie policy" },
+  { href: "/gdpr", label: "Your data rights (GDPR)" },
 ];
 
 export async function Footer() {

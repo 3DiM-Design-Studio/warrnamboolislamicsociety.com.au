@@ -11,15 +11,15 @@ import { nav, site } from "@/content/site";
 // One line of the banner, repeated so the moving strip on phones can loop without a gap.
 function BannerLine() {
   return (
-    <span className="flex shrink-0 items-center gap-4 pr-4 text-[13px] whitespace-nowrap">
+    <span className="flex shrink-0 items-center gap-5 pr-5 text-sm whitespace-nowrap">
+      <span>Non Profit Organisation</span>
+      <span aria-hidden className="text-white/35">
+        |
+      </span>
       <span lang="ar" dir="rtl" className="text-2xl leading-none">
         ﷽
       </span>
       <span>In the name of Allah, the Most Gracious, the Most Merciful</span>
-      <span aria-hidden className="text-white/35">
-        |
-      </span>
-      <span>Non Profit Organisation</span>
       <span aria-hidden className="text-white/35">
         |
       </span>
@@ -31,29 +31,26 @@ export function Banner() {
   return (
     <div className="bg-brand-dark text-white/90">
       {/* Phones: one slim line that slides across. It pauses when touched or hovered, and stands still for visitors who prefer less motion. */}
-      <div className="banner-marquee sm:hidden" role="note" aria-label="Non Profit Organisation. In the name of Allah, the Most Gracious, the Most Merciful">
+      <div className="banner-marquee lg:hidden" role="note" aria-label="Non Profit Organisation. In the name of Allah, the Most Gracious, the Most Merciful">
         <div className="banner-track" aria-hidden>
           <BannerLine />
           <BannerLine />
         </div>
       </div>
-      <p className="banner-static px-4 py-2.5 text-center text-xs sm:hidden">
+      <p className="banner-static px-4 py-2.5 text-center text-xs lg:hidden">
         <span lang="ar" dir="rtl" className="mr-2 align-middle text-xl leading-none">
           ﷽
         </span>
         Non Profit Organisation
       </p>
       {/* Tablet and desktop: the full banner. */}
-      <div className="hidden flex-wrap items-center justify-center gap-x-8 gap-y-1 px-4 py-4 text-center text-lg sm:flex">
+      <div className="hidden items-center justify-center gap-x-8 px-4 py-4 text-center text-lg whitespace-nowrap lg:flex">
         <span>Non Profit Organisation</span>
         <span aria-hidden className="text-white/40">
           |
         </span>
         <span lang="ar" dir="rtl" className="text-3xl leading-none">
           ﷽
-        </span>
-        <span aria-hidden className="text-white/40">
-          |
         </span>
         <span>In the name of Allah, the Most Gracious, the Most Merciful</span>
       </div>
@@ -108,9 +105,9 @@ export function Header() {
         <div className="site-pill flex h-14 items-center justify-between gap-3 rounded-full px-3 pl-4" data-menu={menuOpen ? "open" : undefined}>
           <Link href="/" className="flex items-center gap-2 font-bold">
             <LogoMark src="/logo-icon.png" className="size-11 sm:size-10" />
-            <span className="hidden sm:inline">{site.name}</span>
+            <span className="hidden whitespace-nowrap sm:inline lg:hidden xl:inline">{site.name}</span>
           </Link>
-          <nav className="hidden items-center gap-x-5 text-sm font-medium lg:flex">
+          <nav className="hidden items-center gap-x-5 whitespace-nowrap text-sm font-medium lg:flex">
             {nav.map((n) => (
               <Link key={n.href} href={n.href} className="link-fx" aria-current={isCurrent(path, n.href) ? "page" : undefined}>
                 {n.label}
@@ -120,7 +117,7 @@ export function Header() {
           <div className="flex items-center gap-2">
             <Link
               href="/donate"
-              className="rounded-full bg-brand-gradient px-5 py-2.5 text-sm font-semibold text-brand-dark hover:brightness-95"
+              className="whitespace-nowrap rounded-full bg-brand-gradient px-5 py-2.5 text-sm font-semibold text-brand-dark hover:brightness-95"
             >
               Donate now
             </Link>

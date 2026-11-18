@@ -47,7 +47,7 @@ export function AnalyticsConsent({ gaId }: { gaId?: string }) {
         <div role="region" aria-label="Visit counting" className="fixed inset-x-3 bottom-3 z-[60] mx-auto max-w-xl rounded-2xl bg-brand-dark p-4 text-white shadow-2xl sm:bottom-5 sm:p-5">
           <p className="text-sm leading-relaxed text-white/85">
             May we count visits to this website with Google Analytics? It helps us see which pages people use. We do not show ads or sell anything.{" "}
-            <Link href="/privacy-policy" className="underline">Read our privacy policy</Link>.
+            <Link href="/cookie-policy" className="underline">Cookie policy</Link> · <Link href="/privacy-policy" className="underline">Privacy policy</Link>.
           </p>
           <div className="mt-3 flex flex-col gap-2 sm:flex-row">
             <button type="button" onClick={() => write("yes")} className="btn-primary">Yes, that is fine</button>

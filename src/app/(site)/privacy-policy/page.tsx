@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { AnalyticsChoiceButton } from "@/components/analytics-consent";
-import { PageShell } from "@/components/page-shell";
+import { LegalPage } from "@/components/legal-page";
 import { site } from "@/content/site";
 
 export const metadata = {
@@ -118,7 +118,7 @@ const sections: { id: string; title: string; body: ReactNode }[] = [
         <div className="mt-3 rounded-2xl bg-card p-4">
           <AnalyticsChoiceButton />
         </div>
-        <p className="mt-3">The committee sign-in page uses an essential cookie to keep committee members signed in. It is not used to track you.</p>
+        <p className="mt-3">The committee sign-in page uses an essential cookie to keep committee members signed in. It is not used to track you. See our <a className={link} href="/cookie-policy">cookie policy</a> for the full list.</p>
       </>
     ),
   },
@@ -145,7 +145,7 @@ const sections: { id: string; title: string; body: ReactNode }[] = [
       <>
         <p>
           You can ask to see the information we hold about you, ask us to correct it, or ask us to delete it. Email <Mail /> and we will reply within 30 days. To stop our emails at any
-          time, press “Unsubscribe” in any email.
+          time, press “Unsubscribe” in any email. If you live in Europe or the UK, see also <a className={link} href="/gdpr">your data rights (GDPR)</a>.
         </p>
         <p className="mt-3">
           If you think we have handled your information badly and we have not fixed it, you can complain to the Office of the Australian Information Commissioner at{" "}
@@ -181,41 +181,11 @@ const sections: { id: string; title: string; body: ReactNode }[] = [
 
 export default function Privacy() {
   return (
-    <PageShell title="Privacy Policy" intro={`Last updated ${UPDATED}. This page explains in plain words how we look after your personal information.`}>
-      <nav aria-label="On this page" className="max-w-3xl rounded-2xl bg-card p-5">
-        <p className="mb-2 text-sm font-semibold">On this page</p>
-        <ol className="grid gap-x-6 gap-y-1 text-sm sm:grid-cols-2">
-          {sections.map((s, i) => (
-            <li key={s.id}>
-              <a href={`#${s.id}`} className="link-fx inline-block py-1">
-                {i + 1}. {s.title}
-              </a>
-            </li>
-          ))}
-        </ol>
-      </nav>
-
-      <div className="max-w-3xl space-y-10 pt-4">
-        {sections.map((s, i) => (
-          <section key={s.id} id={s.id} className="scroll-mt-28">
-            <h2 className="mb-3 text-2xl font-bold">
-              {i + 1}. {s.title}
-            </h2>
-            <div className="space-y-3 leading-relaxed">{s.body}</div>
-          </section>
-        ))}
-
-        <section className="rounded-2xl bg-card p-6">
-          <h2 className="text-xl font-bold">Questions?</h2>
-          <p className="mt-2">
-            Email us at <Mail /> or use our{" "}
-            <a className={link} href="/contact">
-              contact page
-            </a>
-            .
-          </p>
-        </section>
-      </div>
-    </PageShell>
+    <LegalPage
+      current="/privacy-policy"
+      title="Privacy Policy"
+      intro={`Last updated ${UPDATED}. This page explains in plain words how we look after your personal information.`}
+      sections={sections}
+    />
   );
 }
