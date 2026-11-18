@@ -1,6 +1,7 @@
 import { ArrowUpRight, CalendarDays, Clock, MapPin } from "lucide-react";
 import Link from "next/link";
 import { LogoMark } from "@/components/logo-mark";
+import { eventDateText, eventPhase } from "@/lib/event-dates";
 import { eventTypeLabel } from "@/lib/event-types";
 import type { PublicPost } from "@/lib/content";
 import { fmtHM } from "@/lib/prayer";
@@ -68,20 +69,27 @@ export function PostCard({ post }: { post: PublicPost }) {
   );
 }
 
-/** Event card: picture on top, type chip, title, date, time, place and a link to the details. */
-export function EventCard({ event }: { event: EventRow }) {
+/**
+ * Event card: picture on top, type chip, title, date, time, place and a link to the details.
+ * Give it today's date (YYYY-MM-DD) and it also says "On now" for a running multi-day event, or "Finished" for a past one.
+ */
+export function EventCard({ event, today }: { event: EventRow; today?: string }) {
+  const phase = today ? eventPhase(event, today) : "upcoming";
+  const past = phase === "past";
   return (
-    <Link href={`/events/${event.id}`} className="group flex flex-col overflow-hidden rounded-2xl bg-card">
-      <Cover src={event.photo_url} className="aspect-[16/10]" />
+    <Link href={`/events/${event.id}`} className={`group flex flex-col overflow-hidden rounded-2xl bg-card ${past ? "opacity-85" : ""}`}>
+      <Cover src={event.photo_url} className={`aspect-[16/10] ${past ? "grayscale-[0.6]" : ""}`} />
       <div className="flex flex-1 flex-col gap-3 p-5">
-        <div>
+        <div className="flex flex-wrap items-center gap-2">
           <Chip solid>{eventTypeLabel(event.event_type)}</Chip>
+          {phase === "ongoing" && <span className="inline-flex items-center rounded-full bg-brand-dark px-3 py-1 text-xs font-semibold text-accent">On now</span>}
+          {past && <Chip>Finished</Chip>}
         </div>
         <h3 className="line-clamp-2 text-lg font-bold leading-snug">{event.title}</h3>
         <div className="grid gap-1.5 text-sm text-muted">
-          <span className="inline-flex items-center gap-2">
-            <CalendarDays className="size-4 shrink-0" aria-hidden />
-            {dateLabel(event.event_date, { weekday: "short", day: "numeric", month: "short" })}
+          <span className="inline-flex items-start gap-2">
+            <CalendarDays className="mt-0.5 size-4 shrink-0" aria-hidden />
+            {eventDateText(event)}
           </span>
           <span className="inline-flex items-center gap-2">
             <Clock className="size-4 shrink-0" aria-hidden />

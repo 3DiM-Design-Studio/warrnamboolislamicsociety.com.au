@@ -33,7 +33,15 @@ async function PrayerBody() {
           ))}
         </ul>
       )}
-      <PrayerTimetable iqamah={iqamah} />
+      <div className="rounded-2xl border border-border bg-card p-5">
+      <p className="font-bold">Azan and Iqamah: what is the difference?</p>
+      <p className="mt-1 text-sm text-muted sm:text-base">
+        <strong className="font-semibold text-brand-dark">Azan</strong> is the call to prayer. It tells you the prayer time has started.{" "}
+        <strong className="font-semibold text-brand-dark">Iqamah</strong> is the second call, a few minutes later, when everyone stands in rows and the group prayer begins at the masjid. To pray with the congregation, arrive before the Iqamah time.
+      </p>
+      <p className="mt-2 text-xs text-muted">Islamic dates follow the Umm al-Qura calendar and can differ by a day from the local moon sighting.</p>
+    </div>
+    <PrayerTimetable iqamah={iqamah} />
       <blockquote className="border-l-4 border-accent pl-4 italic text-muted">
         It is He who shows you lightning, [causing] fear and aspiration, and
         generates the heavy clouds. (Ar-Ra&apos;d: 12)

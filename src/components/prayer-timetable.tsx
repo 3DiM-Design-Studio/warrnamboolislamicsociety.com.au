@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { PrayerSkeleton } from "@/components/skeletons";
 import { DatePicker } from "@/components/date-picker";
+import { hijriDate } from "@/lib/hijri";
 import type { TodayIqamah } from "@/lib/content";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
@@ -127,6 +128,12 @@ export function PrayerTimetable({ iqamah }: { iqamah?: TodayIqamah | null }) {
               month: "long",
               year: "numeric",
             })}
+            {hijriDate(now) && (
+              <>
+                {" "}
+                &middot; <span className="font-medium text-brand-dark">{hijriDate(now)}</span>
+              </>
+            )}
           </p>
           {iqamah?.taraweeh && (
             <p className="mt-1 text-sm font-medium">

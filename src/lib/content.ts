@@ -128,6 +128,32 @@ export async function getUpcomingEvents(): Promise<EventRow[]> {
   return data as EventRow[];
 }
 
+/** Today in Melbourne (YYYY-MM-DD). Cached for a minute, so pages can tell "upcoming" from "finished" without reading the clock themselves. */
+export async function getToday(): Promise<string> {
+  "use cache";
+  cacheLife("minutes");
+  return melbourneToday();
+}
+
+/** Events that have already finished, newest first, so the Events page can show a short "Past events" list. */
+export async function getPastEvents(limit = 6): Promise<EventRow[]> {
+  "use cache";
+  cacheTag(TAGS.events);
+  cacheLife("minutes");
+  if (!hasSupabase) return [];
+  const today = melbourneToday();
+  const { data, error } = await createAnonClient()
+    .from("events")
+    .select("id,title,event_type,short_description,description,photo_url,event_date,event_time,end_date,end_time,place,map_url,speaker,audience,notes,status")
+    .eq("status", "published")
+    .or(`end_date.lt.${today},and(end_date.is.null,event_date.lt.${today})`)
+    .order("event_date", { ascending: false })
+    .order("event_time", { ascending: false })
+    .limit(limit);
+  if (error || !data) return [];
+  return data as EventRow[];
+}
+
 const EVENT_COLUMNS =
   "id,title,event_type,short_description,description,photo_url,event_date,event_time,end_date,end_time,place,map_url,speaker,audience,notes,status";
 

@@ -1,8 +1,9 @@
 "use client";
 
-import { ArrowLeft, Check, Clock, Mail, Phone } from "lucide-react";
+import { ArrowLeft, Clock, Mail, Phone } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const input =
   "w-full rounded-xl border-2 border-border bg-white px-4 py-3 outline-none focus:border-brand-dark";
@@ -10,17 +11,9 @@ const input =
 export type ContactDetails = { email: string; phones: string[]; jumuah: string };
 
 export function ContactForm({ contact }: { contact: ContactDetails }) {
-  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">(
-    "idle",
-  );
+  const router = useRouter();
+  const [status, setStatus] = useState<"idle" | "sending" | "error">("idle");
   const [error, setError] = useState("");
-
-  // The thank-you message stays for 5 seconds, then the empty form comes back.
-  useEffect(() => {
-    if (status !== "sent") return;
-    const timer = setTimeout(() => setStatus("idle"), 5000);
-    return () => clearTimeout(timer);
-  }, [status]);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -33,7 +26,8 @@ export function ContactForm({ contact }: { contact: ContactDetails }) {
         body: JSON.stringify(data),
       });
       if (res.ok) {
-        setStatus("sent");
+        // The thank-you page takes over. The button stays on "Sending..." until it opens.
+        router.push("/contact/thank-you");
         return;
       }
       const body = await res.json().catch(() => null);
@@ -49,53 +43,17 @@ export function ContactForm({ contact }: { contact: ContactDetails }) {
       <div className="grid lg:h-[38rem] lg:grid-cols-[38rem_1fr]">
         <div className="flex min-h-0 flex-col">
           <div className="flex items-center gap-3 p-6 sm:px-8">
-            {status === "sent" ? (
-              // On the thank-you message the arrow goes back to the form, not to the home page.
-              <button
-                type="button"
-                onClick={() => setStatus("idle")}
-                aria-label="Back to the contact form"
-                className="grid size-8 place-items-center rounded-full hover:bg-background"
-              >
-                <ArrowLeft className="size-5" aria-hidden />
-              </button>
-            ) : (
-              <Link
-                href="/"
-                aria-label="Back to home"
-                className="grid size-8 place-items-center rounded-full hover:bg-background"
-              >
-                <ArrowLeft className="size-5" aria-hidden />
-              </Link>
-            )}
+            <Link
+              href="/"
+              aria-label="Back to home"
+              className="grid size-8 place-items-center rounded-full hover:bg-background"
+            >
+              <ArrowLeft className="size-5" aria-hidden />
+            </Link>
             <span className="text-sm font-medium text-muted">Contact us</span>
           </div>
 
-          {status === "sent" ? (
-            <div className="flex flex-1 flex-col items-start px-6 pb-8 pt-2 sm:px-8">
-              <span className="grid size-10 place-items-center rounded-full bg-brand-gradient text-brand-dark">
-                <Check className="size-5" aria-hidden />
-              </span>
-              <h2 className="mt-4 text-2xl font-bold tracking-tight sm:text-3xl">
-                Thank you, we have your message
-              </h2>
-              <p className="mt-1 text-sm text-muted">
-                We will get back to you as soon as possible.
-              </p>
-              {/* Going back to the form shows it empty, ready for another message. */}
-              <p className="mt-5 text-sm text-muted">
-                Going back to the form in a few seconds.{" "}
-                <button
-                  type="button"
-                  onClick={() => setStatus("idle")}
-                  className="link-fx font-semibold text-brand-dark"
-                >
-                  Go back now
-                </button>
-              </p>
-            </div>
-          ) : (
-            <form onSubmit={onSubmit} className="flex min-h-0 flex-1 flex-col">
+          <form onSubmit={onSubmit} className="flex min-h-0 flex-1 flex-col">
               <div className="flex-1 overflow-y-auto px-6 pb-6 pt-2 sm:px-8">
                 <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
                   Send us a message
@@ -153,8 +111,7 @@ export function ContactForm({ contact }: { contact: ContactDetails }) {
                   {status === "sending" ? "Sending..." : "Send message"}
                 </button>
               </div>
-            </form>
-          )}
+          </form>
         </div>
 
         <div className="flex min-h-0 flex-col border-t border-border text-brand-dark lg:border-l lg:border-t-0">

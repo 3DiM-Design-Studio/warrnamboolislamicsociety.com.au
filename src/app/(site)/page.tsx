@@ -4,7 +4,7 @@ import { AcncBadge } from "@/components/acnc-badge";
 import { FridayCalendar } from "@/components/friday-calendar";
 import { HeroGreeting } from "@/components/hero-greeting";
 import { mission, site } from "@/content/site";
-import { HomeEvents, HomeFaqs, HomeJumuahTime, HomeNews } from "@/components/home-sections";
+import { HomeEvents, HomeFaqs, HomeJumuahTime, HomeNews, HomeNextUp } from "@/components/home-sections";
 
 const featureImages = [
   "/cards/services.png",
@@ -48,6 +48,8 @@ export default function Home() {
           </section>
           <AcncBadge />
         </div>
+
+        <HomeNextUp />
 
         <section className="pt-16">
           <h2 className="text-3xl font-bold">

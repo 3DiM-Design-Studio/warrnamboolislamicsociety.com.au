@@ -2,7 +2,10 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { EventCard, PostCard } from "@/components/story-cards";
 import { CardsSkeleton, FaqSkeleton, SectionHeadingSkeleton, Skeleton } from "@/components/skeletons";
-import { getFaqs, getJumuah, getPosts, getUpcomingEvents } from "@/lib/content";
+import { NextUp } from "@/components/next-up";
+import { eventDateText, eventPhase } from "@/lib/event-dates";
+import { getFaqs, getJumuah, getPosts, getToday, getTodayIqamah, getUpcomingEvents } from "@/lib/content";
+import { fmtHM } from "@/lib/prayer";
 
 // Each part of the home page that reads from the database loads on its own, so the hero, the three service
 // cards and the menu show straight away while these fill in (each one shows a grey placeholder meanwhile).
@@ -39,7 +42,7 @@ export function HomeNews() {
 }
 
 async function Events() {
-  const events = await getUpcomingEvents();
+  const [events, today] = await Promise.all([getUpcomingEvents(), getToday()]);
   if (events.length === 0) return null;
   return (
     <section className="pt-16">
@@ -51,7 +54,7 @@ async function Events() {
       </div>
       <div className={grid}>
         {events.slice(0, 3).map((e) => (
-          <EventCard key={e.id} event={e} />
+          <EventCard key={e.id} event={e} today={today} />
         ))}
       </div>
     </section>
@@ -119,6 +122,46 @@ export function HomeFaqs() {
       }
     >
       <Faqs />
+    </Suspense>
+  );
+}
+
+async function NextUpData() {
+  const [iqamah, events, today] = await Promise.all([getTodayIqamah(), getUpcomingEvents(), getToday()]);
+  const e = events[0];
+  return (
+    <NextUp
+      iqamah={iqamah}
+      event={
+        e
+          ? { id: e.id, title: e.title, when: eventDateText(e), time: fmtHM(e.event_time.slice(0, 5)), place: e.place, ongoing: eventPhase(e, today) === "ongoing" }
+          : null
+      }
+    />
+  );
+}
+
+/** The next prayer and the next event, just under the top picture. */
+export function HomeNextUp() {
+  return (
+    <Suspense
+      fallback={
+        <div role="status" aria-busy="true" className="grid gap-4 sm:grid-cols-2">
+          <span className="sr-only">Loading the next prayer and event</span>
+          {[0, 1].map((i) => (
+            <div key={i} aria-hidden className="flex items-center gap-4 rounded-2xl bg-card p-5 sm:p-6">
+              <Skeleton className="size-12 shrink-0 rounded-full" />
+              <div className="grid flex-1 gap-2">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-7 w-40" />
+                <Skeleton className="h-4 w-48 max-w-full" />
+              </div>
+            </div>
+          ))}
+        </div>
+      }
+    >
+      <NextUpData />
     </Suspense>
   );
 }

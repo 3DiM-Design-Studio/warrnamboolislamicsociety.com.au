@@ -8,7 +8,7 @@ import type { EventRow } from "@/lib/types";
 const PER_PAGE = 9;
 
 // 9 events per page, 3 across. The page buttons only appear when there is more than one page.
-export function EventsGrid({ events }: { events: EventRow[] }) {
+export function EventsGrid({ events, today }: { events: EventRow[]; today: string }) {
   const [page, setPage] = useState(1);
   const top = useRef<HTMLDivElement>(null);
   const pages = Math.max(1, Math.ceil(events.length / PER_PAGE));
@@ -26,7 +26,7 @@ export function EventsGrid({ events }: { events: EventRow[] }) {
     <div ref={top} className="scroll-mt-24">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {shown.map((e) => (
-          <EventCard key={e.id} event={e} />
+          <EventCard key={e.id} event={e} today={today} />
         ))}
       </div>
       {pages > 1 && (
