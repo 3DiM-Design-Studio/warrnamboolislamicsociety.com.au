@@ -5,25 +5,8 @@ import { deleteSubscriber, setSubscriberStatus } from "@/lib/actions/subscribers
 import type { SubscriberRow } from "@/lib/types";
 import { fmtDate } from "@/components/admin/format";
 import { List, Row } from "@/components/admin/list";
-import { Pager, SearchBox, filterClass, matchesSearch, paginate } from "@/components/admin/list-controls";
-import { Badge, Button, Card, CardHead, ConfirmDialog, EmptyNote, useRunAction } from "@/components/admin/ui";
-
-// A cell that starts with = + - or @ could run as a formula in Excel, so it gets a leading '.
-const cell = (v: string) => `"${(/^[=+\-@]/.test(v) ? `'${v}` : v).replace(/"/g, '""')}"`;
-
-function downloadCsv(rows: SubscriberRow[]) {
-  const lines = [
-    ["Email", "Status", "Signed up"].map(cell).join(","),
-    ...rows.map((s) => [s.email, s.status === "subscribed" ? "Subscribed" : "Unsubscribed", s.subscribed_date].map(cell).join(",")),
-  ];
-  const blob = new Blob(["﻿" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "newsletter-subscribers.csv";
-  a.click();
-  URL.revokeObjectURL(url);
-}
+import { Pager, SearchBox, filterBar, filterClass, matchesSearch, paginate } from "@/components/admin/list-controls";
+import { Badge, Button, Card, CardHead, ConfirmDialog, EmptyNote, LinkButton, useRunAction } from "@/components/admin/ui";
 
 export function SubscribersManager({ subscribers }: { subscribers: SubscriberRow[] }) {
   const [query, setQuery] = useState("");
@@ -58,15 +41,15 @@ export function SubscribersManager({ subscribers }: { subscribers: SubscriberRow
       <Card>
         <CardHead title="Newsletter list">
           {subscribers.length > 0 && (
-            <Button small onClick={() => downloadCsv(shown)}>
+            <LinkButton small href={`/admin/export/newsletter?status=${status}`}>
               Download spreadsheet
-            </Button>
+            </LinkButton>
           )}
         </CardHead>
         <p className="mb-4 text-[13px] text-muted">People who gave their email in the website footer for community updates.</p>
 
         {subscribers.length > 0 && (
-          <div className="mb-4 flex flex-wrap items-center gap-3">
+          <div className={`mb-4 ${filterBar}`}>
             <SearchBox value={query} onChange={(v) => change(() => setQuery(v))} placeholder="Search emails" />
             <select aria-label="Show subscribers" value={status} onChange={(e) => change(() => setStatus(e.target.value as typeof status))} className={filterClass}>
               <option value="all">All ({subscribers.length})</option>
@@ -74,7 +57,7 @@ export function SubscribersManager({ subscribers }: { subscribers: SubscriberRow
               <option value="unsubscribed">Unsubscribed ({subscribers.length - active})</option>
             </select>
             {filtering && (
-              <Button
+              <Button className="col-span-2 sm:col-span-1"
                 small
                 onClick={() =>
                   change(() => {

@@ -64,6 +64,22 @@ export function Button({ variant = "ghost", small, className, type = "button", .
   );
 }
 
+/** A link (for example to a download) that looks exactly like a Button. */
+export function LinkButton({ variant = "ghost", small, className, ...props }: ComponentProps<"a"> & { variant?: "primary" | "ghost"; small?: boolean }) {
+  return (
+    <a
+      {...props}
+      className={cx(
+        "inline-flex items-center justify-center gap-2 rounded-full font-semibold transition",
+        small ? "px-3.5 py-2.5 text-[13px] sm:py-1.5" : "px-5 py-2.5 text-sm",
+        variant === "primary" && "bg-brand-gradient text-brand-dark hover:brightness-95",
+        variant === "ghost" && "border border-[#cfd1c7] bg-white hover:border-brand-dark",
+        className,
+      )}
+    />
+  );
+}
+
 export function Badge({ tone = "grey", children }: { tone?: "grey" | "green" | "gold" | "red"; children: ReactNode }) {
   return (
     <span

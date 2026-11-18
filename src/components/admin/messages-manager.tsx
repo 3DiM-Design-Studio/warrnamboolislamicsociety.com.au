@@ -5,7 +5,7 @@ import { deleteMessage, setReplied } from "@/lib/actions/messages";
 import type { ContactRow } from "@/lib/types";
 import { fmtDate } from "@/components/admin/format";
 import { Avatar, List, Row } from "@/components/admin/list";
-import { Pager, SearchBox, filterClass, matchesSearch, paginate } from "@/components/admin/list-controls";
+import { Pager, SearchBox, filterBar, filterClass, matchesSearch, paginate } from "@/components/admin/list-controls";
 import { Badge, Button, Card, CardHead, ConfirmDialog, EmptyNote, Modal, cx, useRunAction } from "@/components/admin/ui";
 
 export function MessagesManager({ messages }: { messages: ContactRow[] }) {
@@ -42,7 +42,7 @@ export function MessagesManager({ messages }: { messages: ContactRow[] }) {
         <p className="mb-4 text-[13px] text-muted">Messages sent from the website&rsquo;s Contact page appear here.</p>
 
         {messages.length > 0 && (
-          <div className="mb-4 flex flex-wrap items-center gap-3">
+          <div className={`mb-4 ${filterBar}`}>
             <SearchBox value={query} onChange={(v) => change(() => setQuery(v))} placeholder="Search messages" />
             <select aria-label="Show messages" value={status} onChange={(e) => change(() => setStatus(e.target.value as typeof status))} className={filterClass}>
               <option value="all">All ({messages.length})</option>
@@ -54,7 +54,7 @@ export function MessagesManager({ messages }: { messages: ContactRow[] }) {
               <option value="oldest">Sort: Oldest first</option>
             </select>
             {filtering && (
-              <Button
+              <Button className="col-span-2 sm:col-span-1"
                 small
                 onClick={() =>
                   change(() => {

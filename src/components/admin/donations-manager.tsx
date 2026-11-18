@@ -5,44 +5,12 @@ import { deleteDonation, resendDonationReceipt } from "@/lib/actions/donations";
 import type { DonationRow } from "@/lib/types";
 import { fmtDate } from "@/components/admin/format";
 import { Avatar, List, Row } from "@/components/admin/list";
-import { Pager, SearchBox, filterClass, matchesSearch, paginate } from "@/components/admin/list-controls";
-import { Badge, Button, Card, CardHead, ConfirmDialog, EmptyNote, Modal, useRunAction } from "@/components/admin/ui";
+import { Pager, SearchBox, filterBar, filterClass, matchesSearch, paginate } from "@/components/admin/list-controls";
+import { Badge, Button, Card, CardHead, ConfirmDialog, EmptyNote, Field, LinkButton, Modal, Switch, inputClass, useRunAction } from "@/components/admin/ui";
 
 const money = (cents: number) => new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" }).format(cents / 100);
 
 type Sort = "newest" | "oldest" | "biggest" | "name";
-
-// A cell that starts with = + - or @ could run as a formula in Excel, so it gets a leading '.
-const cell = (v: string | number) => {
-  const s = String(v);
-  return `"${(/^[=+\-@]/.test(s) ? `'${s}` : s).replace(/"/g, '""')}"`;
-};
-
-function downloadCsv(rows: DonationRow[]) {
-  const head = ["Date", "Name", "Anonymous", "Email", "Phone", "Amount (AUD)", "Type", "Receipt wanted", "Dedication"];
-  const lines = rows.map((d) =>
-    [
-      d.submitted_date,
-      d.donor_name,
-      d.anonymous ? "Yes" : "No",
-      d.email,
-      d.phone,
-      (d.amount_cents / 100).toFixed(2),
-      d.frequency === "monthly" ? "Monthly" : "Once",
-      d.wants_receipt ? "Yes" : "No",
-      d.dedication,
-    ]
-      .map(cell)
-      .join(","),
-  );
-  const blob = new Blob(["﻿" + [head.map(cell).join(","), ...lines].join("\r\n")], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "donations.csv";
-  a.click();
-  URL.revokeObjectURL(url);
-}
 
 function Stat({ label, value, sub }: { label: string; value: string; sub: string }) {
   return (
@@ -63,6 +31,9 @@ export function DonationsManager({ donations, month }: { donations: DonationRow[
   const [viewing, setViewing] = useState<DonationRow | null>(null);
   const [deleting, setDeleting] = useState<DonationRow | null>(null);
   const [resending, setResending] = useState<DonationRow | null>(null);
+  const [reporting, setReporting] = useState(false);
+  const [reportMonth, setReportMonth] = useState(month);
+  const [allTime, setAllTime] = useState(false);
   const { run, pending } = useRunAction();
 
   const change = (fn: () => void) => {
@@ -102,23 +73,23 @@ export function DonationsManager({ donations, month }: { donations: DonationRow[
       <Card>
         <CardHead title="All donations">
           {donations.length > 0 && (
-            <Button small onClick={() => downloadCsv(shown)}>
-              Download spreadsheet
+            <Button small onClick={() => setReporting(true)}>
+              Download report
             </Button>
           )}
         </CardHead>
         <p className="mb-4 text-[13px] text-muted">Donations made on the website&rsquo;s Donate page appear here.</p>
 
         {donations.length > 0 && (
-          <div className="mb-4 flex flex-wrap items-center gap-3">
+          <div className={`mb-4 ${filterBar}`}>
             <SearchBox value={query} onChange={(v) => change(() => setQuery(v))} placeholder="Search donations" />
             <select aria-label="Once or monthly" value={type} onChange={(e) => change(() => setType(e.target.value as typeof type))} className={filterClass}>
-              <option value="all">Once &amp; monthly</option>
+              <option value="all">All gifts</option>
               <option value="once">Once only</option>
               <option value="monthly">Monthly only</option>
             </select>
             <select aria-label="Anonymous" value={anon} onChange={(e) => change(() => setAnon(e.target.value as typeof anon))} className={filterClass}>
-              <option value="all">Named &amp; anonymous</option>
+              <option value="all">All donors</option>
               <option value="named">Named only</option>
               <option value="anonymous">Anonymous only</option>
             </select>
@@ -129,7 +100,7 @@ export function DonationsManager({ donations, month }: { donations: DonationRow[
               <option value="name">Sort: Name A&ndash;Z</option>
             </select>
             {filtering && (
-              <Button
+              <Button className="col-span-2 sm:col-span-1"
                 small
                 onClick={() =>
                   change(() => {
@@ -166,7 +137,7 @@ export function DonationsManager({ donations, month }: { donations: DonationRow[
                   }
                   actions={
                     <>
-                      <span className="mr-2 text-lg font-bold tabular-nums">{money(d.amount_cents)}</span>
+                      <span className="mr-2 text-lg font-bold tabular-nums max-sm:mb-0.5 max-sm:w-full">{money(d.amount_cents)}</span>
                       <Button small variant="primary" onClick={() => setViewing(d)}>
                         View
                       </Button>
@@ -192,6 +163,24 @@ export function DonationsManager({ donations, month }: { donations: DonationRow[
           </>
         )}
       </Card>
+
+      <Modal open={reporting} onClose={() => setReporting(false)} title="Download a report" small>
+        <div className="grid gap-4">
+          <p className="text-sm text-muted">
+            An Excel file in the society&rsquo;s style: a one-page summary you can show the community, the full list of donations, and a private sheet with contact details for the committee.
+          </p>
+          <Field label="Month">
+            <input type="month" value={reportMonth} max={month} disabled={allTime} onChange={(e) => e.target.value && setReportMonth(e.target.value)} className={inputClass} />
+          </Field>
+          <Switch label="All donations, every month" checked={allTime} onChange={(e) => setAllTime(e.target.checked)} />
+          <div className="flex flex-wrap justify-end gap-2">
+            <Button onClick={() => setReporting(false)}>Cancel</Button>
+            <LinkButton variant="primary" href={`/admin/export/donations?month=${allTime ? "all" : reportMonth}`} onClick={() => setTimeout(() => setReporting(false), 400)}>
+              Download report
+            </LinkButton>
+          </div>
+        </div>
+      </Modal>
 
       <Modal open={viewing !== null} onClose={() => setViewing(null)} title="Donation details">
         {viewing && (

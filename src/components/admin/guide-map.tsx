@@ -44,7 +44,7 @@ const NAV = ["Overview", "News posts", "Events", "Members", "Donations", "Messag
 
 function Dashboard() {
   return (
-    <Frame ratio={62} label="A drawing of the admin Overview page with numbered red boxes">
+    <Frame ratio={70} label="A drawing of the admin Overview page with numbered red boxes">
       <div className="absolute inset-0 bg-background">
         {/* menu */}
         <div className="absolute inset-y-0 left-0 bg-brand-dark text-white/80" style={{ width: cq(19) }}>
@@ -88,33 +88,41 @@ function Dashboard() {
           </Card>
         ))}
 
-        {/* prayer times */}
-        <Card x={21.5} y={25} w={38.3} h={28}>
+        {/* row 1: recent activity beside today's prayer times */}
+        <Card x={21.5} y={24.4} w={38.3} h={25}>
+          <div className="font-bold" style={text(1.6)}>Recent activity</div>
+          {["New donation", "New member", "Message", "Post saved"].map((p) => (
+            <div key={p} className="flex justify-between border-t border-border" style={{ ...text(1.3), padding: `${cq(0.9)} 0` }}>
+              <span>{p}</span>
+              <span className="text-muted">2 days ago</span>
+            </div>
+          ))}
+        </Card>
+        <Card x={60.7} y={24.4} w={38} h={25}>
           <div className="font-bold" style={text(1.6)}>Today’s prayer times</div>
           {["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"].map((p) => (
-            <div key={p} className="flex justify-between border-t border-border" style={{ ...text(1.3), padding: `${cq(1)} 0` }}>
+            <div key={p} className="flex justify-between border-t border-border" style={{ ...text(1.3), padding: `${cq(0.8)} 0` }}>
               <span>{p}</span>
               <span className="text-muted">Azan · Iqamah</span>
             </div>
           ))}
         </Card>
-        <Card x={61.2} y={25} w={37.3} h={16.5}>
-          <div className="font-bold" style={text(1.6)}>Quick actions</div>
-          <div className="grid grid-cols-2" style={{ gap: cq(1), marginTop: cq(1.2) }}>
-            {["Write a post", "Add an event", "See members", "Read messages"].map((q) => (
-              <div key={q} className="rounded-md border border-border bg-background" style={{ ...text(1.25), padding: cq(1.1) }}>
-                {q}
-              </div>
-            ))}
-          </div>
-        </Card>
-        <Card x={61.2} y={43.2} w={37.3} h={9.8}>
+        {/* row 2: to do beside the 6-month donations chart */}
+        <Card x={21.5} y={51} w={38.3} h={9.5}>
           <div className="font-bold" style={text(1.6)}>To do</div>
           <div className="text-muted" style={{ ...text(1.3), marginTop: cq(1) }}>Nothing to do. All good.</div>
         </Card>
+        <Card x={60.7} y={51} w={38} h={9.5}>
+          <div className="font-bold" style={text(1.6)}>Donations, last 6 months</div>
+          <div className="flex items-end" style={{ gap: cq(1.2), height: cq(4), marginTop: cq(0.8) }}>
+            {[30, 38, 46, 55, 66, 100].map((h, i) => (
+              <span key={i} className="flex-1 rounded-t bg-accent" style={{ height: `${h}%` }} />
+            ))}
+          </div>
+        </Card>
 
         {/* the round guide button */}
-        <span className="absolute grid place-items-center rounded-full bg-brand-dark font-bold text-accent shadow" style={{ ...text(2.2), left: cq(21), top: cq(55.5), width: cq(4.6), height: cq(4.6) }}>
+        <span className="absolute grid place-items-center rounded-full bg-brand-dark font-bold text-accent shadow" style={{ ...text(2.2), left: cq(93), top: cq(64.5), width: cq(4.6), height: cq(4.6) }}>
           ?
         </span>
 
@@ -122,11 +130,12 @@ function Dashboard() {
         <Mark n={2} x={21} y={1.4} w={14} h={5.4} />
         <Mark n={3} x={88.4} y={0.8} w={10.6} h={5.4} />
         <Mark n={4} x={21} y={10.4} w={77.6} h={12.6} />
-        <Mark n={5} x={21} y={24.4} w={38.8} h={29} />
-        <Mark n={6} x={60.7} y={24.4} w={38} h={17.2} />
-        <Mark n={7} x={60.7} y={42.6} w={38} h={11} />
-        <Mark n={8} x={1} y={52} w={17} h={8.8} />
-        <Mark n={9} x={20.4} y={54.9} w={5.8} h={5.8} />
+        <Mark n={5} x={21} y={24.4} w={38.8} h={25.6} />
+        <Mark n={6} x={60.2} y={24.4} w={38.5} h={25.6} />
+        <Mark n={7} x={21} y={50.5} w={38.8} h={10.5} />
+        <Mark n={8} x={60.2} y={50.5} w={38.5} h={10.5} />
+        <Mark n={9} x={1} y={52} w={17} h={8.8} />
+        <Mark n={10} x={92.5} y={64} w={5.8} h={5.8} />
       </div>
     </Frame>
   );

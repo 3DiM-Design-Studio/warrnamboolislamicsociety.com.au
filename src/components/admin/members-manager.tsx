@@ -6,7 +6,7 @@ import type { MemberRow } from "@/lib/types";
 import { Icon } from "@/components/admin/icons";
 import { fmtDate } from "@/components/admin/format";
 import { Avatar, List, Row } from "@/components/admin/list";
-import { Pager, SearchBox, filterClass, matchesSearch, paginate } from "@/components/admin/list-controls";
+import { Pager, SearchBox, filterBar, filterClass, matchesSearch, paginate } from "@/components/admin/list-controls";
 import { Button, Card, CardHead, ConfirmDialog, EmptyNote, Modal, ModalActions, TextField, useFormAction, useRunAction } from "@/components/admin/ui";
 
 const SORTS = {
@@ -112,10 +112,10 @@ export function MembersManager({ members }: { members: MemberRow[] }) {
           </Button>
         </CardHead>
         <p className="mb-4 text-[13px] text-muted">People who join on the website&rsquo;s Membership page show up here straight away.</p>
-        <div className="mb-4 flex flex-wrap items-center gap-3">
+        <div className={`mb-4 ${filterBar}`}>
           <SearchBox value={query} onChange={(v) => change(() => setQuery(v))} placeholder="Search members" />
           <select aria-label="Show members from" value={suburb} onChange={(e) => change(() => setSuburb(e.target.value))} className={filterClass}>
-            <option value="">All suburbs ({members.length})</option>
+            <option value="">All suburbs</option>
             {suburbs.map(([k, n]) => (
               <option key={k} value={k}>
                 {titleCase(k)} ({n})
@@ -130,7 +130,7 @@ export function MembersManager({ members }: { members: MemberRow[] }) {
             ))}
           </select>
           {filtering && (
-            <Button
+            <Button className="col-span-2 sm:col-span-1"
               small
               onClick={() =>
                 change(() => {

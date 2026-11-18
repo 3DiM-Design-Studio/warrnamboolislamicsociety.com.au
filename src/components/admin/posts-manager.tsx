@@ -6,18 +6,18 @@ import type { PostRow } from "@/lib/types";
 import { Icon } from "@/components/admin/icons";
 import { fmtDate, melbourneDay } from "@/components/admin/format";
 import { Avatar, List, Row } from "@/components/admin/list";
-import { Pager, SearchBox, filterClass, matchesSearch, paginate } from "@/components/admin/list-controls";
+import { Pager, SearchBox, filterBar, filterClass, matchesSearch, paginate } from "@/components/admin/list-controls";
 import { PhotoField } from "@/components/admin/photo-field";
 import { RichEditor } from "@/components/admin/rich-editor";
 import { Badge, Button, Card, CardHead, ConfirmDialog, EmptyNote, Modal, ModalActions, Switch, TextField, useFormAction, useRunAction } from "@/components/admin/ui";
 
 const SORTS = {
-  first: "Shown first, then newest",
-  newest: "Newest posted",
-  oldest: "Oldest posted",
-  created: "Recently created",
-  edited: "Recently edited",
-  title: "Title (A–Z)",
+  first: "Shown first",
+  newest: "Newest",
+  oldest: "Oldest",
+  created: "Created",
+  edited: "Edited",
+  title: "Title A–Z",
 } as const;
 type SortKey = keyof typeof SORTS;
 
@@ -91,7 +91,7 @@ export function PostsManager({ posts, today }: { posts: PostRow[]; today: string
 
         {posts.length > 0 && (
           <div className="mb-4 grid gap-3">
-            <div className="flex flex-wrap items-center gap-3">
+            <div className={filterBar}>
               <SearchBox value={query} onChange={(v) => change(() => setQuery(v))} placeholder="Search posts" />
               <select aria-label="Show posts" value={status} onChange={(e) => change(() => setStatus(e.target.value as typeof status))} className={filterClass}>
                 <option value="all">All posts</option>
@@ -117,18 +117,20 @@ export function PostsManager({ posts, today }: { posts: PostRow[]; today: string
                 ))}
               </select>
             </div>
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
-              <label className="flex items-center gap-2 font-semibold">
+            <div className="grid grid-cols-2 items-end gap-x-2.5 gap-y-3 sm:flex sm:flex-wrap sm:items-center sm:gap-x-4">
+              <label className="grid min-w-0 gap-1 text-[13px] font-semibold sm:flex sm:items-center sm:gap-2 sm:text-sm">
                 Posted from
                 <input type="date" value={from} max={to || undefined} onChange={(e) => change(() => setFrom(e.target.value))} className={filterClass} />
               </label>
-              <label className="flex items-center gap-2 font-semibold">
+              <label className="grid min-w-0 gap-1 text-[13px] font-semibold sm:flex sm:items-center sm:gap-2 sm:text-sm">
                 to
                 <input type="date" value={to} min={from || undefined} onChange={(e) => change(() => setTo(e.target.value))} className={filterClass} />
               </label>
-              <Switch label="Shown first only" checked={firstOnly} onChange={(e) => change(() => setFirstOnly(e.target.checked))} />
+              <div className="col-span-2 sm:col-span-1">
+                <Switch label="Shown first only" checked={firstOnly} onChange={(e) => change(() => setFirstOnly(e.target.checked))} />
+              </div>
               {filtering && (
-                <Button small onClick={clear}>
+                <Button className="col-span-2 sm:col-span-1" small onClick={clear}>
                   Clear filters
                 </Button>
               )}

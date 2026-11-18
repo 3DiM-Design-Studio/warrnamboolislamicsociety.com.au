@@ -167,7 +167,7 @@ export function AdminShell({ email, alerts = NO_ALERTS, children }: { email: str
             href={`/admin/guide?topic=${guideTopic}`}
             aria-label="Open the guide"
             title="Guide: how to use this page"
-            className="fixed bottom-4 left-4 z-10 grid size-12 place-items-center rounded-full bg-brand-dark text-xl font-bold text-accent shadow-lg ring-2 ring-white transition hover:scale-105 lg:left-[266px]"
+            className="fixed bottom-4 right-4 z-10 grid size-12 place-items-center rounded-full bg-brand-dark text-xl font-bold text-accent shadow-lg ring-2 ring-white transition hover:scale-105 sm:bottom-6 sm:right-6"
           >
             ?
           </Link>
