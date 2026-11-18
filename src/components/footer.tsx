@@ -1,6 +1,7 @@
 import { ArrowRight, ArrowUp, HeartHandshake, Mail, Phone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { NavLink } from "@/components/nav-link";
 import GradientWaves from "@/components/GradientWaves";
 import { SubscribeForm } from "@/components/subscribe-form";
 import { nav, site } from "@/content/site";
@@ -114,9 +115,9 @@ export async function Footer() {
               </Link>
               <p className="mt-4 flex flex-col items-start">
                 {support.map((n) => (
-                  <Link key={n.href} href={n.href} className="link-fx py-2.5 lg:py-1">
+                  <NavLink key={n.href} href={n.href} className="link-fx py-2.5 lg:py-1">
                     {n.label}
-                  </Link>
+                  </NavLink>
                 ))}
               </p>
             </div>
@@ -126,9 +127,9 @@ export async function Footer() {
                 <p className="font-bold">Menu</p>
                 <p className="mt-3 flex flex-col items-start">
                   {nav.map((n) => (
-                    <Link key={n.href} href={n.href} className="link-fx py-2.5 lg:py-1">
+                    <NavLink key={n.href} href={n.href} className="link-fx py-2.5 lg:py-1">
                       {n.label}
-                    </Link>
+                    </NavLink>
                   ))}
                 </p>
               </div>

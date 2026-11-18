@@ -182,6 +182,7 @@ export const GUIDE: Group[] = [
                 ],
               },
               { t: "tip", text: "Leave “Show on the website” off to keep it as a draft." },
+              { t: "tip", text: "On the website, the News page shows the newest story large at the top, then 6 stories at a time with page buttons at the bottom. New stories appear at the front." },
             ],
           },
         ],

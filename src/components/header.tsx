@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useState, useSyncExternalStore } from "react";
 import { LogoMark } from "@/components/logo-mark";
+import { isCurrent } from "@/components/nav-link";
 import { nav, site } from "@/content/site";
 
 export function Banner() {
@@ -72,7 +73,7 @@ export function Header() {
           </Link>
           <nav className="hidden items-center gap-x-5 text-sm font-medium lg:flex">
             {nav.map((n) => (
-              <Link key={n.href} href={n.href} className="link-fx">
+              <Link key={n.href} href={n.href} className="link-fx" aria-current={isCurrent(path, n.href) ? "page" : undefined}>
                 {n.label}
               </Link>
             ))}
@@ -104,7 +105,7 @@ export function Header() {
               <Link
                 key={n.href}
                 href={n.href}
-                aria-current={path === n.href ? "page" : undefined}
+                aria-current={isCurrent(path, n.href) ? "page" : undefined}
                 className="rounded-2xl px-4 py-3.5 text-base font-medium hover:bg-background aria-[current=page]:bg-[#c9f26b]/50 aria-[current=page]:font-bold"
               >
                 {n.label}

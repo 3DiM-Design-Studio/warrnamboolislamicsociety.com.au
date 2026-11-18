@@ -1,13 +1,50 @@
 import { Bell, BookOpen, Users } from "lucide-react";
+import { Suspense } from "react";
 import { PageShell } from "@/components/page-shell";
+import { Pagination } from "@/components/pagination";
 import { FeaturedPost, PostCard } from "@/components/story-cards";
 import { getPosts } from "@/lib/content";
 
 export const metadata = { title: "News" };
 
-export default async function News() {
-  const posts = await getPosts();
+const PER_PAGE = 6;
+
+// Reads ?page= from the address. The first page also shows the newest story large at the top.
+async function NewsList({ searchParams }: { searchParams: PageProps<"/news">["searchParams"] }) {
+  const [posts, query] = await Promise.all([getPosts(), searchParams]);
   const [lead, ...rest] = posts;
+  if (!lead) return <p className="text-muted">No news yet. Please check back soon.</p>;
+
+  const total = Math.max(1, Math.ceil(rest.length / PER_PAGE));
+  const asked = Number.parseInt(String(Array.isArray(query.page) ? query.page[0] : query.page ?? "1"), 10);
+  const page = Number.isFinite(asked) ? Math.min(Math.max(asked, 1), total) : 1;
+  const from = (page - 1) * PER_PAGE;
+  const shown = rest.slice(from, from + PER_PAGE);
+
+  return (
+    <div className="space-y-10">
+      {page === 1 && <FeaturedPost post={lead} />}
+      {rest.length > 0 && (
+        <section id="latest" className="scroll-mt-28">
+          <div className="mb-5 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+            <h2 className="text-2xl font-bold">Latest news</h2>
+            <p className="text-sm text-muted">
+              Showing {from + 1}–{from + shown.length} of {rest.length} stories
+            </p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {shown.map((p) => (
+              <PostCard key={p.id} post={p} />
+            ))}
+          </div>
+          <Pagination page={page} total={total} hrefFor={(n) => (n === 1 ? "/news#latest" : `/news?page=${n}#latest`)} />
+        </section>
+      )}
+    </div>
+  );
+}
+
+export default function News({ searchParams }: PageProps<"/news">) {
   return (
     <PageShell
       title="Stories and updates from our community."
@@ -20,23 +57,9 @@ export default async function News() {
       }}
       intro="Announcements, events and notices from Warrnambool Islamic Society."
     >
-      {!lead ? (
-        <p className="text-muted">No news yet. Please check back soon.</p>
-      ) : (
-        <div className="space-y-10">
-          <FeaturedPost post={lead} />
-          {rest.length > 0 && (
-            <section>
-              <h2 className="mb-5 text-2xl font-bold">Latest news</h2>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {rest.map((p) => (
-                  <PostCard key={p.id} post={p} />
-                ))}
-              </div>
-            </section>
-          )}
-        </div>
-      )}
+      <Suspense fallback={<div aria-hidden className="min-h-[60vh]" />}>
+        <NewsList searchParams={searchParams} />
+      </Suspense>
     </PageShell>
   );
 }
