@@ -40,7 +40,7 @@ function Card({ x, y, w, h, children }: { x: number; y: number; w: number; h: nu
   );
 }
 
-const NAV = ["Overview", "News posts", "Events", "Members", "Donations", "Messages", "Newsletter", "Team", "Prayer times", "Jumu’ah", "Website info", "Admin users"];
+const NAV = ["Overview", "News posts", "Events", "Members", "Donations", "Messages", "Newsletter", "Team", "Prayer times", "Website info", "Admin users"];
 
 function Dashboard() {
   return (
@@ -59,7 +59,7 @@ function Dashboard() {
               </div>
             ))}
           </div>
-          <div style={{ position: "absolute", left: cq(1), top: cq(52.5), width: cq(17), borderTop: "1px solid rgba(255,255,255,.2)" }}>
+          <div style={{ position: "absolute", left: cq(1), top: cq(49), width: cq(17), borderTop: "1px solid rgba(255,255,255,.2)" }}>
             {["View website", "Log out"].map((n) => (
               <div key={n} style={{ ...text(1.4), height: cq(3.5), padding: `${cq(0.95)} ${cq(1.2)}` }}>
                 {n}

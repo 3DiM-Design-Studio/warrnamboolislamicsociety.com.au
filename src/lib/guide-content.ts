@@ -59,7 +59,7 @@ export const GUIDE: Group[] = [
                   { icon: "messages", title: "Read a message", text: "Messages" },
                   { icon: "newsletter", title: "See the email list", text: "Newsletter" },
                   { icon: "prayer", title: "Change an Iqamah time", text: "Prayer times" },
-                  { icon: "jumuah", title: "Change the Friday time", text: "Jumu’ah" },
+                  { icon: "jumuah", title: "Change the Friday time", text: "Prayer times → Jumu’ah box" },
                   { icon: "info", title: "Change phone, email or top message", text: "Website info" },
                   { icon: "info", title: "Change the FAQ questions", text: "Website info → FAQ" },
                   { icon: "team", title: "Change the committee", text: "Team" },
@@ -356,7 +356,7 @@ export const GUIDE: Group[] = [
       {
         slug: "prayer",
         title: "Prayer times",
-        summary: "Azan comes from the timetable. You choose the Iqamah.",
+        summary: "Azan comes from the timetable. You choose the Iqamah and the Friday Jumu’ah time.",
         parts: [
           {
             heading: "Iqamah times",
@@ -393,20 +393,13 @@ export const GUIDE: Group[] = [
               { t: "tip", text: "The website uses these times on those days, then goes back to normal by itself." },
             ],
           },
-        ],
-      },
-      {
-        slug: "jumuah",
-        title: "Jumu’ah",
-        summary: "The Friday time for each season. It repeats every year.",
-        parts: [
           {
-            heading: "Add a season",
+            heading: "Jumu’ah time (Friday)",
             blocks: [
               {
                 t: "form",
                 title: "Add season",
-                open: "Jumu’ah → press Add season (or Edit)",
+                open: "Prayer times → Jumu’ah time by season box (under Preview for today) → press Add season (or Edit)",
                 fields: [
                   { label: "Name", example: "Autumn and winter", need: true },
                   { label: "From (month + day)", example: "April 1", need: true, half: true },
@@ -415,6 +408,7 @@ export const GUIDE: Group[] = [
                 ],
               },
               { t: "warn", text: "Every day of the year needs exactly one season. If days are missing or overlap, a red note appears." },
+              { t: "tip", text: "Seasons repeat every year. The website switches by itself when a new season starts." },
             ],
           },
         ],

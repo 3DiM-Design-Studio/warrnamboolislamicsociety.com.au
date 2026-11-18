@@ -21,7 +21,6 @@ const NAV: { href: string; label: string; icon: IconName }[] = [
   { href: "/admin/subscribers", label: "Newsletter", icon: "newsletter" },
   { href: "/admin/team", label: "Team", icon: "team" },
   { href: "/admin/prayer", label: "Prayer times", icon: "prayer" },
-  { href: "/admin/jumuah", label: "Jumu’ah", icon: "jumuah" },
   { href: "/admin/info", label: "Website info", icon: "info" },
   { href: "/admin/admins", label: "Admin users", icon: "admins" },
 ];
@@ -37,7 +36,6 @@ const GUIDE_PAGE: Record<string, string> = {
   "/admin/subscribers": "newsletter",
   "/admin/team": "team",
   "/admin/prayer": "prayer",
-  "/admin/jumuah": "jumuah",
   "/admin/info": "info",
   "/admin/admins": "admins",
 };

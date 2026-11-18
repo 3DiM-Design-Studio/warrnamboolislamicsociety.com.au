@@ -3,13 +3,14 @@
 import { useMemo, useState } from "react";
 import { deleteRamadan, savePrayerSettings, saveRamadan } from "@/lib/actions/prayer";
 import { PRAYERS, activeRamadan, dayBoard, fmtHM, fmtTime, type AzanTimes, type IqamahRules, type PrayerKey } from "@/lib/prayer";
-import type { PrayerSettingsRow, RamadanRow } from "@/lib/types";
+import type { JumuahRow, PrayerSettingsRow, RamadanRow } from "@/lib/types";
 import { Icon } from "@/components/admin/icons";
 import { fmtDate } from "@/components/admin/format";
+import { JumuahSeasons } from "@/components/admin/jumuah-manager";
 import { List, Row } from "@/components/admin/list";
 import { Badge, Button, Card, CardHead, ConfirmDialog, EmptyNote, Modal, ModalActions, Switch, TextField, inputClass, useFormAction, useRunAction } from "@/components/admin/ui";
 
-export function PrayerManager({ settings, ramadan, today, azan }: { settings: PrayerSettingsRow; ramadan: RamadanRow[]; today: string; azan: AzanTimes }) {
+export function PrayerManager({ settings, ramadan, seasons, today, azan }: { settings: PrayerSettingsRow; ramadan: RamadanRow[]; seasons: JumuahRow[]; today: string; azan: AzanTimes }) {
   const [rules, setRules] = useState<IqamahRules>(settings.rules);
   const [editing, setEditing] = useState<RamadanRow | "new" | null>(null);
   const [deleting, setDeleting] = useState<RamadanRow | null>(null);
@@ -124,6 +125,7 @@ export function PrayerManager({ settings, ramadan, today, azan }: { settings: Pr
           </Card>
         </div>
 
+        <div className="grid gap-5">
         <Card>
           <CardHead title="Preview for today">{settings.show_on_site ? <Badge tone="green">On website</Badge> : <Badge tone="gold">Hidden</Badge>}</CardHead>
           <p className="mb-3 text-[13px] text-muted">{fmtDate(today, true)}. Changes show here before you save.</p>
@@ -150,6 +152,8 @@ export function PrayerManager({ settings, ramadan, today, azan }: { settings: Pr
             </table>
           </div>
         </Card>
+        <JumuahSeasons seasons={seasons} today={today} />
+        </div>
       </div>
 
       <Modal open={editing !== null} onClose={() => setEditing(null)} title={editing === "new" ? "Add Ramadan dates" : "Edit Ramadan dates"}>

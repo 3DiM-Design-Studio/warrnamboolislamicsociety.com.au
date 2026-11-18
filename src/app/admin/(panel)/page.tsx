@@ -82,7 +82,7 @@ export default async function OverviewPage() {
   const todo: { text: string; href: string; label: string }[] = [];
   if (drafts) todo.push({ text: `${drafts} news post${drafts > 1 ? "s" : ""} not on the website yet`, href: "/admin/posts", label: "Open" });
   if (badPhone) todo.push({ text: "A phone number needs fixing", href: "/admin/info", label: "Fix" });
-  if (!coverage.ok) todo.push({ text: "Some days have no Jumu’ah time", href: "/admin/jumuah", label: "Fix" });
+  if (!coverage.ok) todo.push({ text: "Some days have no Jumu’ah time", href: "/admin/prayer", label: "Fix" });
   if (!p?.show_on_site) todo.push({ text: "Iqamah times are hidden on the website", href: "/admin/prayer", label: "Check" });
 
   const kpi = (icon: IconName, label: string, value: string, sub: string) => (
@@ -104,7 +104,7 @@ export default async function OverviewPage() {
     { href: "/admin/members", label: "See members", icon: "members" },
     { href: "/admin/donations", label: "See donations", icon: "donations" },
     { href: "/admin/messages", label: "Read messages", icon: "messages" },
-    { href: "/admin/jumuah", label: "Jumu’ah time", icon: "jumuah" },
+    { href: "/admin/prayer", label: "Jumu’ah time", icon: "jumuah" },
     { href: "/admin/info", label: "Website info", icon: "info" },
   ];
 
