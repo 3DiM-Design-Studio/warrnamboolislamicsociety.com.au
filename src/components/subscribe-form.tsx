@@ -48,6 +48,8 @@ export function SubscribeForm() {
           name="email"
           type="email"
           required
+          aria-label="Your email address"
+          autoComplete="email"
           placeholder="Email address"
           className="w-full bg-transparent py-1 text-base outline-none placeholder:text-brand-dark/50"
         />

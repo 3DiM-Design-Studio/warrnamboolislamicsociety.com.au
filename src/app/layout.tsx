@@ -9,7 +9,8 @@ import {
   Noto_Sans_Devanagari,
   Noto_Sans_Tamil,
 } from "next/font/google";
-import { GoogleAnalytics } from "@next/third-parties/google";
+import { AnalyticsConsent } from "@/components/analytics-consent";
+import { SITE_URL } from "@/lib/site-url";
 import { site } from "@/content/site";
 import "./globals.css";
 
@@ -36,9 +37,17 @@ const devanagari = Noto_Sans_Devanagari({
 const tamil = Noto_Sans_Tamil({ variable: "--font-tamil", subsets: ["tamil"], preload: false });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: { default: site.name, template: `%s | ${site.name}` },
   description: site.tagline,
+  applicationName: site.name,
+  // "./" gives every page its own canonical address (its own path on the site).
+  alternates: { canonical: "./" },
+  openGraph: { type: "website", siteName: site.name, locale: "en_AU", title: site.name, description: site.tagline },
+  twitter: { card: "summary_large_image", title: site.name, description: site.tagline },
 };
+
+export const viewport = { themeColor: "#0b0d0b" };
 
 // The public site's header, footer and banner live in app/(site)/layout.tsx so that /admin does not get them.
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -56,9 +65,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <ScrollReveal />
         </Suspense>
         {children}
-        {process.env.NEXT_PUBLIC_GA_ID && (
-          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
-        )}
+        <AnalyticsConsent gaId={process.env.NEXT_PUBLIC_GA_ID} />
       </body>
     </html>
   );

@@ -442,6 +442,12 @@ export const GUIDE: Group[] = [
             ],
           },
           {
+            heading: "Visit counting notice",
+            blocks: [
+              { t: "tip", text: "New visitors see a small notice asking if we may count visits with Google Analytics. Counting starts only if they press “Yes, that is fine”. It never runs inside this admin panel. Visitors can change their choice at any time on the Privacy policy page." },
+            ],
+          },
+          {
             heading: "Frequently asked questions",
             blocks: [
               { t: "flow", items: ["Website info", "Scroll to “Frequently asked questions”", "Add question (or Edit)", "Save"] },

@@ -1,6 +1,7 @@
 import { CalendarDays, Clock, ExternalLink, MapPin, User, Users } from "lucide-react";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { JsonLd } from "@/components/json-ld";
 import { PageShell } from "@/components/page-shell";
 import { WhatsAppShare } from "@/components/whatsapp-share";
 import { getEvent } from "@/lib/content";
@@ -13,7 +14,13 @@ const dateLabel = (d: string) =>
 export async function generateMetadata({ params }: PageProps<"/events/[id]">) {
   const { id } = await params;
   const event = await getEvent(id);
-  return { title: event?.title ?? "Event" };
+  if (!event) return { title: "Event not found" };
+  const description = event.short_description || undefined;
+  return {
+    title: event.title,
+    description,
+    openGraph: { type: "website" as const, title: event.title, description, images: [event.photo_url || "/opengraph-image"] },
+  };
 }
 
 export default function EventPage({ params }: PageProps<"/events/[id]">) {
@@ -39,6 +46,21 @@ async function Event({ params }: { params: PageProps<"/events/[id]">["params"] }
 
   return (
     <PageShell title={event.title} crumb="Event" parent={{ label: "Events", href: "/events" }} intro={event.short_description || undefined}>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Event",
+          name: event.title,
+          startDate: `${event.event_date}T${event.event_time.slice(0, 5)}`,
+          ...(event.end_date || event.end_time ? { endDate: `${event.end_date ?? event.event_date}T${(event.end_time ?? event.event_time).slice(0, 5)}` } : {}),
+          eventStatus: cancelled ? "https://schema.org/EventCancelled" : "https://schema.org/EventScheduled",
+          eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+          ...(event.place ? { location: { "@type": "Place", name: event.place, address: "Warrnambool, Victoria, Australia" } } : {}),
+          ...(event.short_description ? { description: event.short_description } : {}),
+          ...(event.photo_url ? { image: [event.photo_url] } : {}),
+          organizer: { "@type": "Organization", name: "Warrnambool Islamic Society" },
+        }}
+      />
       <div className="grid gap-8 lg:grid-cols-[1.3fr_1fr]">
         <div className="space-y-6">
           {cancelled && <p className="rounded-2xl bg-[#fbe4e1] p-4 font-semibold text-[#b3261e]">This event has been cancelled.</p>}

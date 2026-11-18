@@ -1,3 +1,4 @@
+import { AnalyticsChoiceButton } from "@/components/analytics-consent";
 import { PageShell } from "@/components/page-shell";
 import { site } from "@/content/site";
 
@@ -18,6 +19,12 @@ export default function Privacy() {
         </a>
         .
       </p>
+      <h2 className="text-xl font-bold">Counting visits (Google Analytics)</h2>
+      <p>
+        We count visits with Google Analytics only if you say yes on the notice shown when you first visit. It sets small files
+        (cookies) in your browser and tells us which pages are used. It is never used for ads. You can change your mind at any time.
+      </p>
+      <AnalyticsChoiceButton />
       <p className="text-sm text-muted">
         This is a short placeholder. The original policy on the old WordPress site is a
         default template and should be reviewed before launch.

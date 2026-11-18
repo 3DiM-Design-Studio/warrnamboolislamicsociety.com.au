@@ -217,4 +217,20 @@ html { scroll-padding-top: 6rem; }
 @keyframes nf-swing { 0%, 100% { transform: rotate(5deg); } 50% { transform: rotate(-5deg); } }
 
 /* The link of the page that is open stays underlined */
+/* Keyboard users: a link that appears on the first Tab and jumps past the header */
+.skip-link {
+  position: fixed;
+  left: 1rem;
+  top: 0.75rem;
+  z-index: 100;
+  transform: translateY(-200%);
+  border-radius: 9999px;
+  background: var(--accent);
+  padding: 0.75rem 1.25rem;
+  font-weight: 600;
+  color: var(--brand-dark);
+  transition: transform 150ms;
+}
+.skip-link:focus { transform: none; }
+
 .link-fx[aria-current="page"] { background-position: 0% 100%; background-size: 100% 1.5px; }
