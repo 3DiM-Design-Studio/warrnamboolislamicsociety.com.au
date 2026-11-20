@@ -1,7 +1,6 @@
 import { Download, ExternalLink, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { ContactCta } from "@/components/contact-cta";
 import { PageShell } from "@/components/page-shell";
 import { charity, site } from "@/content/site";
 
@@ -78,8 +77,6 @@ export default function Acnc() {
           <Image src="/acnc-certificate.jpg" alt="ACNC registration certificate for Warrnambool Islamic Community Centre Ltd, ABN 94 687 715 395, registered 4 June 2025" width={1000} height={1414} className="h-auto w-full rounded-xl" />
         </a>
       </section>
-
-      <ContactCta title="Want to speak with someone?" text="We are glad to answer questions about our registration, our plans and how your support is used." button="Contact us" />
     </PageShell>
   );
 }

@@ -4,7 +4,6 @@ import { AcncBadge } from "@/components/acnc-badge";
 import { FridayCalendar } from "@/components/friday-calendar";
 import { HeroGreeting } from "@/components/hero-greeting";
 import { mission, site } from "@/content/site";
-import { ContactCta } from "@/components/contact-cta";
 import { HomeEvents, HomeFaqs, HomeJumuahTime, HomeNews, HomeNextUp } from "@/components/home-sections";
 
 const featureImages = [
@@ -121,8 +120,6 @@ export default function Home() {
         </section>
 
         <HomeFaqs />
-
-        <ContactCta title="Get in touch" text="Questions about prayer times, membership or events? We would love to hear from you." />
       </div>
     </>
   );

@@ -4,7 +4,7 @@ import Link from "next/link";
 // "+61 3 5907 1724" -> "+61359071724", so a tap on a phone starts the call.
 const telHref = (phone: string) => `tel:${phone.replace(/[^\d+]/g, "")}`;
 
-/** The society's contact details with tap-to-call and tap-to-email links. Shown at the bottom of About and other pages (see ContactCta). */
+/** The society's contact details with tap-to-call and tap-to-email links. Shown at the bottom of the About page. */
 export function ContactDetails({
   email,
   phones,
