@@ -1,5 +1,6 @@
 import { arabicTitle, amountBar, BRAND, contactBlock, detailTable, emailLayout, heading, note, paragraph, quoteBox } from "@/lib/email-template";
 import { mailConfigured, sendMail } from "@/lib/mail";
+import { charity } from "@/content/site";
 
 export type ReceiptDetails = {
   to: string;
@@ -39,6 +40,7 @@ export function receiptEmail(r: ReceiptDetails) {
         ["Date", longDate(r.date)],
         ["Donation type", type],
         ["Given to", BRAND.name],
+        ["Registered charity", `${charity.legalName}, ABN ${charity.abn}`],
         ["Name on receipt", r.name],
       ]),
       quoteBox(HADITH, HADITH_SOURCE),
@@ -57,6 +59,7 @@ export function receiptEmail(r: ReceiptDetails) {
     `Date: ${longDate(r.date)}`,
     `Donation type: ${type}`,
     `Given to: ${BRAND.name}`,
+    `Registered charity: ${charity.legalName}, ABN ${charity.abn}`,
     `Name on receipt: ${r.name}`,
     "",
     `"${HADITH}"`,

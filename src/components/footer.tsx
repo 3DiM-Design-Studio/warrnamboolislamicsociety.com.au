@@ -6,7 +6,7 @@ import GradientWaves from "@/components/GradientWaves";
 import { BackToTop } from "@/components/back-to-top";
 import { CookieSettingsButton } from "@/components/analytics-consent";
 import { SubscribeForm } from "@/components/subscribe-form";
-import { nav, site } from "@/content/site";
+import { charity, nav, site } from "@/content/site";
 import { getSettings } from "@/lib/content";
 
 const support = [
@@ -67,7 +67,7 @@ export async function Footer() {
               </div>
               <div className="flex flex-col items-start gap-4 text-sm sm:flex-row sm:items-center sm:gap-5">
                 <Link
-                  href="/news/wis-registered-charity-acnc"
+                  href="/acnc"
                   aria-label="Registered charity with the ACNC"
                   className="shrink-0"
                 >
@@ -83,6 +83,9 @@ export async function Footer() {
                   <p className="font-bold">{site.name}</p>
                   <p className="mt-1 text-brand-dark/70">
                     Registered charity with the ACNC.
+                  </p>
+                  <p className="mt-0.5 text-brand-dark/70">
+                    ABN {charity.abn}
                   </p>
                   <p className="mt-3 flex items-center gap-2 break-all">
                     <Mail className="size-4 shrink-0" aria-hidden />
@@ -143,7 +146,7 @@ export async function Footer() {
           </div>
         </div>
         <p className="mt-6 text-sm text-white drop-shadow">
-          &copy; {site.name}. All rights reserved.
+          &copy; {site.name}. All rights reserved. Registered as {charity.legalName}, ABN {charity.abn}.
         </p>
       </div>
     </footer>

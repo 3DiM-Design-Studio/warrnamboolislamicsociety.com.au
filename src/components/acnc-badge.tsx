@@ -7,8 +7,8 @@ import Link from "next/link";
 export function AcncBadge() {
   return (
     <Link
-      href="/news/wis-registered-charity-acnc"
-      aria-label="Registered charity with the ACNC. Read the announcement."
+      href="/acnc"
+      aria-label="Registered charity with the ACNC. See our certificate."
       className="group absolute inset-x-3 bottom-0 z-10 translate-y-1/2 sm:inset-x-auto sm:left-10 sm:max-w-[calc(100%-5rem)]"
     >
       <span className="flex items-center overflow-hidden rounded-3xl bg-white shadow-[0_12px_30px_-12px_rgba(0,0,0,0.45)] transition-transform duration-300 group-hover:-translate-y-0.5 sm:rounded-full">

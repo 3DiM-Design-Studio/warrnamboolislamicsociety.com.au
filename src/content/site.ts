@@ -10,6 +10,14 @@ export const site = {
   phones: ["+61 3 5907 1724", "+61 493 187 858", "+61 408 307 364", "+61 407 975 314"],
 };
 
+// The charity's details, exactly as on the ACNC registration certificate (registered 4 June 2025).
+export const charity = {
+  legalName: "Warrnambool Islamic Community Centre Ltd",
+  abn: "94 687 715 395",
+  registered: "4 June 2025",
+  registerUrl: "https://www.acnc.gov.au/charity",
+};
+
 export const nav = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About Us" },
