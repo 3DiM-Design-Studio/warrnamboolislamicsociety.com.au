@@ -7,7 +7,10 @@ import { CardsSkeleton } from "@/components/skeletons";
 import { EventCard } from "@/components/story-cards";
 import { getPastEvents, getToday, getUpcomingEvents } from "@/lib/content";
 
-export const metadata = { title: "Events" };
+export const metadata = {
+  title: "Events",
+  description: "Talks, classes and community gatherings at Warrnambool Islamic Society. See what is coming up and add events to your calendar.",
+};
 
 // Upcoming events (and multi-day events that are on right now) first, then a short list of recent past events.
 async function EventsList() {

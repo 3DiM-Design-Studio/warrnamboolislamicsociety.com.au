@@ -20,6 +20,7 @@ const policies = [
   { href: "/privacy-policy", label: "Privacy policy" },
   { href: "/cookie-policy", label: "Cookie policy" },
   { href: "/gdpr", label: "Your data rights (GDPR)" },
+  { href: "/terms", label: "Terms of use" },
 ];
 
 // One layout for every policy page: a short contents list, numbered sections, links to the sibling policies and a contact box.

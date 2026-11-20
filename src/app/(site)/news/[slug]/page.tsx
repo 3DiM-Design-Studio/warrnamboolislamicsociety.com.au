@@ -74,7 +74,7 @@ async function Post({ params }: { params: PageProps<"/news/[slug]">["params"] })
       </Link>
       {post.photo_url && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={post.photo_url} alt="" className="w-full rounded-2xl" />
+        <img src={post.photo_url} alt={post.title} className="w-full rounded-2xl" />
       )}
       <div
         className="max-w-3xl space-y-4 text-lg [&_a]:underline [&_ol]:list-decimal [&_ol]:pl-5 [&_ul]:list-disc [&_ul]:pl-5"

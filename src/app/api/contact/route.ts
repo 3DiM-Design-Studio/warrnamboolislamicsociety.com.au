@@ -1,5 +1,6 @@
 import { detailTable, emailLayout, esc as escHtml, heading, note } from "@/lib/email-template";
 import { sendMail } from "@/lib/mail";
+import { tooMany } from "@/lib/rate-limit";
 import { createAnonClient, hasSupabase } from "@/lib/supabase/anon";
 
 const clean = (v: unknown) => (typeof v === "string" ? v.trim() : "");
@@ -13,6 +14,8 @@ export async function POST(req: Request) {
   } catch {
     return Response.json({ error: "Please fill in the form and try again." }, { status: 400 });
   }
+
+  if (tooMany(req, "contact", 5)) return Response.json({ error: "Too many messages. Please wait a few minutes and try again." }, { status: 429 });
 
   // Hidden "website" field: people never see it, spam bots fill it in. Pretend it worked and drop it.
   if (clean(body.website)) return Response.json({ ok: true });

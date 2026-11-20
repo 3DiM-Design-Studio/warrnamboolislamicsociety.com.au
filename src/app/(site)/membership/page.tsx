@@ -4,7 +4,10 @@ import { ContactCta } from "@/components/contact-cta";
 import { MembershipForm } from "@/components/membership-form";
 import { PageShell } from "@/components/page-shell";
 
-export const metadata = { title: "Membership" };
+export const metadata = {
+  title: "Membership",
+  description: "Become a member of Warrnambool Islamic Society online in a few short steps and support our community.",
+};
 
 export default function Membership() {
   return (

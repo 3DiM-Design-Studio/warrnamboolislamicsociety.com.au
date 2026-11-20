@@ -8,7 +8,10 @@ import { FeaturedPost, PostCard } from "@/components/story-cards";
 import { getPosts } from "@/lib/content";
 import { htmlToText } from "@/lib/sanitize";
 
-export const metadata = { title: "News" };
+export const metadata = {
+  title: "News",
+  description: "Announcements, stories and updates from Warrnambool Islamic Society.",
+};
 
 const PER_PAGE = 6;
 

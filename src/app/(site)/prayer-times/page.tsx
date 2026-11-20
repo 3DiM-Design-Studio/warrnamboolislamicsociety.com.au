@@ -7,7 +7,10 @@ import { PrayerSkeleton, Skeleton } from "@/components/skeletons";
 import { prayerNotes } from "@/content/site";
 import { getJumuah, getTodayIqamah } from "@/lib/content";
 
-export const metadata = { title: "Prayer Times" };
+export const metadata = {
+  title: "Prayer Times",
+  description: "Daily prayer times, Iqamah times and a weekly calendar for Warrnambool, with the Hijri date and Jumu'ah time.",
+};
 
 // Everything below the heading comes from the database (Iqamah times and the Jumu'ah season), so it loads on its own.
 async function PrayerBody() {

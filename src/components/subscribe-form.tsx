@@ -11,12 +11,14 @@ export function SubscribeForm() {
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setStatus("sending");
-    const email = new FormData(e.currentTarget).get("email");
+    const form = new FormData(e.currentTarget);
+    const email = form.get("email");
+    const website = form.get("website");
     try {
       const res = await fetch("/api/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, website }),
       });
       const body = await res.json().catch(() => null);
       setStatus(!res.ok ? "error" : body?.already ? "already" : "sent");
@@ -43,6 +45,7 @@ export function SubscribeForm() {
 
   return (
     <form onSubmit={onSubmit}>
+      <input name="website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 opacity-0" />
       <div className="flex items-center border-b border-brand-dark/40 pb-2">
         <input
           name="email"

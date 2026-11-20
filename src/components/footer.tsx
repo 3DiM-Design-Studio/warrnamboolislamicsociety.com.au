@@ -14,6 +14,7 @@ const support = [
   { href: "/privacy-policy", label: "Privacy policy" },
   { href: "/cookie-policy", label: "Cookie policy" },
   { href: "/gdpr", label: "Your data rights (GDPR)" },
+  { href: "/terms", label: "Terms of use" },
 ];
 
 export async function Footer() {

@@ -13,7 +13,10 @@ import { RichHeading } from "@/components/rich-heading";
 import { site } from "@/content/site";
 import { getFaqs } from "@/lib/content";
 
-export const metadata = { title: "Donate" };
+export const metadata = {
+  title: "Donate",
+  description: "Give once or monthly to help build a permanent place of worship in Warrnambool. Secure card payment and an emailed receipt.",
+};
 
 const heading =
   "Your giving helps Warrnambool build a place of worship, strengthen our community and support generations to come.";

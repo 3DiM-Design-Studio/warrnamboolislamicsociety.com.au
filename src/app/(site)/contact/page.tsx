@@ -3,7 +3,10 @@ import { PageShell } from "@/components/page-shell";
 import { ContactForm } from "@/components/contact-form";
 import { getJumuah, getSettings } from "@/lib/content";
 
-export const metadata = { title: "Contact Us" };
+export const metadata = {
+  title: "Contact Us",
+  description: "Send a message to Warrnambool Islamic Society. We are happy to answer questions about prayer times, membership and events.",
+};
 
 export default async function Contact() {
   const [settings, jumuah] = await Promise.all([getSettings(), getJumuah()]);

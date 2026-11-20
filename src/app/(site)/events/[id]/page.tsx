@@ -70,7 +70,7 @@ async function Event({ params }: { params: PageProps<"/events/[id]">["params"] }
           {!cancelled && phase === "ongoing" && <p className="rounded-2xl bg-[#dcf1e8] p-4 font-semibold text-[#0f6a4d]">This event is on now.</p>}
           {event.photo_url && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={event.photo_url} alt="" className="w-full rounded-2xl" />
+            <img src={event.photo_url} alt={event.title} className="w-full rounded-2xl" />
           )}
           {event.description && <p className="whitespace-pre-line text-lg leading-relaxed">{event.description}</p>}
           {event.notes && (

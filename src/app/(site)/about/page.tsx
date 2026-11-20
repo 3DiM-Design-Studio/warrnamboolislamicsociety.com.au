@@ -15,7 +15,10 @@ import { RichHeading } from "@/components/rich-heading";
 import { mission } from "@/content/site";
 import { getJumuah, getSettings, getTeamGroups } from "@/lib/content";
 
-export const metadata = { title: "About Us" };
+export const metadata = {
+  title: "About Us",
+  description: "Who we are, our mission of service, education and empowerment, and the committee that leads Warrnambool Islamic Society.",
+};
 
 const intro =
   "We have created Warrnambool Islamic Society with a mission to serve Warrnambool and neighbouring communities by service, education and empowerment, based on Islamic principles of compassion, unity and justice. We are a not-for-profit organisation.";
