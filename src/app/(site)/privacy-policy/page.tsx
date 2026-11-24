@@ -8,7 +8,7 @@ export const metadata = {
   description: "How Warrnambool Islamic Society collects, uses and protects your personal information.",
 };
 
-const UPDATED = "18 November 2026";
+const UPDATED = "24 November 2026";
 
 const li = "list-disc space-y-1.5 pl-5";
 const link = "font-semibold underline underline-offset-2";
@@ -52,6 +52,9 @@ const sections: { id: string; title: string; body: ReactNode }[] = [
         <li>
           <strong>Newsletter and event emails.</strong> Your email address, if you put it in the box at the bottom of our pages. We use it to send community news and event reminders.
           Every email has an unsubscribe link.
+        </li>
+        <li>
+          <strong>Photos.</strong> We may show photos taken at our prayers, events and gatherings on the Gallery page and elsewhere on this website. If you or your child appear in a photo and you would like it removed, email us and we will take it down promptly.
         </li>
         <li>
           <strong>Committee sign-in.</strong> Committee members who manage the website sign in with an email address and password. This is not used for anything else.

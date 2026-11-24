@@ -24,6 +24,7 @@ export const nav = [
   { href: "/prayer-times", label: "Prayer Times" },
   { href: "/news", label: "News" },
   { href: "/events", label: "Events" },
+  { href: "/gallery", label: "Gallery" },
   { href: "/membership", label: "Membership" },
   { href: "/contact", label: "Contact" },
 ];

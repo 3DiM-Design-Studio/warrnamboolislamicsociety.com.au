@@ -8,4 +8,5 @@ export const TAGS = {
   prayer: "prayer",
   jumuah: "jumuah",
   faqs: "faqs",
+  gallery: "gallery",
 } as const;

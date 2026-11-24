@@ -54,6 +54,7 @@ export const GUIDE: Group[] = [
                   { icon: "posts", title: "Write news", text: "News posts" },
                   { icon: "events", title: "Add an event", text: "Events" },
                   { icon: "events", title: "Remind people about an event", text: "Events → Send reminder" },
+                  { icon: "gallery", title: "Add photos", text: "Gallery" },
                   { icon: "members", title: "See who joined", text: "Members" },
                   { icon: "donations", title: "See donations", text: "Donations" },
                   { icon: "messages", title: "Read a message", text: "Messages" },
@@ -240,6 +241,51 @@ export const GUIDE: Group[] = [
           {
             heading: "Show on the website?",
             blocks: [{ t: "list", items: ["Yes, show it: visible to everyone.", "Draft: hidden while you finish.", "Cancelled: the page says it is cancelled."] }],
+          },
+        ],
+      },
+      {
+        slug: "gallery",
+        title: "Gallery",
+        summary: "Photos of the community, shown on the Gallery page and on the Home page.",
+        parts: [
+          {
+            heading: "Add photos",
+            blocks: [
+              { t: "flow", items: ["Gallery", "Add photos", "Pick one or many pictures", "Add a short caption if you like", "Save"] },
+              {
+                t: "form",
+                title: "Add photos",
+                open: "Gallery → press Add photos",
+                button: "Save photos",
+                fields: [
+                  { label: "Album", kind: "select", example: "Friday prayer", need: true },
+                  { label: "Date of the photos", kind: "date", example: "Optional" },
+                  { label: "Show these photos on the Home page", kind: "switch", example: "Turn on for your best photos" },
+                  { label: "Photos", kind: "photo", need: true },
+                  { label: "Caption for each photo (optional)", example: "Friday prayer in the musallah" },
+                ],
+              },
+              { t: "warn", text: "Only upload photos that the people in them have agreed to share. Be careful with photos of children. Do not add private occasions, such as a funeral, without the family’s written permission." },
+              { t: "tip", text: "You can pick many pictures at once, up to 40. They are made the right size for the website for you, and hidden details such as where a photo was taken are removed. Pictures from an iPhone that will not upload can be saved as JPEG first." },
+              { t: "tip", text: "A caption is optional, but a short one is a good idea. It is shown under the photo and read out for people who cannot see the picture, so say what is in it. A photo without a caption still works." },
+            ],
+          },
+          {
+            heading: "The Home page and hiding photos",
+            blocks: [
+              {
+                t: "list",
+                items: [
+                  "The Home page shows up to 5 photos in a neat block. Turn on “Show on the Home page” for the photos you want there. If none are turned on, Home shows the 5 newest photos.",
+                  "Hide takes a photo off the website straight away without deleting it. Press Show to put it back. Use this if someone asks for a photo to come down.",
+                  "Edit changes the caption, album, date and the two switches. To change the picture itself, delete it and add it again.",
+                  "Delete asks Yes or No first and cannot be undone.",
+                  "Visitors can filter the Gallery page by album: Friday prayer, Iftar, Eid, Lectures and Community.",
+                  "The Gallery page shows 15 photos first, and a “Show more photos” button adds 15 more each time.",
+                ],
+              },
+            ],
           },
         ],
       },

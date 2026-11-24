@@ -5,6 +5,7 @@ import { AcncBadge } from "@/components/acnc-badge";
 import { FridayCalendar } from "@/components/friday-calendar";
 import { HeroGreeting } from "@/components/hero-greeting";
 import { mission, site } from "@/content/site";
+import { HomeGallery } from "@/components/home-gallery";
 import { JoinCommunity } from "@/components/join-community";
 import { HomeEvents, HomeFaqs, HomeJumuahTime, HomeNews, HomeNextUp } from "@/components/home-sections";
 
@@ -19,7 +20,7 @@ export default function Home() {
   return (
     <>
       <div className="mx-auto -mt-[120px] max-w-6xl px-4 pt-8">
-        <div className="relative mb-20 sm:mb-16">
+        <div className="relative mb-24 sm:mb-28">
           <section className="relative isolate overflow-hidden rounded-3xl bg-brand-dark text-white">
             <Image
               src="/hero.jpeg"
@@ -88,6 +89,10 @@ export default function Home() {
         <HomeNews />
 
         <HomeEvents />
+
+        <Suspense fallback={null}>
+          <HomeGallery />
+        </Suspense>
 
         <section className="relative isolate mt-16 overflow-hidden rounded-3xl bg-card px-6 py-8 sm:px-10">
           <div className="absolute inset-0 -z-10 overflow-hidden rounded-3xl">

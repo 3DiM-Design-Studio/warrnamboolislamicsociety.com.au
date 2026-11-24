@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { getPosts, getUpcomingEvents } from "@/lib/content";
 import { SITE_URL } from "@/lib/site-url";
 
-const pages = ["", "/about", "/prayer-times", "/news", "/events", "/membership", "/donate", "/contact", "/acnc", "/privacy-policy", "/cookie-policy", "/gdpr", "/terms"];
+const pages = ["", "/about", "/prayer-times", "/news", "/events", "/gallery", "/membership", "/donate", "/contact", "/acnc", "/privacy-policy", "/cookie-policy", "/gdpr", "/terms"];
 
 // Every public page, plus each published news story and upcoming event, so search engines find new ones by themselves.
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

@@ -30,6 +30,8 @@ const nextConfig: NextConfig = {
   },
   partialPrefetching: true,
   experimental: {
+    // Gallery photos are shrunk in the browser first, then posted to the server to be tidied. The host accepts about 4.5 MB.
+    serverActions: { bodySizeLimit: '4.5mb' },
     // Dev only. Skip the automatic "must load instantly" check on every page: the admin area is
     // behind a login, so it can never be instant, and the check only fills the dev screen with
     // warnings. Production behaviour is unchanged.

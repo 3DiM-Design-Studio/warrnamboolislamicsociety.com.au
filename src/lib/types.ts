@@ -115,6 +115,20 @@ export type TeamRow = {
   sort_order: number;
 };
 
+export type GalleryRow = {
+  id: string;
+  caption: string;
+  album: string;
+  photo_url: string;
+  thumb_url: string;
+  width: number | null;
+  height: number | null;
+  taken_on: string | null;
+  featured: boolean;
+  visible: boolean;
+  created_at: string;
+};
+
 export type PrayerSettingsRow = {
   rules: IqamahRules;
   show_on_site: boolean;

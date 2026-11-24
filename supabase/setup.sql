@@ -289,6 +289,21 @@ create table if not exists public.admin_seen (
 -- The Donate page uses Stripe, so there is no donation_settings table.
 drop table if exists public.donation_settings;
 
+-- Gallery: photos of the community. Visitors see only the photos marked visible.
+create table if not exists public.gallery_photos (
+  id uuid primary key default gen_random_uuid(),
+  caption text not null default '' check (char_length(caption) <= 160),
+  album text not null default 'community' check (char_length(album) between 1 and 40),
+  photo_url text not null,
+  thumb_url text not null,
+  width int,
+  height int,
+  taken_on date,
+  featured boolean not null default false,
+  visible boolean not null default true,
+  created_at timestamptz not null default now()
+);
+
 -- ============ 3. Security rules (Row Level Security) ============
 alter table public.admins enable row level security;
 alter table public.site_settings enable row level security;
@@ -299,6 +314,10 @@ alter table public.contacts enable row level security;
 alter table public.donations enable row level security;
 alter table public.subscribers enable row level security;
 alter table public.team_members enable row level security;
+alter table public.gallery_photos enable row level security;
+alter table public.gallery_photos alter column caption set default '';
+alter table public.gallery_photos drop constraint if exists gallery_photos_caption_check;
+alter table public.gallery_photos add constraint gallery_photos_caption_check check (char_length(caption) <= 160);
 alter table public.prayer_settings enable row level security;
 alter table public.ramadan_periods enable row level security;
 alter table public.jumuah_seasons enable row level security;
@@ -337,6 +356,13 @@ create policy wis_settings_write on public.site_settings for all to authenticate
 
 create policy wis_team_read on public.team_members for select to anon, authenticated using (true);
 create policy wis_team_write on public.team_members for all to authenticated using (public.is_admin()) with check (public.is_admin());
+
+drop policy if exists wis_gallery_read_public on public.gallery_photos;
+drop policy if exists wis_gallery_read_admin on public.gallery_photos;
+drop policy if exists wis_gallery_write on public.gallery_photos;
+create policy wis_gallery_read_public on public.gallery_photos for select to anon using (visible);
+create policy wis_gallery_read_admin on public.gallery_photos for select to authenticated using (visible or public.is_admin());
+create policy wis_gallery_write on public.gallery_photos for all to authenticated using (public.is_admin()) with check (public.is_admin());
 
 create policy wis_faqs_read on public.faqs for select to anon, authenticated using (true);
 create policy wis_faqs_write on public.faqs for all to authenticated using (public.is_admin()) with check (public.is_admin());

@@ -25,6 +25,7 @@ import type {
   PostRow,
   PrayerSettingsRow,
   RamadanRow,
+  GalleryRow,
   SettingsRow,
   TeamRow,
 } from "@/lib/types";
@@ -195,6 +196,31 @@ export async function getTeamGroups(): Promise<TeamGroup[]> {
     g.people.push({ id: r.id, name: r.name, photo_url: r.photo_url });
   }
   return groups;
+}
+
+export type PublicPhoto = Pick<GalleryRow, "id" | "caption" | "album" | "photo_url" | "thumb_url" | "width" | "height" | "taken_on" | "featured">;
+
+/** Every photo marked visible, newest first. If the table is not set up yet, the gallery is simply empty. */
+export async function getGallery(): Promise<PublicPhoto[]> {
+  "use cache";
+  cacheTag(TAGS.gallery);
+  cacheLife("minutes");
+  if (!hasSupabase) return [];
+  const { data, error } = await createAnonClient()
+    .from("gallery_photos")
+    .select("id,caption,album,photo_url,thumb_url,width,height,taken_on,featured")
+    .eq("visible", true)
+    .order("taken_on", { ascending: false, nullsFirst: false })
+    .order("created_at", { ascending: false });
+  if (error || !data) return [];
+  return data as PublicPhoto[];
+}
+
+/** Up to 5 photos for the Home page: the ones switched on for Home, or else the newest. */
+export async function getHomeGallery(): Promise<PublicPhoto[]> {
+  const all = await getGallery();
+  const featured = all.filter((p) => p.featured);
+  return (featured.length > 0 ? featured : all).slice(0, 5);
 }
 
 export type JumuahInfo = {

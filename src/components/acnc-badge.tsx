@@ -21,7 +21,7 @@ export function AcncBadge() {
             Warrnambool Islamic Society is registered with the Australian Charities and Not-for-profits Commission.
           </span>
           <span className="link-fx mt-1.5 inline-flex items-center gap-1.5 font-semibold text-[#0f8a63] sm:mt-2">
-            Read the announcement
+            See our certificate
             <ArrowRight className="size-4" aria-hidden />
           </span>
         </span>
