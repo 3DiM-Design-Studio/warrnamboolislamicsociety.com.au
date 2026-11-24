@@ -2,13 +2,14 @@
 
 import { Download } from "lucide-react";
 import { useEffect, useState, useSyncExternalStore } from "react";
+import { WhatsAppIcon } from "@/components/social-links";
 import { ThankYouView } from "@/components/thank-you-view";
 
 // Confirms the membership payment with the server (which emails the committee once), then shows the thank-you page
 // with the member's picture to download.
 const noSubscribe = () => () => {};
 
-export function MembershipThanks() {
+export function MembershipThanks({ whatsapp }: { whatsapp?: string }) {
   // The payment code Stripe adds to the address. "" means it is missing; undefined means the page is still loading.
   const pi = useSyncExternalStore(noSubscribe, () => new URLSearchParams(window.location.search).get("payment_intent") ?? "", () => undefined);
   const [result, setResult] = useState<"checking" | "done" | "problem">("checking");
@@ -71,6 +72,15 @@ export function MembershipThanks() {
           <Download className="size-4" aria-hidden />
           Download my picture
         </a>
+      )}
+      {whatsapp && (
+        <div className="mx-auto mt-6 max-w-sm rounded-2xl bg-white/10 p-4">
+          <p className="text-sm text-white/85">Stay in touch with the community: news, events and notices.</p>
+          <a href={whatsapp} target="_blank" rel="noopener noreferrer" className="btn-primary mt-3 w-full">
+            <WhatsAppIcon className="size-4" />
+            Join our WhatsApp group
+          </a>
+        </div>
       )}
     </ThankYouView>
   );

@@ -1,9 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 import { AcncBadge } from "@/components/acnc-badge";
 import { FridayCalendar } from "@/components/friday-calendar";
 import { HeroGreeting } from "@/components/hero-greeting";
 import { mission, site } from "@/content/site";
+import { JoinCommunity } from "@/components/join-community";
 import { HomeEvents, HomeFaqs, HomeJumuahTime, HomeNews, HomeNextUp } from "@/components/home-sections";
 
 const featureImages = [
@@ -120,6 +122,10 @@ export default function Home() {
         </section>
 
         <HomeFaqs />
+
+        <Suspense fallback={null}>
+          <JoinCommunity />
+        </Suspense>
       </div>
     </>
   );

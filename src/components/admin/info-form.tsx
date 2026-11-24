@@ -15,6 +15,7 @@ export function InfoForm({ settings }: { settings: SettingsRow }) {
         </Field>
         <TextField label="Email" name="email" type="email" defaultValue={settings.email} error={e.email} required />
         <TextField label="Facebook page link" name="facebook" type="url" defaultValue={settings.facebook} error={e.facebook} placeholder="https://www.facebook.com/yourpage" />
+        <TextField label="WhatsApp group link" name="whatsapp" type="url" defaultValue={settings.whatsapp} error={e.whatsapp} placeholder="https://chat.whatsapp.com/..." hint="In WhatsApp: open the group, then Group info, then Invite via link. Paste the link here." />
         <TextField label="Message at the top of the website" name="banner_text" defaultValue={settings.banner_text} error={e.banner_text} placeholder="For example: Eid prayer is at 8:30 AM" />
         <Switch label="Show this message" name="banner_on" defaultChecked={settings.banner_on} />
         {state && !state.ok && !state.errors && (

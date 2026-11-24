@@ -55,6 +55,7 @@ const fallbackSettings: SettingsRow = {
   phones: site.phones.map((p) => p.replace("+61 0", "+61 ")),
   email: site.email,
   facebook: "",
+  whatsapp: "",
   banner_on: false,
   banner_text: "",
 };
@@ -64,7 +65,7 @@ export async function getSettings(): Promise<SettingsRow> {
   cacheTag(TAGS.settings);
   cacheLife("minutes");
   if (!hasSupabase) return fallbackSettings;
-  const { data, error } = await createAnonClient().from("site_settings").select("phones,email,facebook,banner_on,banner_text").eq("id", 1).maybeSingle();
+  const { data, error } = await createAnonClient().from("site_settings").select("phones,email,facebook,whatsapp,banner_on,banner_text").eq("id", 1).maybeSingle();
   if (error || !data) return fallbackSettings;
   return data as SettingsRow;
 }

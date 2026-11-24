@@ -5,6 +5,7 @@ import { NavLink } from "@/components/nav-link";
 import GradientWaves from "@/components/GradientWaves";
 import { BackToTop } from "@/components/back-to-top";
 import { CookieSettingsButton } from "@/components/analytics-consent";
+import { SocialRow } from "@/components/social-links";
 import { SubscribeForm } from "@/components/subscribe-form";
 import { charity, nav, site } from "@/content/site";
 import { getSettings } from "@/lib/content";
@@ -96,6 +97,9 @@ export async function Footer() {
                     <Phone className="size-4 shrink-0" aria-hidden />
                     {settings.phones[0]}
                   </p>
+                  <div className="mt-4">
+                    <SocialRow facebook={settings.facebook} whatsapp={settings.whatsapp} label="Follow us" />
+                  </div>
                 </div>
               </div>
             </div>

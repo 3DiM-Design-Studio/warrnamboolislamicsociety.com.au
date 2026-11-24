@@ -26,6 +26,8 @@ export default async function Contact() {
           email: settings.email,
           phones: settings.phones,
           jumuah: jumuah.today ? `Every Friday at ${jumuah.today}` : "Every Friday",
+          facebook: settings.facebook,
+          whatsapp: settings.whatsapp,
         }}
       />
     </PageShell>

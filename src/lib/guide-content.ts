@@ -420,7 +420,7 @@ export const GUIDE: Group[] = [
       {
         slug: "info",
         title: "Website info",
-        summary: "Phone, email, Facebook, the top message and the FAQ questions.",
+        summary: "Phone, email, Facebook, WhatsApp, the top message and the FAQ questions.",
         parts: [
           {
             heading: "The form",
@@ -434,6 +434,7 @@ export const GUIDE: Group[] = [
                   { label: "Phone numbers", kind: "long", example: "One number on each line", need: true },
                   { label: "Email", example: "info@example.com", need: true },
                   { label: "Facebook page link", example: "https://www.facebook.com/yourpage" },
+                  { label: "WhatsApp group link", example: "https://chat.whatsapp.com/..." },
                   { label: "Message at the top of the website", example: "Eid prayer is at 8:30 AM" },
                   { label: "Show this message", kind: "switch", example: "Turn off when it is old news" },
                 ],
@@ -443,7 +444,8 @@ export const GUIDE: Group[] = [
           {
             heading: "Visit counting notice",
             blocks: [
-              { t: "tip", text: "New visitors see a small notice asking if we may count visits with Google Analytics. Counting starts only if they press “Yes, that is fine”. It never runs inside this admin panel. Visitors can change their choice at any time on the Privacy policy page." },
+              { t: "tip", text: "New visitors see a small notice asking if we may count visits with Google Analytics. Counting starts only if they press “Yes, that is fine”. It never runs inside this admin panel. Visitors can change their choice at any time on the Cookie policy page, or with “Cookie settings” at the bottom of every page." },
+              { t: "tip", text: "The Facebook and WhatsApp links appear in the footer, on the Contact page, on the Home page (a WhatsApp strip with a QR code), on the News page and after someone joins as a member. Leave a box empty and that button is simply not shown. If the WhatsApp link stops working (for example the group admin reset it), paste the new one here and press Save." },
             ],
           },
           {

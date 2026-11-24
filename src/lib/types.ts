@@ -6,6 +6,7 @@ export type SettingsRow = {
   phones: string[];
   email: string;
   facebook: string;
+  whatsapp: string;
   banner_on: boolean;
   banner_text: string;
 };

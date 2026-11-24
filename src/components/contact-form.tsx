@@ -1,14 +1,15 @@
 "use client";
 
-import { ArrowLeft, Clock, Mail, Phone } from "lucide-react";
+import { ArrowLeft, Clock, Mail, Phone, Users } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState, useTransition } from "react";
+import { SocialRow } from "@/components/social-links";
 
 const input =
   "w-full rounded-xl border-2 border-border bg-white px-4 py-3 outline-none focus:border-brand-dark";
 
-export type ContactDetails = { email: string; phones: string[]; jumuah: string };
+export type ContactDetails = { email: string; phones: string[]; jumuah: string; facebook?: string; whatsapp?: string };
 
 export function ContactForm({ contact }: { contact: ContactDetails }) {
   const router = useRouter();
@@ -159,6 +160,15 @@ export function ContactForm({ contact }: { contact: ContactDetails }) {
                 <p className="font-semibold">{contact.jumuah}</p>
               </div>
             </div>
+            {(contact.facebook || contact.whatsapp) && (
+              <div className="flex gap-4">
+                <Users className="mt-1 size-5 shrink-0" aria-hidden />
+                <div>
+                  <p className="mb-2 text-sm font-medium opacity-70">You can also find us on</p>
+                  <SocialRow facebook={contact.facebook} whatsapp={contact.whatsapp} />
+                </div>
+              </div>
+            )}
           </div>
           <iframe
             title="Map showing Warrnambool Islamic Society"

@@ -27,10 +27,13 @@ create table if not exists public.site_settings (
   phones text[] not null default '{}',
   email text not null default '',
   facebook text not null default '',
+  whatsapp text not null default '',
   banner_on boolean not null default false,
   banner_text text not null default '' check (char_length(banner_text) <= 200),
   updated_at timestamptz not null default now()
 );
+
+alter table public.site_settings add column if not exists whatsapp text not null default '';
 
 create table if not exists public.posts (
   id uuid primary key default gen_random_uuid(),

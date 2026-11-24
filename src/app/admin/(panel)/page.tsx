@@ -74,7 +74,7 @@ export default async function OverviewPage() {
   const [posts, events, settings, prayer, ramadan, seasons, donations, waiting, subscribers, newSubscribers, adminRequests, nextEvent] = await Promise.all([
     supabase.from("posts").select("status"),
     supabase.from("events").select("id", { count: "exact", head: true }).eq("status", "published").or(`end_date.gte.${today},and(end_date.is.null,event_date.gte.${today})`),
-    supabase.from("site_settings").select("phones,email,facebook,banner_on,banner_text").eq("id", 1).maybeSingle(),
+    supabase.from("site_settings").select("phones,email,facebook,whatsapp,banner_on,banner_text").eq("id", 1).maybeSingle(),
     supabase.from("prayer_settings").select("rules,show_on_site").eq("id", 1).maybeSingle(),
     supabase.from("ramadan_periods").select("id,name,start_date,end_date,isha_iqamah,taraweeh"),
     supabase.from("jumuah_seasons").select("id,name,start_month,start_day,end_month,end_day,jumuah_time"),

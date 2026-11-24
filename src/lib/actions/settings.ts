@@ -11,12 +11,13 @@ import type { ActionState } from "@/lib/types";
 const schema = z.object({
   email: z.string().trim().min(1, "Please enter an email address.").pipe(z.email("Please enter a real email address.")),
   facebook: z.string().trim().refine((v) => v === "" || /^https:\/\/(www\.)?facebook\.com\/.+/.test(v), "Please paste the full Facebook link, starting with https://facebook.com/"),
+  whatsapp: z.string().trim().refine((v) => v === "" || /^https:\/\/(chat\.whatsapp\.com|whatsapp\.com\/channel)\/.+/.test(v), "Please paste the full WhatsApp group link, starting with https://chat.whatsapp.com/"),
   banner_text: z.string().trim().max(200, "The message is too long (200 letters at most)."),
 });
 
 export async function saveSettings(_prev: ActionState, fd: FormData): Promise<ActionState> {
   const { supabase } = await requireAdmin();
-  const parsed = schema.safeParse({ email: str(fd, "email"), facebook: str(fd, "facebook"), banner_text: str(fd, "banner_text") });
+  const parsed = schema.safeParse({ email: str(fd, "email"), facebook: str(fd, "facebook"), whatsapp: str(fd, "whatsapp"), banner_text: str(fd, "banner_text") });
   const errors: Record<string, string> = parsed.success ? {} : fieldErrors(parsed.error);
 
   // Phone numbers: one per line. A stray 0 after +61 is removed automatically.
@@ -41,6 +42,7 @@ export async function saveSettings(_prev: ActionState, fd: FormData): Promise<Ac
     phones,
     email: parsed.data.email,
     facebook: parsed.data.facebook,
+    whatsapp: parsed.data.whatsapp,
     banner_on: bannerOn && parsed.data.banner_text !== "",
     banner_text: parsed.data.banner_text,
     updated_at: new Date().toISOString(),

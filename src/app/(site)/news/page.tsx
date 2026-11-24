@@ -5,7 +5,7 @@ import { PageShell } from "@/components/page-shell";
 import { Pagination } from "@/components/pagination";
 import { CardsSkeleton, FeaturedPostSkeleton, Skeleton } from "@/components/skeletons";
 import { FeaturedPost, PostCard } from "@/components/story-cards";
-import { getPosts } from "@/lib/content";
+import { getPosts, getSettings } from "@/lib/content";
 import { htmlToText } from "@/lib/sanitize";
 
 export const metadata = {
@@ -26,7 +26,7 @@ const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) 
 
 // Reads ?q= (search) and ?page= from the address. The first page of the full list also shows the newest story large at the top.
 async function NewsList({ searchParams }: { searchParams: PageProps<"/news">["searchParams"] }) {
-  const [posts, params] = await Promise.all([getPosts(), searchParams]);
+  const [posts, params, settings] = await Promise.all([getPosts(), searchParams, getSettings()]);
   const q = one(params.q).trim().slice(0, 80);
   const searching = q !== "";
   const found = searching ? posts.filter((p) => matches(q, `${p.title} ${p.excerpt} ${htmlToText(p.body)}`)) : posts;
@@ -76,6 +76,15 @@ async function NewsList({ searchParams }: { searchParams: PageProps<"/news">["se
           )}
         </div>
       </form>
+      {settings.whatsapp && (
+        <p className="-mt-6 text-sm text-muted">
+          Want news as it happens?{" "}
+          <a href={settings.whatsapp} target="_blank" rel="noopener noreferrer" className="link-fx font-semibold text-brand-dark">
+            Join our WhatsApp group
+          </a>
+          .
+        </p>
+      )}
 
       {posts.length === 0 ? (
         <p className="text-muted">No news yet. Please check back soon.</p>
