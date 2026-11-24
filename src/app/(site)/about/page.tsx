@@ -9,11 +9,10 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { CoastPill } from "@/components/coast-pill";
-import { ContactDetails } from "@/components/contact-details";
 import { ScrollRow } from "@/components/scroll-row";
 import { RichHeading } from "@/components/rich-heading";
 import { mission } from "@/content/site";
-import { getJumuah, getSettings, getTeamGroups } from "@/lib/content";
+import { getTeamGroups } from "@/lib/content";
 
 export const metadata = {
   title: "About Us",
@@ -53,7 +52,7 @@ const pastels = [
   "#d7e7f2",
 ];
 export default async function About() {
-  const [groups, settings, jumuah] = await Promise.all([getTeamGroups(), getSettings(), getJumuah()]);
+  const groups = await getTeamGroups();
   const people = groups.flatMap((g) =>
     g.people.map((p) => ({ id: p.id, name: p.name, role: g.role, photo: p.photo_url })),
   );
@@ -131,8 +130,6 @@ export default async function About() {
           </ScrollRow>
         </div>
       </section>
-
-      <ContactDetails email={settings.email} phones={settings.phones} jumuah={jumuah.today ? `Every Friday at ${jumuah.today}` : "Every Friday"} />
     </div>
   );
 }

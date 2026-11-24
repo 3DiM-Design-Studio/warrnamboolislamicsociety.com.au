@@ -16,13 +16,34 @@ export function WhatsAppIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+const circle = "grid size-11 place-items-center rounded-full border border-brand-dark/25 text-brand-dark transition-colors hover:border-brand-dark hover:bg-brand-dark hover:text-white";
 const pill = "inline-flex items-center gap-2 rounded-full border border-brand-dark/25 px-3.5 py-2 text-sm font-semibold transition-colors hover:border-brand-dark";
 
 /** Facebook and WhatsApp buttons. A button shows only when its link has been filled in (Website info in the admin panel). */
-export function SocialRow({ facebook, whatsapp, label }: { facebook?: string; whatsapp?: string; label?: string }) {
+export function SocialRow({ facebook, whatsapp, label, round = false, className = "" }: { facebook?: string; whatsapp?: string; label?: string; round?: boolean; className?: string }) {
   if (!facebook && !whatsapp) return null;
+  // round: small circles with only the logo (used in the footer). Otherwise pills with the name beside the logo.
+  if (round) {
+    return (
+      <div className={className}>
+        {label && <p className="mb-3 text-sm font-bold">{label}</p>}
+        <div className="flex gap-3">
+          {facebook && (
+            <a href={facebook} target="_blank" rel="noopener noreferrer" className={circle} aria-label="Warrnambool Islamic Society on Facebook (opens in a new tab)" title="Facebook">
+              <FacebookIcon className="size-5" />
+            </a>
+          )}
+          {whatsapp && (
+            <a href={whatsapp} target="_blank" rel="noopener noreferrer" className={circle} aria-label="Join our WhatsApp group (opens in a new tab)" title="WhatsApp group">
+              <WhatsAppIcon className="size-5" />
+            </a>
+          )}
+        </div>
+      </div>
+    );
+  }
   return (
-    <div>
+    <div className={className}>
       {label && <p className="mb-2 text-sm font-semibold">{label}</p>}
       <div className="flex flex-wrap gap-2">
         {facebook && (

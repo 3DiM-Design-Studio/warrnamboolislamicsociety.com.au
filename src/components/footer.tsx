@@ -97,9 +97,6 @@ export async function Footer() {
                     <Phone className="size-4 shrink-0" aria-hidden />
                     {settings.phones[0]}
                   </p>
-                  <div className="mt-4">
-                    <SocialRow facebook={settings.facebook} whatsapp={settings.whatsapp} label="Follow us" />
-                  </div>
                 </div>
               </div>
             </div>
@@ -145,6 +142,7 @@ export async function Footer() {
                     </NavLink>
                   ))}
                 </p>
+                <SocialRow round facebook={settings.facebook} whatsapp={settings.whatsapp} label="Follow us" className="mt-6" />
               </div>
               <BackToTop className="self-end" />
             </div>
