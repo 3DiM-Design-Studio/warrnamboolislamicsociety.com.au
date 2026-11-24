@@ -125,11 +125,12 @@ export function GalleryGrid({ photos }: { photos: PublicPhoto[] }) {
                 className="h-auto w-full"
                 style={p.width && p.height ? { aspectRatio: `${p.width} / ${p.height}` } : undefined}
               />
-              {p.caption && (
-                <span className="pointer-events-none absolute inset-0 flex items-end bg-black/60 p-3.5 text-sm font-semibold leading-snug text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100">
-                  <span className="line-clamp-4">{p.caption}</span>
+              <span className="pointer-events-none absolute inset-0 flex items-end bg-black/60 p-3.5 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100">
+                <span className="grid gap-0.5">
+                  <span className="line-clamp-4 text-sm font-semibold leading-snug">{p.caption || albumLabel(p.album)}</span>
+                  {p.caption && <span className="text-xs text-white/70">{albumLabel(p.album)}</span>}
                 </span>
-              )}
+              </span>
             </button>
           </li>
         ))}

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { SectionHeading } from "@/components/section-heading";
 import { getHomeGallery } from "@/lib/content";
-import { photoLabel } from "@/lib/gallery";
+import { albumLabel, photoLabel } from "@/lib/gallery";
 
 // Where each photo sits in the block. On a phone the first photo is wide and the rest are squares (a last odd one is wide too).
 // From a laptop up it is a block of 4 columns by 2 rows, shaped to the number of photos so there are never gaps.
@@ -30,11 +30,12 @@ export async function HomeGallery() {
             <Link href={`/gallery#p-${p.id}`} className="group relative block size-full overflow-hidden rounded-2xl bg-card" aria-label={`View photo: ${photoLabel(p)}`}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={i === 0 ? p.photo_url : p.thumb_url} alt="" loading="lazy" decoding="async" className="absolute inset-0 size-full object-cover" />
-              {p.caption && (
-                <span className="absolute inset-0 flex items-end bg-black/60 p-3.5 text-sm font-semibold leading-snug text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100">
-                  <span className="line-clamp-4">{p.caption}</span>
+              <span className="absolute inset-0 flex items-end bg-black/60 p-3.5 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100">
+                <span className="grid gap-0.5">
+                  <span className="line-clamp-4 text-sm font-semibold leading-snug">{p.caption || albumLabel(p.album)}</span>
+                  {p.caption && <span className="text-xs text-white/70">{albumLabel(p.album)}</span>}
                 </span>
-              )}
+              </span>
             </Link>
           </li>
         ))}
