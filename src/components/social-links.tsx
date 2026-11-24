@@ -55,7 +55,7 @@ export function SocialRow({ facebook, whatsapp, label, round = false, className 
         {whatsapp && (
           <a href={whatsapp} target="_blank" rel="noopener noreferrer" className={pill} aria-label="Join our WhatsApp group (opens in a new tab)">
             <WhatsAppIcon className="size-4" />
-            WhatsApp group
+            WhatsApp
           </a>
         )}
       </div>

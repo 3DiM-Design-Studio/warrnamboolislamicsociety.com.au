@@ -47,8 +47,8 @@ export function ContactForm({ contact }: { contact: ContactDetails }) {
 
   return (
     <div className="overflow-hidden rounded-2xl bg-card">
-      <div className="grid lg:h-[38rem] lg:grid-cols-[38rem_1fr]">
-        <div className="flex min-h-0 flex-col">
+      <div className="grid lg:grid-cols-[1.1fr_1fr]">
+        <div className="flex flex-col">
           <div className="flex items-center gap-3 p-6 sm:px-8">
             <Link
               href="/"
@@ -60,8 +60,8 @@ export function ContactForm({ contact }: { contact: ContactDetails }) {
             <span className="text-sm font-medium text-muted">Contact us</span>
           </div>
 
-          <form ref={formRef} onSubmit={onSubmit} className="flex min-h-0 flex-1 flex-col">
-              <div className="flex-1 overflow-y-auto px-6 pb-6 pt-2 sm:px-8">
+          <form ref={formRef} onSubmit={onSubmit} className="flex flex-1 flex-col">
+              <div className="flex-1 px-6 pb-6 pt-2 sm:px-8">
                 <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
                   Send us a message
                 </h2>
@@ -121,8 +121,8 @@ export function ContactForm({ contact }: { contact: ContactDetails }) {
           </form>
         </div>
 
-        <div className="flex min-h-0 flex-col border-t border-border text-brand-dark lg:border-l lg:border-t-0">
-          <div className="flex flex-col justify-center gap-8 p-8 sm:p-10">
+        <div className="flex flex-col border-t border-border text-brand-dark lg:border-l lg:border-t-0">
+          <div className="flex flex-1 flex-col justify-center gap-7 p-6 sm:p-10">
             <div className="flex gap-4">
               <Mail className="mt-1 size-5 shrink-0" aria-hidden />
               <div>
@@ -137,20 +137,22 @@ export function ContactForm({ contact }: { contact: ContactDetails }) {
             </div>
             <div className="flex gap-4">
               <Phone className="mt-1 size-5 shrink-0" aria-hidden />
-              <div>
+              <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium opacity-70">Phone</p>
-                <ul>
+                <div className="@container">
+                <ul className="grid grid-cols-1 gap-x-6 @[17rem]:grid-cols-2">
                   {contact.phones.map((n) => (
                     <li key={n}>
                       <a
                         href={`tel:${n.replace(/\s/g, "")}`}
-                        className="link-fx inline-block py-2.5 font-semibold"
+                        className="link-fx inline-block whitespace-nowrap py-2.5 text-[15px] font-semibold sm:text-base"
                       >
                         {n}
                       </a>
                     </li>
                   ))}
                 </ul>
+                </div>
               </div>
             </div>
             <div className="flex gap-4">
@@ -170,15 +172,15 @@ export function ContactForm({ contact }: { contact: ContactDetails }) {
               </div>
             )}
           </div>
-          <iframe
-            title="Map showing Warrnambool Islamic Society"
-            src="https://www.google.com/maps?q=Warrnambool+Islamic+Society,+Warrnambool+VIC&output=embed"
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            className="h-72 w-full flex-1 border-0 lg:h-auto lg:min-h-64"
-          />
         </div>
       </div>
+      <iframe
+        title="Map showing Warrnambool Islamic Society"
+        src="https://www.google.com/maps?q=Warrnambool+Islamic+Society,+Warrnambool+VIC&output=embed"
+        loading="lazy"
+        referrerPolicy="no-referrer-when-downgrade"
+        className="block h-72 w-full border-0 border-t border-border sm:h-80 lg:h-96"
+      />
     </div>
   );
 }
