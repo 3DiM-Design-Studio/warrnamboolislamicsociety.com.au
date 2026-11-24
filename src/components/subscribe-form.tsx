@@ -54,7 +54,7 @@ export function SubscribeForm() {
           aria-label="Your email address"
           autoComplete="email"
           placeholder="Email address"
-          className="w-full bg-transparent py-1 text-base outline-none placeholder:text-brand-dark/50"
+          className="w-full bg-transparent py-3 text-base outline-none placeholder:text-brand-dark/50"
         />
         <button
           aria-label="Subscribe"

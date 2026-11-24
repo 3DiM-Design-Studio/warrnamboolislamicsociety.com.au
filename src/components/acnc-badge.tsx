@@ -15,7 +15,7 @@ export function AcncBadge() {
         <span className="grid size-[4.75rem] shrink-0 place-items-center sm:size-32">
           <Image src="/acnc-logo.png" alt="ACNC Registered Charity" width={960} height={816} className="size-[82%] object-contain" />
         </span>
-        <span className="min-w-0 flex-1 py-3.5 pr-4 text-xs text-brand-dark sm:w-96 sm:flex-none sm:py-0 sm:pr-6 sm:text-sm">
+        <span className="min-w-0 flex-1 py-3.5 pr-4 text-[13px] text-brand-dark sm:w-96 sm:flex-none sm:py-0 sm:pr-6 sm:text-sm">
           <span className="block font-bold">Registered charity with the ACNC</span>
           <span className="mt-0.5 line-clamp-2 text-muted sm:mt-1">
             Warrnambool Islamic Society is registered with the Australian Charities and Not-for-profits Commission.

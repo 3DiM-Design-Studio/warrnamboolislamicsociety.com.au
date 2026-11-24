@@ -33,7 +33,7 @@ export default function Home() {
             <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/85 via-black/55 to-black/40" />
             <div className="flex min-h-[36rem] flex-col justify-end px-5 pb-28 pt-44 sm:min-h-[42rem] sm:p-10 sm:pb-24 sm:pt-52">
               <div className="grid items-end gap-6 md:grid-cols-[1fr_22rem]">
-                <h1 className="max-w-3xl text-5xl font-bold leading-[1.05] tracking-tight sm:text-7xl">
+                <h1 className="max-w-3xl text-4xl font-bold leading-[1.08] tracking-tight sm:text-7xl">
                   {site.name}
                 </h1>
                 <div>
@@ -55,7 +55,7 @@ export default function Home() {
         <HomeNextUp />
 
         <section className="pt-16">
-          <h2 className="text-3xl font-bold">
+          <h2 className="text-2xl font-bold sm:text-3xl">
             Serving Warrnambool, with sincerity.
           </h2>
           <p className="mt-2 max-w-xl text-muted">
@@ -110,7 +110,7 @@ export default function Home() {
               <p className="text-sm text-muted">
                 Join us for Jumu&apos;ah, every Friday
               </p>
-              <p className="mt-2 text-6xl font-bold tracking-tight sm:text-8xl">
+              <p className="mt-2 text-[2.75rem] font-bold leading-none tracking-tight sm:text-8xl">
                 <HomeJumuahTime />
               </p>
               <p className="mt-3 max-w-md text-muted">

@@ -36,7 +36,7 @@ export default async function Donate() {
         <nav aria-label="Breadcrumb">
           <ol className="flex items-center gap-1.5 text-sm text-muted">
             <li>
-              <Link href="/" className="link-fx inline-block py-2">
+              <Link href="/" className="link-fx inline-block py-3">
                 Home
               </Link>
             </li>
@@ -48,7 +48,7 @@ export default async function Donate() {
             </li>
           </ol>
         </nav>
-        <Link href="/" className="link-fx inline-block py-2 text-sm font-medium text-[#0f8a63]">
+        <Link href="/" className="link-fx inline-block py-3 text-sm font-medium text-[#0f8a63]">
           Cancel
         </Link>
       </div>
@@ -100,14 +100,14 @@ export default async function Donate() {
           {faqs.length > 0 && (
           <div className="divide-y divide-border rounded-2xl bg-card">
             {faqs.map((f) => (
-              <details key={f.q} className="group p-5">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm">
+              <details key={f.q} className="group px-5 py-2">
+                <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 text-sm">
                   {f.q}
                   <span className="text-lg transition group-open:rotate-45">
                     +
                   </span>
                 </summary>
-                <p className="mt-3 text-sm text-muted">{f.a}</p>
+                <p className="mb-3 mt-1 text-sm text-muted">{f.a}</p>
               </details>
             ))}
           </div>

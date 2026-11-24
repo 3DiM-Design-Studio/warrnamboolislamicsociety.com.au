@@ -61,7 +61,7 @@ export default async function About() {
       <nav aria-label="Breadcrumb">
         <ol className="flex items-center gap-1.5 text-sm text-muted">
           <li>
-            <Link href="/" className="link-fx inline-block py-2">
+            <Link href="/" className="link-fx inline-block py-3">
               Home
             </Link>
           </li>
@@ -93,7 +93,7 @@ export default async function About() {
 
       <section className="pt-24">
         <div className="grid items-end gap-6 md:grid-cols-[1fr_20rem]">
-          <h2 className="max-w-xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
+          <h2 className="max-w-xl text-2xl font-bold leading-tight tracking-tight sm:text-4xl">
             Meet the office bearers who lead our society
           </h2>
           <p className="text-sm text-muted">

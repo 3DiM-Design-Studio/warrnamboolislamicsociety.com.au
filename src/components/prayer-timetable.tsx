@@ -112,9 +112,9 @@ export function PrayerTimetable({ iqamah }: { iqamah?: TodayIqamah | null }) {
   const hours = Array.from({ length: END - START + 1 }, (_, i) => START + i);
   const nowTop = ((now.getHours() * 60 + now.getMinutes()) / 60 - START) * PX;
   const btn =
-    "grid size-9 place-items-center rounded-lg border border-border bg-white hover:bg-background";
+    "grid size-11 place-items-center rounded-lg border border-border bg-white hover:bg-background";
   const seg = (active: boolean) =>
-    `px-4 py-2 text-sm font-semibold ${active ? "bg-brand-gradient text-brand-dark" : "bg-white hover:bg-background"}`;
+    `min-h-11 px-4 py-2 text-sm font-semibold ${active ? "bg-brand-gradient text-brand-dark" : "bg-white hover:bg-background"}`;
 
   return (
     <div className="space-y-10">
@@ -143,12 +143,12 @@ export function PrayerTimetable({ iqamah }: { iqamah?: TodayIqamah | null }) {
           <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
             {PRAYERS.map(({ key, label }) => (
               <div key={key} className="rounded-xl bg-background p-4">
-                <p className="text-xs uppercase tracking-widest text-muted">
+                <p className="text-[13px] uppercase tracking-widest text-muted">
                   {label}
                 </p>
                 <p className="mt-1 text-xl font-bold">{todayRow[key]}</p>
                 {iqamah && key !== "sunrise" && (
-                  <p className="mt-1 text-xs text-muted">
+                  <p className="mt-1 text-[13px] text-muted">
                     Iqamah {iqamah.times[key]}
                   </p>
                 )}
@@ -165,7 +165,7 @@ export function PrayerTimetable({ iqamah }: { iqamah?: TodayIqamah | null }) {
               onClick={() => setPicking((v) => !v)}
               aria-expanded={picking}
               aria-haspopup="dialog"
-              className="inline-flex items-center gap-2 rounded-lg border border-border bg-white px-3 py-2 text-sm font-medium hover:bg-background"
+              className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-border bg-white px-3 py-2 text-sm font-medium hover:bg-background"
             >
               <CalendarDays className="size-4" aria-hidden />
               {range}
@@ -195,7 +195,7 @@ export function PrayerTimetable({ iqamah }: { iqamah?: TodayIqamah | null }) {
           </button>
           <button
             onClick={() => setAnchor(new Date())}
-            className="rounded-lg border border-border bg-white px-4 py-2 text-sm font-semibold hover:bg-background"
+            className="min-h-11 rounded-lg border border-border bg-white px-4 py-2 text-sm font-semibold hover:bg-background"
           >
             Today
           </button>
@@ -331,7 +331,7 @@ export function PrayerTimetable({ iqamah }: { iqamah?: TodayIqamah | null }) {
             </div>
           </div>
         </div>
-        <p className="mt-3 text-xs text-muted">
+        <p className="mt-3 text-[13px] text-muted">
           Each block sits at the time that prayer starts in Warrnambool. The red
           line is the time now.
         </p>

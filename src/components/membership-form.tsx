@@ -182,7 +182,7 @@ function Card({
               <Link
                 href="/"
                 aria-label="Back to home"
-                className="grid size-8 place-items-center rounded-full hover:bg-background"
+                className="grid size-11 place-items-center rounded-full hover:bg-background"
               >
                 <ArrowLeft className="size-5" aria-hidden />
               </Link>
@@ -203,7 +203,7 @@ function Card({
                     disabled={!done}
                     onClick={() => setStep(i)}
                     aria-current={active ? "step" : undefined}
-                    className="flex items-center disabled:cursor-default"
+                    className="-m-1 flex items-center p-1 disabled:cursor-default"
                   >
                     <span
                       className={`grid size-9 place-items-center rounded-full text-xs font-bold lg:size-7 ${

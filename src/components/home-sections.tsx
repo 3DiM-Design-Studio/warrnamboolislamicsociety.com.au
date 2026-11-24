@@ -86,15 +86,15 @@ async function Faqs() {
   if (faqs.length === 0) return null;
   return (
     <section className="pt-16">
-      <h2 className="text-3xl font-bold">Frequently asked questions</h2>
+      <h2 className="text-2xl font-bold sm:text-3xl">Frequently asked questions</h2>
       <div className="mt-6 divide-y divide-border rounded-2xl bg-card">
         {faqs.map((f) => (
-          <details key={f.q} className="group p-5">
-            <summary className="flex cursor-pointer list-none items-center justify-between font-medium">
+          <details key={f.q} className="group px-5 py-2">
+            <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between font-medium">
               {f.q}
               <span className="text-xl transition group-open:rotate-45">+</span>
             </summary>
-            <p className="mt-3 text-sm text-muted">{f.a}</p>
+            <p className="mb-3 mt-1 text-sm text-muted">{f.a}</p>
           </details>
         ))}
       </div>

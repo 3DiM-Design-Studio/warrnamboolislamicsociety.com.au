@@ -2,7 +2,7 @@ import { ArrowRight, HeartHandshake, Mail, Phone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { NavLink } from "@/components/nav-link";
-import GradientWaves from "@/components/GradientWaves";
+import { LazyWaves } from "@/components/lazy-waves";
 import { BackToTop } from "@/components/back-to-top";
 import { CookieSettingsButton } from "@/components/analytics-consent";
 import { SocialRow } from "@/components/social-links";
@@ -23,7 +23,7 @@ export async function Footer() {
   return (
     <footer className="relative isolate mt-8 overflow-hidden">
       <div className="absolute inset-0 -z-10">
-        <GradientWaves
+        <LazyWaves
           horizonColor="#0b5d3b"
           waveColor="#00bf2e"
           crestColor="#c9f26b"
@@ -56,7 +56,7 @@ export async function Footer() {
       </div>
       {/* No minimum height: the card sets the footer's height, so there is no empty gap above it. */}
       <div className="mx-auto flex max-w-6xl flex-col justify-end px-4 pb-8 pt-4">
-        <div className="rounded-xl border border-white/40 bg-white/90 p-8 backdrop-blur-xl sm:p-10">
+        <div className="rounded-xl border border-white/40 bg-white/95 p-8 sm:bg-white/90 sm:p-10 sm:backdrop-blur-xl">
           <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
             <div className="flex flex-col gap-12">
               <div className="max-w-sm">
@@ -124,11 +124,11 @@ export async function Footer() {
               </Link>
               <p className="mt-4 flex flex-col items-start">
                 {support.map((n) => (
-                  <NavLink key={n.href} href={n.href} className="link-fx py-2.5 lg:py-1">
+                  <NavLink key={n.href} href={n.href} className="link-fx py-3 lg:py-1">
                     {n.label}
                   </NavLink>
                 ))}
-                <CookieSettingsButton className="link-fx py-2.5 text-left lg:py-1" />
+                <CookieSettingsButton className="link-fx py-3 text-left lg:py-1" />
               </p>
             </div>
 
@@ -137,7 +137,7 @@ export async function Footer() {
                 <p className="font-bold">Menu</p>
                 <p className="mt-3 flex flex-col items-start">
                   {nav.map((n) => (
-                    <NavLink key={n.href} href={n.href} className="link-fx py-2.5 lg:py-1">
+                    <NavLink key={n.href} href={n.href} className="link-fx py-3 lg:py-1">
                       {n.label}
                     </NavLink>
                   ))}

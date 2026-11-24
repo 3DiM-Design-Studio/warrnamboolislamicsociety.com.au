@@ -8,7 +8,7 @@ import Link from "next/link";
 export function SectionHeading({ title, href, label, id }: { title: string; href: string; label: string; id?: string }) {
   return (
     <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-end sm:justify-between">
-      <h2 id={id} className="text-balance text-3xl font-bold">
+      <h2 id={id} className="text-balance text-2xl font-bold sm:text-3xl">
         {title}
       </h2>
       <Link

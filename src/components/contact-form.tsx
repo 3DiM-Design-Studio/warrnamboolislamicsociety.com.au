@@ -53,7 +53,7 @@ export function ContactForm({ contact }: { contact: ContactDetails }) {
             <Link
               href="/"
               aria-label="Back to home"
-              className="grid size-8 place-items-center rounded-full hover:bg-background"
+              className="grid size-11 place-items-center rounded-full hover:bg-background"
             >
               <ArrowLeft className="size-5" aria-hidden />
             </Link>
@@ -129,7 +129,7 @@ export function ContactForm({ contact }: { contact: ContactDetails }) {
                 <p className="text-sm font-medium opacity-70">Email</p>
                 <a
                   href={`mailto:${contact.email}`}
-                  className="link-fx inline-block py-1.5 font-semibold"
+                  className="link-fx inline-block py-2.5 font-semibold"
                 >
                   {contact.email}
                 </a>
@@ -144,7 +144,7 @@ export function ContactForm({ contact }: { contact: ContactDetails }) {
                     <li key={n}>
                       <a
                         href={`tel:${n.replace(/\s/g, "")}`}
-                        className="link-fx inline-block py-1.5 font-semibold"
+                        className="link-fx inline-block py-2.5 font-semibold"
                       >
                         {n}
                       </a>
