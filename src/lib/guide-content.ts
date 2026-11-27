@@ -491,7 +491,7 @@ export const GUIDE: Group[] = [
             heading: "Visit counting notice",
             blocks: [
               { t: "tip", text: "New visitors see a small notice asking if we may count visits with Google Analytics. Counting starts only if they press “Yes, that is fine”. It never runs inside this admin panel. Visitors can change their choice at any time on the Cookie policy page, or with “Cookie settings” at the bottom of every page." },
-              { t: "tip", text: "The Facebook and WhatsApp links appear in the footer, on the Contact page, on the Home page (a WhatsApp strip with a QR code), on the News page and after someone joins as a member. Leave a box empty and that button is simply not shown. If the WhatsApp link stops working (for example the group admin reset it), paste the new one here and press Save." },
+              { t: "tip", text: "The Facebook and WhatsApp links appear in the footer (the WhatsApp one also appears as a QR code that people can scan with their phone), on the Contact page, on the News page and after someone joins as a member. Leave a box empty and that button is simply not shown. If the WhatsApp link stops working (for example the group admin reset it), paste the new one here and press Save." },
             ],
           },
           {

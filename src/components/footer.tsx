@@ -5,6 +5,7 @@ import { NavLink } from "@/components/nav-link";
 import { LazyWaves } from "@/components/lazy-waves";
 import { BackToTop } from "@/components/back-to-top";
 import { CookieSettingsButton } from "@/components/analytics-consent";
+import { QrCode } from "@/components/qr-code";
 import { SocialRow } from "@/components/social-links";
 import { SubscribeForm } from "@/components/subscribe-form";
 import { charity, nav, site } from "@/content/site";
@@ -142,7 +143,16 @@ export async function Footer() {
                     </NavLink>
                   ))}
                 </p>
-                <SocialRow round facebook={settings.facebook} whatsapp={settings.whatsapp} label="Follow us" className="mt-6" />
+                <div className="mt-6 flex flex-wrap items-end gap-x-5 gap-y-4">
+                  <SocialRow round facebook={settings.facebook} whatsapp={settings.whatsapp} label="Follow us" />
+                  {/* Phones can tap the WhatsApp icon, so the code is for people on a laptop or tablet who scan it with their phone. */}
+                  {settings.whatsapp && (
+                    <div className="hidden md:block">
+                      <QrCode value={settings.whatsapp} label="QR code to join the Warrnambool Islamic Society WhatsApp group" className="size-20 rounded-xl border border-brand-dark/15" />
+                      <p className="mt-1.5 text-[13px] leading-tight text-brand-dark/70">Scan to join on WhatsApp</p>
+                    </div>
+                  )}
+                </div>
               </div>
               <BackToTop className="self-end" />
             </div>
